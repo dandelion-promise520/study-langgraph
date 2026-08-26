@@ -65,24 +65,24 @@ import { ThemeTogglePreview } from "../motion/theme-toggle.preview";
 const resources: SidebarResource[] = [
   {
     id: "release",
-    label: "Release workspace",
+    label: "发布工作区",
     kind: "project",
     children: [
-      { id: "checkout", label: "Checkout audit", kind: "file" },
-      { id: "release-notes", label: "Release notes", kind: "file" },
-      { id: "references", label: "Research sources", kind: "bookmark" },
+      { id: "checkout", label: "结算流程审计", kind: "file" },
+      { id: "release-notes", label: "发布说明", kind: "file" },
+      { id: "references", label: "调研资料", kind: "bookmark" },
     ],
   },
   {
     id: "design",
-    label: "Design system",
+    label: "设计系统",
     kind: "folder",
     children: [
-      { id: "tokens", label: "Motion tokens", kind: "file" },
-      { id: "components", label: "Component inventory", kind: "file" },
+      { id: "tokens", label: "动效规范", kind: "file" },
+      { id: "components", label: "组件清单", kind: "file" },
     ],
   },
-  { id: "archive", label: "Archived runs", kind: "folder" },
+  { id: "archive", label: "归档记录", kind: "folder" },
 ];
 
 const diffLines = [
@@ -116,18 +116,18 @@ const diffLines = [
 const approvalQuestions: ApprovalCardQuestion[] = [
   {
     id: "release",
-    title: "How should the patch be released?",
+    title: "请确认本次修复补丁的发布方式：",
     options: [
-      { value: "focused", label: "Ship the focused checkout fix" },
-      { value: "bundle", label: "Bundle it with the next release" },
+      { value: "focused", label: "直接独立发布该结算修复补丁（推荐）" },
+      { value: "bundle", label: "合并到下一个大版本中统一发布" },
     ],
     allowCustom: true,
-    customPlaceholder: "Add another release instruction…",
+    customPlaceholder: "输入其他自定义发布指令…",
   },
 ];
 
 const reply =
-  "I’ll keep the patch focused, preserve the current checkout layout, and run the same validation path before preparing the release.";
+  "好的，我将保持本次补丁的专注度，维持现有结算界面布局不变，并在最终发布前执行完整的自动化校验链路。";
 
 interface AddedMessage {
   id: string;
@@ -189,11 +189,11 @@ function GeneratedPreview() {
   );
 }
 
-function AssistantIdentity({ label = "beUI Agent" }: { label?: string }) {
+function AssistantIdentity({ label = "AI 智能体" }: { label?: string }) {
   return (
     <MessageHeader>
       <span>{label}</span>
-      <span>Now</span>
+      <span>刚刚</span>
     </MessageHeader>
   );
 }
@@ -249,18 +249,18 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
     return [
       {
         id: "inspect",
-        title: "Inspect the checkout flow",
+        title: "审计结算业务流程",
         status: "completed",
       },
       {
         id: "patch",
-        title: "Prepare the validation patch",
+        title: "编写参数校验修复补丁",
         status: "completed",
       },
-      { id: "checks", title: "Run focused checks", status: checksStatus },
+      { id: "checks", title: "执行定向自动化检查", status: checksStatus },
       {
         id: "review",
-        title: "Collect release approval",
+        title: "确认发布审批流程",
         status: toolStatus === "complete" ? "in-progress" : "pending",
       },
     ];
@@ -359,7 +359,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
   return (
     <ChatApp sidebarWidth="17rem" className={cn("h-[760px]", className)}>
       <AnimatedSidebar
-        ariaLabel="Agent workspace"
+        ariaLabel="智能体工作区"
         collapsible="offcanvas"
         className="min-h-0"
         panelClassName="h-full bg-background"
@@ -369,9 +369,9 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
             <AnimatedSidebarGroupContent>
               <AnimatedSidebarMenu className="gap-1">
                 {[
-                  { label: "New task", icon: MessageSquarePlus },
-                  { label: "Search", icon: Search },
-                  { label: "Runs", icon: Clock3 },
+                  { label: "新建任务", icon: MessageSquarePlus },
+                  { label: "全站搜索", icon: Search },
+                  { label: "运行记录", icon: Clock3 },
                 ].map(({ label, icon: Icon }) => (
                   <AnimatedSidebarMenuItem key={label}>
                     <AnimatedSidebarMenuButton
@@ -389,7 +389,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
 
           <AnimatedSidebarGroup className="min-h-0 flex-1 px-1 py-0">
             <AnimatedSidebarGroupLabel className="mb-1 h-8 px-2 text-xs font-medium tracking-normal normal-case">
-              Projects
+              项目列表
             </AnimatedSidebarGroupLabel>
             <AnimatedSidebarGroupContent className="relative min-h-0 flex-1 overflow-hidden">
               <div className="scrollbar-none` h-full overflow-y-auto overscroll-contain pb-8 [overflow-anchor:none] [&::-webkit-scrollbar]:hidden">
@@ -419,9 +419,9 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
               <PanelLeft className="size-4" />
             </AnimatedSidebarTrigger>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-foreground">Checkout release</p>
+              <p className="truncate text-sm font-medium text-foreground">结算模块发布</p>
               <p className="truncate text-[11px] text-muted-foreground">
-                Agent workspace · focused patch
+                智能体工作区 · 定向修复补丁
               </p>
             </div>
           </div>
@@ -429,7 +429,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
           {/* 👉 右侧：状态徽章 + 主题切换按钮 */}
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-              Connected
+              已连接
             </span>
             <ThemeTogglePreview></ThemeTogglePreview>
           </div>
@@ -449,13 +449,12 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
               </MessageAvatar>
               <MessageContent>
                 <MessageHeader>
-                  <span>You</span>
+                  <span>你</span>
                   <span>10:24</span>
                 </MessageHeader>
                 <MessageBubble variant="solid">
                   <MessageBubbleContent>
-                    Audit the checkout flow, fix the validation gap, and prepare a release-ready
-                    patch.
+                    审计结算流程，修复表单校验漏洞，并准备可直接发布的补丁。
                   </MessageBubbleContent>
                 </MessageBubble>
               </MessageContent>
@@ -467,7 +466,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
               </MessageAvatar>
               <MessageContent className="gap-3">
                 <MessageHeader>
-                  <span>beUI Agent</span>
+                  <span>AI 智能体</span>
                   <span>10:24</span>
                 </MessageHeader>
                 <AgentActivity
@@ -479,7 +478,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                     {
                       id: "reason",
                       type: "text",
-                      content: "Tracing the checkout submission path and validation boundary.",
+                      content: "正在追踪结算提交路径与校验边界。",
                     },
                     {
                       id: "read",
@@ -490,11 +489,11 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                     {
                       id: "search",
                       type: "search",
-                      query: "order validation failures",
+                      query: "订单校验失败处理方案",
                       results: [
                         {
                           id: "result-1",
-                          title: "Agent interface guide",
+                          title: "智能体界面设计指南",
                           domain: "beui.dev",
                           url: "/docs/ai-agents",
                         },
@@ -502,7 +501,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                     },
                   ]}
                 />
-                <TodoList items={plan} title="Release plan" collapseOnComplete={false} />
+                <TodoList items={plan} title="发布计划" collapseOnComplete={false} />
               </MessageContent>
             </Message>
 
@@ -511,19 +510,19 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
               <MessageContent>
                 <ToolApproval
                   tool="terminal.run"
-                  title="Run focused checkout checks?"
-                  description="The agent needs permission to run the validation and accessibility suites."
+                  title="允许运行结算自动化检查？"
+                  description="智能体需要获取权限以运行校验与无障碍自动化测试套件。"
                   status={toolStatus}
                   defaultOpen
                   parameters={[
                     {
                       id: "command",
-                      label: "Command",
+                      label: "执行命令",
                       value: (
                         <ToolApprovalCode code="bun test checkout --coverage" language="bash" />
                       ),
                     },
-                    { id: "scope", label: "Scope", value: "Current workspace" },
+                    { id: "scope", label: "运行作用域", value: "当前工作区" },
                   ]}
                   onApprove={approveTool}
                   onAlwaysAllow={approveTool}
@@ -542,20 +541,18 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                   <ToolResult
                     tool="terminal.run"
                     title={
-                      toolStatus === "running"
-                        ? "Running checkout checks"
-                        : "Checkout checks passed"
+                      toolStatus === "running" ? "正在运行结算检查..." : "结算自动化检查全部通过"
                     }
                     status={toolStatus === "running" ? "running" : "success"}
                     kind="terminal"
-                    meta={toolStatus === "running" ? "Live" : "2.8s"}
+                    meta={toolStatus === "running" ? "实时" : "2.8秒"}
                     defaultOpen
                     collapseOnComplete={false}
                   >
                     <ToolResultOutput>
                       {toolStatus === "running"
-                        ? "✓ validation contract\n… checkout keyboard flow"
-                        : "✓ validation contract\n✓ checkout keyboard flow\n✓ order submission recovery"}
+                        ? "✓ 校验规则契约测试通过\n… 结算键盘导航流程测试中"
+                        : "✓ 校验规则契约测试通过\n✓ 结算键盘导航流程测试通过\n✓ 订单提交异常恢复测试通过"}
                     </ToolResultOutput>
                   </ToolResult>
                   {toolStatus === "complete" ? (
@@ -586,7 +583,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                 <MessageContent>
                   <ToolResult
                     tool="terminal.run"
-                    title="Checkout checks were not run"
+                    title="结算检查未执行"
                     status={toolStatus === "denied" ? "cancelled" : "error"}
                     kind="terminal"
                     defaultOpen
@@ -594,8 +591,8 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                   >
                     <ToolResultOutput>
                       {toolStatus === "denied"
-                        ? "Permission was not granted. No command was run."
-                        : "The command could not be completed."}
+                        ? "未获得执行权限，已跳过命令运行。"
+                        : "命令执行未能完成。"}
                     </ToolResultOutput>
                   </ToolResult>
                 </MessageContent>
@@ -608,7 +605,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                 <MessageContent className="gap-3">
                   <ImageGeneration
                     status="complete"
-                    prompt="a clear checkout confirmation screen"
+                    prompt="清晰直观的结算完成确认页设计"
                     resolution="1280 × 840"
                     size="compact"
                   >
@@ -618,33 +615,33 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                     <MessageBubbleContent>
                       <StreamingResponse
                         status="complete"
-                        copyText="The checkout patch is ready for review."
+                        copyText="结算流程补丁已准备就绪，请查阅。"
                         sources={[
                           {
                             id: "message",
-                            title: "Message composition",
+                            title: "消息组件架构",
                             domain: "beui.dev",
                             url: "/components/agents/message",
                           },
                           {
                             id: "diff",
-                            title: "File Diff",
+                            title: "代码变更比对",
                             domain: "beui.dev",
                             url: "/components/agents/file-diff",
                           },
                           {
                             id: "approval",
-                            title: "Tool Approval",
+                            title: "工具调用审批",
                             domain: "beui.dev",
                             url: "/components/agents/tool-approval",
                           },
                         ]}
                       >
-                        <p>The checkout patch is ready for review.</p>
+                        <p>结算流程补丁已准备就绪，请查阅：</p>
                         <ul>
-                          <li>Validation now runs before submission.</li>
-                          <li>Failure output stays inside the current flow.</li>
-                          <li>Focused checks pass without changing the layout.</li>
+                          <li>提交订单前已强制执行有效性校验。</li>
+                          <li>错误提示信息内嵌于当前流程中友好展示。</li>
+                          <li>定向测试已全部通过，未破坏原有页面布局。</li>
                         </ul>
                       </StreamingResponse>
                     </MessageBubbleContent>
@@ -667,7 +664,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                         window.setTimeout(() => setApprovalStatus("answered"), 650),
                       );
                     }}
-                    result="Release direction sent to the agent."
+                    result="发布决策指令已发送给智能体。"
                   />
                 </MessageContent>
               </Message>
@@ -685,7 +682,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                   </MessageAvatar>
                 )}
                 <MessageContent>
-                  {message.from === "assistant" ? <AssistantIdentity label="beUI Agent" /> : null}
+                  {message.from === "assistant" ? <AssistantIdentity label="AI 智能体" /> : null}
                   <MessageBubble variant={message.from === "user" ? "solid" : "soft"}>
                     <MessageBubbleContent>
                       {message.from === "assistant" ? (
@@ -701,7 +698,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                       )}
                     </MessageBubbleContent>
                   </MessageBubble>
-                  {message.from === "user" ? <MessageFooter>Sent</MessageFooter> : null}
+                  {message.from === "user" ? <MessageFooter>已发送</MessageFooter> : null}
                 </MessageContent>
               </Message>
             ))}
@@ -712,7 +709,7 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
                   <Bot />
                 </MessageAvatar>
                 <MessageContent>
-                  <ThinkingShimmer>Reviewing your direction</ThinkingShimmer>
+                  <ThinkingShimmer>正在分析您的指令并规划下一步...</ThinkingShimmer>
                 </MessageContent>
               </Message>
             ) : null}
@@ -729,23 +726,23 @@ export function ChatAppExample({ className }: Pick<ComponentProps<typeof ChatApp
               onSubmit={submit}
               minRows={1}
               maxRows={4}
-              placeholder="Ask the agent to continue…"
+              placeholder="输入消息，让智能体继续执行…"
               models={[
-                { value: "balanced", label: "Balanced" },
-                { value: "fast", label: "Fast" },
-                { value: "deep", label: "Deep reasoning" },
+                { value: "balanced", label: "标准均衡" },
+                { value: "fast", label: "极速响应" },
+                { value: "deep", label: "深度思考" },
               ]}
               defaultModel="balanced"
               actions={[
-                { value: "attach", label: "Attach file", icon: <Paperclip /> },
+                { value: "attach", label: "上传附件", icon: <Paperclip /> },
                 {
                   value: "project",
-                  label: "Add project context",
+                  label: "关联项目上下文",
                   icon: <FolderKanban />,
                 },
                 {
                   value: "skill",
-                  label: "Use a skill",
+                  label: "调用技能库",
                   icon: <WandSparkles />,
                 },
               ]}

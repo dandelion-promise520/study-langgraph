@@ -12,20 +12,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
+
 import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import {
-  EASE_OUT,
-  SPRING_LAYOUT,
-  SPRING_SWAP,
-} from "@/lib/ease";
+import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+
+import type { AgentActivityContentType, AgentActivityItem, AgentActivityProps } from "./types";
+
 import { ActivityRow } from "./activity-row";
-import type {
-  AgentActivityContentType,
-  AgentActivityItem,
-  AgentActivityProps,
-} from "./types";
 
 export type {
   AgentActivityContentType,
@@ -44,11 +39,11 @@ export type {
 
 function formatDuration(duration: number) {
   const seconds = Math.max(0, Math.round(duration));
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return `${seconds} 秒`;
 
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
-  return remainder === 0 ? `${minutes}m` : `${minutes}m ${remainder}s`;
+  return remainder === 0 ? `${minutes} 分钟` : `${minutes} 分 ${remainder} 秒`;
 }
 
 function useControllableOpen({
@@ -81,11 +76,11 @@ function getContentType(items: AgentActivityItem[]): AgentActivityContentType {
 }
 
 function getActiveLabel(type: AgentActivityContentType) {
-  if (type === "search") return "Searching the web…";
-  if (type === "tool") return "Running tools…";
-  if (type === "trace") return "Working through the run…";
-  if (type === "mixed") return "Working through it…";
-  return "Thinking…";
+  if (type === "search") return "正在联网搜索…";
+  if (type === "tool") return "正在调用工具…";
+  if (type === "trace") return "正在执行流程…";
+  if (type === "mixed") return "正在处理中…";
+  return "正在思考…";
 }
 
 function getSummary(
@@ -96,24 +91,22 @@ function getSummary(
   if (type === "step" || type === "text") {
     return (
       <>
-        Thought for <span className="tabular-nums">{formatDuration(duration)}</span>
+        思考用时 <span className="tabular-nums">{formatDuration(duration)}</span>
       </>
     );
   }
-  if (type === "search") return "Searched the web";
+  if (type === "search") return "已完成联网搜索";
   if (type === "tool") {
-    return `Ran ${items.length} ${items.length === 1 ? "tool" : "tools"}`;
+    return `调用了 ${items.length} 个工具`;
   }
   if (type === "trace") {
     const messages = items.filter(
-      (item) =>
-        item.type === "trace" &&
-        (item.kind === "thinking" || item.kind === "message"),
+      (item) => item.type === "trace" && (item.kind === "thinking" || item.kind === "message"),
     ).length;
     const tools = items.length - messages;
-    return `${tools} ${tools === 1 ? "tool call" : "tool calls"}, ${messages} ${messages === 1 ? "message" : "messages"}`;
+    return `${tools} 次工具调用，${messages} 条回复消息`;
   }
-  return `Completed ${items.length} ${items.length === 1 ? "step" : "steps"}`;
+  return `已完成 ${items.length} 个步骤`;
 }
 
 export function AgentActivity({
@@ -148,15 +141,11 @@ export function AgentActivity({
   });
   const working = status === "working";
   const expanded = working || currentOpen;
-  const contentType = items.length
-    ? getContentType(items)
-    : (initialContentType ?? "mixed");
+  const contentType = items.length ? getContentType(items) : (initialContentType ?? "mixed");
   const cappedHeight = Math.min(contentHeight, Math.max(0, maxHeight));
   const viewportHeight = working ? Math.max(0, maxHeight) : cappedHeight;
   const capped = contentHeight > maxHeight;
-  const streamOffset = working
-    ? Math.min(0, viewportHeight - contentHeight)
-    : 0;
+  const streamOffset = working ? Math.min(0, viewportHeight - contentHeight) : 0;
 
   useLayoutEffect(() => {
     const node = contentRef.current;
@@ -205,9 +194,11 @@ export function AgentActivity({
           role="status"
           className="flex h-7 min-w-0 items-center text-muted-foreground"
         >
-          {renderWorkingStatus
-            ? renderWorkingStatus({ label: liveLabel, duration })
-            : <ThinkingShimmer>{liveLabel}</ThinkingShimmer>}
+          {renderWorkingStatus ? (
+            renderWorkingStatus({ label: liveLabel, duration })
+          ) : (
+            <ThinkingShimmer>{liveLabel}</ThinkingShimmer>
+          )}
         </div>
       ) : (
         <button
@@ -216,7 +207,7 @@ export function AgentActivity({
           aria-expanded={expanded}
           aria-controls={contentId}
           onClick={toggle}
-          className="group flex h-7 min-w-0 items-center gap-1.5 rounded-md text-left font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="group flex h-7 min-w-0 items-center gap-1.5 rounded-md text-left font-medium text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <span className="truncate">
             {renderCompletedStatus

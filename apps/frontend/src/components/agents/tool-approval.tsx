@@ -1,27 +1,11 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
-import {
-  Check,
-  ChevronDown,
-  CircleAlert,
-  LoaderCircle,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { Check, ChevronDown, CircleAlert, LoaderCircle, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
-import {
-  AgentCode,
-  type AgentCodeLanguage,
-} from "@/components/agents/agent-code";
+import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
+
+import { AgentCode, type AgentCodeLanguage } from "@/components/agents/agent-code";
 import { AgentDisclosure } from "@/components/agents/agent-disclosure";
 import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -63,13 +47,13 @@ export interface ToolApprovalProps {
 }
 
 function getStatusCopy(status: ToolApprovalStatus) {
-  if (status === "approving") return "Approving";
-  if (status === "approved") return "Approved";
-  if (status === "denied") return "Denied";
-  if (status === "running") return "Running";
-  if (status === "complete") return "Completed";
-  if (status === "error") return "Failed";
-  return "Approval required";
+  if (status === "approving") return "正在授权";
+  if (status === "approved") return "已授权";
+  if (status === "denied") return "已拒绝";
+  if (status === "running") return "运行中";
+  if (status === "complete") return "已完成";
+  if (status === "error") return "失败";
+  return "待审批确认";
 }
 
 function getStatusBadgeClass(status: ToolApprovalStatus) {
@@ -85,11 +69,7 @@ function getStatusBadgeClass(status: ToolApprovalStatus) {
   return "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400";
 }
 
-export function ToolApprovalCode({
-  code,
-  language = "bash",
-  className,
-}: ToolApprovalCodeProps) {
+export function ToolApprovalCode({ code, language = "bash", className }: ToolApprovalCodeProps) {
   return (
     <AgentCode
       code={code}
@@ -97,7 +77,7 @@ export function ToolApprovalCode({
       className={cn(
         // Parameter values sit in a narrow grid column with nowhere to scroll
         // on touch, so they wrap instead of clipping (as ToolResultOutput does).
-        "whitespace-pre-wrap break-words rounded-lg border border-border/50 bg-muted/30 px-2.5 py-2",
+        "rounded-lg border border-border/50 bg-muted/30 px-2.5 py-2 break-words whitespace-pre-wrap",
         className,
       )}
     />
@@ -106,7 +86,7 @@ export function ToolApprovalCode({
 
 export function ToolApproval({
   tool,
-  title = "Allow this tool to run?",
+  title = "允许运行此工具？",
   description,
   parameters = [],
   status = "pending",
@@ -176,9 +156,7 @@ export function ToolApproval({
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="font-medium text-foreground">{title}</div>
-              <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
-                {tool}
-              </div>
+              <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{tool}</div>
             </div>
             <span
               className={cn(
@@ -199,9 +177,9 @@ export function ToolApproval({
               aria-expanded={currentOpen}
               aria-controls={detailsId}
               onClick={() => setOpen(!currentOpen)}
-              className="mt-2 inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-2 inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
-              View details
+              查看详情
               <motion.span
                 aria-hidden="true"
                 animate={{ rotate: currentOpen ? 180 : 0 }}
@@ -214,10 +192,7 @@ export function ToolApproval({
         </div>
       </div>
 
-      <AgentDisclosure
-        id={detailsId}
-        open={currentOpen}
-      >
+      <AgentDisclosure id={detailsId} open={currentOpen}>
         <dl className="mx-4 mb-4 grid gap-2 rounded-xl border border-border/50 bg-background/70 p-3">
           {parameters.map((parameter) => (
             <div
@@ -225,7 +200,7 @@ export function ToolApproval({
               className="grid grid-cols-[minmax(0,7rem)_minmax(0,1fr)] items-center gap-3 text-xs"
             >
               <dt className="text-muted-foreground">{parameter.label}</dt>
-              <dd className="min-w-0 break-words font-mono text-foreground/85">
+              <dd className="min-w-0 font-mono break-words text-foreground/85">
                 {parameter.value}
               </dd>
             </div>
@@ -249,7 +224,7 @@ export function ToolApproval({
               transition={SPRING_PRESS}
               className="rounded-xl bg-foreground px-3 py-1.5 text-xs font-medium text-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              Allow once
+              仅允许一次
             </motion.button>
             {onAlwaysAllow ? (
               <motion.button
@@ -257,17 +232,17 @@ export function ToolApproval({
                 onClick={onAlwaysAllow}
                 whileTap={reduce ? undefined : { scale: 0.97 }}
                 transition={SPRING_PRESS}
-                className="rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs font-medium text-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-xl border border-border/60 bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
               >
-                Always allow
+                始终允许
               </motion.button>
             ) : null}
             <button
               type="button"
               onClick={onDeny}
-              className="rounded-xl px-3 py-1.5 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-xl px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
-              Deny
+              拒绝
             </button>
           </motion.div>
         ) : null}

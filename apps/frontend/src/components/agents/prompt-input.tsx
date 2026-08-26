@@ -14,18 +14,14 @@ import {
   useRef,
   useState,
 } from "react";
+
 import { Button } from "@/components/motion/button";
 import {
   MorphPopover,
   MorphPopoverContent,
   MorphPopoverTrigger,
 } from "@/components/motion/popover-morph";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/motion/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/motion/select";
 import { SPRING_SWAP } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -84,8 +80,8 @@ export function PromptInput({
   leadingAction,
   className,
   disabled,
-  placeholder = "Ask the agent to do something…",
-  "aria-label": ariaLabel = "Prompt",
+  placeholder = "输入指令让智能体执行…",
+  "aria-label": ariaLabel = "输入框",
   onKeyDown,
   ...textareaProps
 }: PromptInputProps) {
@@ -93,15 +89,11 @@ export function PromptInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const measurementRef = useRef<HTMLDivElement>(null);
   const [internalValue, setInternalValue] = useState(defaultValue);
-  const [internalModel, setInternalModel] = useState(
-    defaultModel ?? models[0]?.value,
-  );
+  const [internalModel, setInternalModel] = useState(defaultModel ?? models[0]?.value);
   const [actionsOpen, setActionsOpen] = useState(false);
   const currentValue = value ?? internalValue;
   const currentModelValue = model ?? internalModel;
-  const currentModel = models.find(
-    (option) => option.value === currentModelValue,
-  );
+  const currentModel = models.find((option) => option.value === currentModelValue);
   const canSubmit = Boolean(currentValue.trim()) && !disabled && !loading;
 
   const resizeTextarea = useCallback(() => {
@@ -176,7 +168,7 @@ export function PromptInput({
       <div
         ref={measurementRef}
         aria-hidden="true"
-        className="pointer-events-none invisible absolute inset-x-2 top-0 whitespace-pre-wrap px-2 text-sm leading-6 [overflow-wrap:break-word]"
+        className="pointer-events-none invisible absolute inset-x-2 top-0 px-2 text-sm leading-6 [overflow-wrap:break-word] whitespace-pre-wrap"
       >
         {`${currentValue}\u200b`}
       </div>
@@ -231,7 +223,7 @@ export function PromptInput({
                     onAction?.(action.value);
                     setActionsOpen(false);
                   }}
-                  className="flex w-full items-start gap-2.5 rounded-lg px-2.5 py-2 text-left outline-none transition-colors hover:bg-muted focus-visible:bg-muted disabled:pointer-events-none disabled:opacity-50"
+                  className="flex w-full items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors outline-none hover:bg-muted focus-visible:bg-muted disabled:pointer-events-none disabled:opacity-50"
                 >
                   {action.icon ? (
                     <span className="mt-0.5 grid size-5 shrink-0 place-items-center text-muted-foreground [&_svg]:size-4">
@@ -239,9 +231,7 @@ export function PromptInput({
                     </span>
                   ) : null}
                   <span className="min-w-0">
-                    <span className="block text-sm text-foreground">
-                      {action.label}
-                    </span>
+                    <span className="block text-sm text-foreground">{action.label}</span>
                     {action.description ? (
                       <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
                         {action.description}
@@ -269,7 +259,7 @@ export function PromptInput({
                   </span>
                 ) : null}
                 <span className="truncate text-muted-foreground">
-                  {currentModel?.label ?? "Choose model"}
+                  {currentModel?.label ?? "选择模型"}
                 </span>
               </span>
             </SelectTrigger>
@@ -287,9 +277,7 @@ export function PromptInput({
                         {option.icon}
                       </span>
                     ) : null}
-                    <span className="min-w-0 truncate text-sm text-foreground">
-                      {option.label}
-                    </span>
+                    <span className="min-w-0 truncate text-sm text-foreground">{option.label}</span>
                   </span>
                 </SelectItem>
               ))}
@@ -301,7 +289,7 @@ export function PromptInput({
           type={loading ? "button" : "submit"}
           size="icon"
           disabled={loading ? !onStop : !canSubmit}
-          aria-label={loading ? "Stop generating" : "Send prompt"}
+          aria-label={loading ? "停止生成" : "发送消息"}
           onClick={loading ? onStop : undefined}
           className="ml-auto size-8 rounded-full"
         >

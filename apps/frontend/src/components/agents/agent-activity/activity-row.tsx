@@ -12,8 +12,10 @@ import {
   Wrench,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
 import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+
 import type {
   AgentActivityItem,
   AgentActivitySearch,
@@ -57,9 +59,7 @@ function StepRow({ item }: { item: AgentActivityStep }) {
         {item.label}
       </span>
       {item.meta ? (
-        <span className="shrink-0 leading-5 text-muted-foreground/55">
-          {item.meta}
-        </span>
+        <span className="shrink-0 leading-5 text-muted-foreground/55">{item.meta}</span>
       ) : null}
     </div>
   );
@@ -67,17 +67,11 @@ function StepRow({ item }: { item: AgentActivityStep }) {
 
 function TextRow({ item }: { item: AgentActivityText }) {
   return (
-    <div className="rounded-md px-1.5 py-1 leading-5 text-muted-foreground">
-      {item.content}
-    </div>
+    <div className="rounded-md px-1.5 py-1 leading-5 text-muted-foreground">{item.content}</div>
   );
 }
 
-function SearchResultRow({
-  result,
-}: {
-  result: AgentSearchResult;
-}) {
+function SearchResultRow({ result }: { result: AgentSearchResult }) {
   const content = (
     <>
       <span
@@ -86,18 +80,14 @@ function SearchResultRow({
       >
         {result.icon ?? <Globe2 className="size-3" strokeWidth={2} />}
       </span>
-      <span className="min-w-0 truncate font-medium text-foreground/90">
-        {result.title}
-      </span>
+      <span className="min-w-0 truncate font-medium text-foreground/90">{result.title}</span>
       {result.domain ? (
-        <span className="min-w-0 truncate text-muted-foreground/55">
-          {result.domain}
-        </span>
+        <span className="min-w-0 truncate text-muted-foreground/55">{result.domain}</span>
       ) : null}
     </>
   );
   const className = cn(
-    "flex min-h-7 items-center gap-2 rounded-md px-1.5 py-1 text-left outline-none transition-colors",
+    "flex min-h-7 items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors outline-none",
     result.url && "focus-visible:ring-2 focus-visible:ring-ring",
   );
 
@@ -157,7 +147,7 @@ function SearchRow({ item }: { item: AgentActivitySearch }) {
             transition={transition}
             className="px-1.5 py-1 pl-8 text-muted-foreground/55"
           >
-            +{item.moreCount} more
+            + 还有 {item.moreCount} 项
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -174,8 +164,16 @@ function ActionIcon({ action }: { action: string }) {
   return <Wrench className="size-4" />;
 }
 
+function getActionLabel(action: string) {
+  if (action === "read") return "读取";
+  if (action === "edit") return "编辑";
+  if (action === "write") return "编写";
+  if (action === "run") return "运行";
+  return action;
+}
+
 function ToolRow({ item }: { item: AgentActivityTool }) {
-  const action = item.action.charAt(0).toUpperCase() + item.action.slice(1);
+  const actionLabel = getActionLabel(item.action);
 
   return (
     <div className="flex min-h-8 min-w-0 items-center gap-2.5 rounded-md px-1.5 py-0.5 leading-5">
@@ -185,7 +183,7 @@ function ToolRow({ item }: { item: AgentActivityTool }) {
       >
         <ActionIcon action={item.action} />
       </span>
-      <span className="shrink-0 font-medium text-foreground/90">{action}</span>
+      <span className="shrink-0 font-medium text-foreground/90">{actionLabel}</span>
       <span className="min-w-0 flex-1 truncate rounded-lg bg-muted/80 px-2.5 py-1 font-mono text-xs text-muted-foreground/70">
         {item.target}
       </span>
@@ -215,10 +213,7 @@ function TraceIcon({ kind }: { kind: AgentActivityTrace["kind"] }) {
 function TraceRow({ item }: { item: AgentActivityTrace }) {
   return (
     <div className="grid min-h-8 grid-cols-[1rem_auto_minmax(0,1fr)] items-center gap-2.5 rounded-md px-1.5 py-0.5">
-      <span
-        aria-hidden="true"
-        className="grid size-4 place-items-center text-muted-foreground/70"
-      >
+      <span aria-hidden="true" className="grid size-4 place-items-center text-muted-foreground/70">
         {item.icon ?? <TraceIcon kind={item.kind} />}
       </span>
       <span className="font-medium text-foreground/90">{item.label}</span>

@@ -1,29 +1,12 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
-import {
-  Check,
-  ChevronDown,
-  Copy,
-  RotateCcw,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react";
+import { Check, ChevronDown, Copy, RotateCcw, ThumbsDown, ThumbsUp } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
-import {
-  type CitationItem,
-  CitationList,
-  CitationStack,
-} from "@/components/agents/citations";
+import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
+
 import { AgentDisclosure } from "@/components/agents/agent-disclosure";
+import { type CitationItem, CitationList, CitationStack } from "@/components/agents/citations";
 import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -75,12 +58,12 @@ function ResponseAction({
       type="button"
       aria-label={label}
       title={label}
-      aria-pressed={label === "Helpful" || label === "Not helpful" ? active : undefined}
+      aria-pressed={label === "有帮助" || label === "无帮助" ? active : undefined}
       onClick={onClick}
       whileTap={reduce ? undefined : { scale: 0.9 }}
       transition={SPRING_PRESS}
       className={cn(
-        "grid size-7 place-items-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+        "grid size-7 place-items-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
         active && "bg-muted text-foreground",
       )}
     >
@@ -114,8 +97,7 @@ export function StreamingResponse({
   const [copied, setCopied] = useState(false);
   const [internalFeedback, setInternalFeedback] =
     useState<StreamingResponseFeedback>(defaultFeedback);
-  const [internalSourcesOpen, setInternalSourcesOpen] =
-    useState(defaultSourcesOpen);
+  const [internalSourcesOpen, setInternalSourcesOpen] = useState(defaultSourcesOpen);
   const copyTimer = useRef<number | undefined>(undefined);
   const currentFeedback = feedback ?? internalFeedback;
   const currentSourcesOpen = sourcesOpen ?? internalSourcesOpen;
@@ -126,8 +108,7 @@ export function StreamingResponse({
   const shouldShowActions =
     showActions && !streaming && (canCopy || onRetry || complete || hasSources);
   const sourcesContentId = `${baseId}-sources`;
-  const resolvedSourcePrefix =
-    sourceIdPrefix ?? `response-source-${baseId.replace(/:/g, "")}`;
+  const resolvedSourcePrefix = sourceIdPrefix ?? `response-source-${baseId.replace(/:/g, "")}`;
 
   useEffect(
     () => () => {
@@ -160,11 +141,7 @@ export function StreamingResponse({
   );
 
   return (
-    <div
-      data-state={status}
-      aria-busy={streaming}
-      className={cn("w-full", className)}
-    >
+    <div data-state={status} aria-busy={streaming} className={cn("w-full", className)}>
       <div
         aria-live={announce ? "polite" : "off"}
         className={cn(
@@ -186,33 +163,26 @@ export function StreamingResponse({
           >
             <div className={cn("flex items-center gap-0.5", actionsClassName)}>
               {canCopy ? (
-                <ResponseAction
-                  label={copied ? "Copied" : "Copy response"}
-                  onClick={handleCopy}
-                >
-                  {copied ? (
-                    <Check className="size-3.5" />
-                  ) : (
-                    <Copy className="size-3.5" />
-                  )}
+                <ResponseAction label={copied ? "已复制" : "复制回答"} onClick={handleCopy}>
+                  {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                 </ResponseAction>
               ) : null}
               {onRetry ? (
-                <ResponseAction label="Retry response" onClick={onRetry}>
+                <ResponseAction label="重新生成" onClick={onRetry}>
                   <RotateCcw className="size-3.5" />
                 </ResponseAction>
               ) : null}
               {complete ? (
                 <>
                   <ResponseAction
-                    label="Helpful"
+                    label="有帮助"
                     active={currentFeedback === "up"}
                     onClick={() => setFeedback("up")}
                   >
                     <ThumbsUp className="size-3.5" />
                   </ResponseAction>
                   <ResponseAction
-                    label="Not helpful"
+                    label="无帮助"
                     active={currentFeedback === "down"}
                     onClick={() => setFeedback("down")}
                   >
@@ -226,12 +196,10 @@ export function StreamingResponse({
                   aria-expanded={currentSourcesOpen}
                   aria-controls={sourcesContentId}
                   onClick={() => setSourcesOpen(!currentSourcesOpen)}
-                  className="group ml-1 inline-flex min-h-7 items-center gap-2 rounded-md px-1.5 text-xs text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                  className="group ml-1 inline-flex min-h-7 items-center gap-2 rounded-md px-1.5 text-xs text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <CitationStack citations={sources} />
-                  <span className="tabular-nums">
-                    {sources.length} {sources.length === 1 ? "source" : "sources"}
-                  </span>
+                  <span className="tabular-nums">{sources.length} 个参考来源</span>
                   <motion.span
                     aria-hidden="true"
                     animate={{ rotate: currentSourcesOpen ? 180 : 0 }}
@@ -245,10 +213,7 @@ export function StreamingResponse({
             </div>
 
             {hasSources ? (
-              <AgentDisclosure
-                id={sourcesContentId}
-                open={currentSourcesOpen}
-              >
+              <AgentDisclosure id={sourcesContentId} open={currentSourcesOpen}>
                 <CitationList
                   citations={sources}
                   idPrefix={resolvedSourcePrefix}

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { AgentDisclosure } from "@/components/agents/agent-disclosure";
 import { ActionSwapRollText } from "@/components/motion/action-swap-roll";
 import { Button } from "@/components/motion/button";
@@ -20,6 +21,7 @@ import { Input } from "@/components/motion/input";
 import { RadioGroup, RadioGroupItem } from "@/components/motion/radio";
 import { EASE_OUT, SPRING_SWAP } from "@/lib/ease";
 import { cn } from "@/lib/utils";
+
 import type {
   ApprovalCardAnswer,
   ApprovalCardAnswers,
@@ -40,12 +42,12 @@ export type {
 const EMPTY_ANSWER: ApprovalCardAnswer = { selected: [], custom: "" };
 
 function getStatusLabel(status: ApprovalCardStatus) {
-  if (status === "submitting") return "Submitting";
-  if (status === "approved") return "Approved";
-  if (status === "rejected") return "Rejected";
-  if (status === "changes-requested") return "Changes requested";
-  if (status === "answered") return "Response submitted";
-  return "Input required";
+  if (status === "submitting") return "提交中";
+  if (status === "approved") return "已通过";
+  if (status === "rejected") return "已驳回";
+  if (status === "changes-requested") return "已请求修改";
+  if (status === "answered") return "已提交回复";
+  return "待输入确认";
 }
 
 function getStatusClass(status: ApprovalCardStatus) {
@@ -140,7 +142,7 @@ function QuestionOptions({
         <Input
           value={custom}
           disabled={disabled}
-          placeholder={question.customPlaceholder ?? "Add another response…"}
+          placeholder={question.customPlaceholder ?? "输入其他回复内容…"}
           onChange={(value) =>
             onChange({
               selected: question.multiple ? answer.selected : [],
@@ -149,8 +151,7 @@ function QuestionOptions({
           }
           className={cn("p-0.5", question.options?.length && "mt-1.5")}
           classNames={{
-            field:
-              "h-10 rounded-xl border-0 bg-background/70 focus-within:bg-background",
+            field: "h-10 rounded-xl border-0 bg-background/70 focus-within:bg-background",
             input: "px-3 text-sm",
           }}
         />
@@ -163,7 +164,7 @@ function ProgressDots({ current, ids }: { current: number; ids: string[] }) {
   return (
     <span className="flex gap-1.5">
       <span className="sr-only">
-        Question {current + 1} of {ids.length}
+        第 {current + 1} / {ids.length} 题
       </span>
       {ids.map((id, index) => (
         <motion.span
@@ -186,7 +187,7 @@ function ProgressDots({ current, ids }: { current: number; ids: string[] }) {
 }
 
 export function ApprovalCard({
-  title = "Approval required",
+  title = "待审批确认",
   description,
   children,
   questions = [],
@@ -202,14 +203,13 @@ export function ApprovalCard({
   onReject,
   onRequestChanges,
   onDismiss,
-  approveLabel = "Approve",
-  submitLabel = "Submit response",
+  approveLabel = "同意",
+  submitLabel = "提交回复",
   result,
   className,
 }: ApprovalCardProps) {
   const reduce = useReducedMotion() ?? false;
-  const [internalAnswers, setInternalAnswers] =
-    useState<ApprovalCardAnswers>(defaultAnswers);
+  const [internalAnswers, setInternalAnswers] = useState<ApprovalCardAnswers>(defaultAnswers);
   const [internalStep, setInternalStep] = useState(defaultStep);
   const autoAdvanceTimer = useRef<number | undefined>(undefined);
   const currentAnswers = answers ?? internalAnswers;
@@ -222,9 +222,7 @@ export function ApprovalCard({
   const pending = status === "pending";
   const busy = status === "submitting";
   const interactive = pending || busy;
-  const currentAnswer = question
-    ? (currentAnswers[question.id] ?? EMPTY_ANSWER)
-    : EMPTY_ANSWER;
+  const currentAnswer = question ? (currentAnswers[question.id] ?? EMPTY_ANSWER) : EMPTY_ANSWER;
   const displayTitle = question?.title ?? title;
   const titleKey = question?.id ?? String(status);
   const statusLabel = getStatusLabel(status);
@@ -285,10 +283,7 @@ export function ApprovalCard({
     <div
       data-state={status}
       aria-busy={busy}
-      className={cn(
-        "w-full overflow-hidden rounded-2xl bg-muted p-4 text-sm",
-        className,
-      )}
+      className={cn("w-full overflow-hidden rounded-2xl bg-muted p-4 text-sm", className)}
     >
       <div className="flex items-start gap-3">
         <span
@@ -315,13 +310,11 @@ export function ApprovalCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-start gap-3">
-            <h3 className="min-w-0 flex-1 text-base font-medium leading-5 text-foreground">
-              <ActionSwapRollText value={titleKey}>
-                {displayTitle}
-              </ActionSwapRollText>
+            <h3 className="min-w-0 flex-1 text-base leading-5 font-medium text-foreground">
+              <ActionSwapRollText value={titleKey}>{displayTitle}</ActionSwapRollText>
             </h3>
             {questionMode && interactive ? (
-              <span className="shrink-0 text-xs tabular-nums text-muted-foreground/65">
+              <span className="shrink-0 text-xs text-muted-foreground/65 tabular-nums">
                 {currentStep + 1}/{questions.length}
               </span>
             ) : (
@@ -337,9 +330,9 @@ export function ApprovalCard({
             {onDismiss ? (
               <button
                 type="button"
-                aria-label="Dismiss"
+                aria-label="关闭"
                 onClick={onDismiss}
-                className="grid size-5 shrink-0 place-items-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className="grid size-5 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="size-4" />
               </button>
@@ -357,9 +350,7 @@ export function ApprovalCard({
                   transition={{ duration: reduce ? 0 : 0.2, ease: EASE_OUT }}
                 >
                   {question.description ? (
-                    <p className="mt-1 leading-5 text-muted-foreground">
-                      {question.description}
-                    </p>
+                    <p className="mt-1 leading-5 text-muted-foreground">{question.description}</p>
                   ) : null}
                   <QuestionOptions
                     question={question}
@@ -373,9 +364,7 @@ export function ApprovalCard({
             ) : (
               <div>
                 {description ? (
-                  <p className="mt-1 leading-5 text-muted-foreground">
-                    {description}
-                  </p>
+                  <p className="mt-1 leading-5 text-muted-foreground">{description}</p>
                 ) : null}
                 {children ? <div className="mt-3">{children}</div> : null}
               </div>
@@ -386,24 +375,17 @@ export function ApprovalCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="Previous question"
+                  aria-label="上一题"
                   disabled={busy || currentStep === 0}
                   onClick={() => setStep(currentStep - 1)}
                   className="rounded-full"
                 >
                   <ArrowLeft className="size-4" />
                 </Button>
-                <ProgressDots
-                  current={currentStep}
-                  ids={questions.map((item) => item.id)}
-                />
+                <ProgressDots current={currentStep} ids={questions.map((item) => item.id)} />
                 <Button
                   size={currentStep === questions.length - 1 ? "sm" : "icon"}
-                  aria-label={
-                    currentStep === questions.length - 1
-                      ? "Submit response"
-                      : "Next question"
-                  }
+                  aria-label={currentStep === questions.length - 1 ? "提交回复" : "下一题"}
                   disabled={busy || !isAnswered(currentAnswer)}
                   onClick={continueQuestion}
                   className="ml-auto rounded-full"
@@ -422,12 +404,7 @@ export function ApprovalCard({
               </div>
             ) : (
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  disabled={busy}
-                  onClick={onApprove}
-                  className="rounded-full"
-                >
+                <Button size="sm" disabled={busy} onClick={onApprove} className="rounded-full">
                   {approveLabel}
                 </Button>
                 {onRequestChanges ? (
@@ -438,7 +415,7 @@ export function ApprovalCard({
                     onClick={onRequestChanges}
                     className="rounded-full"
                   >
-                    Request changes
+                    请求修改
                   </Button>
                 ) : null}
                 {onReject ? (
@@ -449,7 +426,7 @@ export function ApprovalCard({
                     onClick={onReject}
                     className="rounded-full text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400"
                   >
-                    Reject
+                    驳回
                   </Button>
                 ) : null}
               </div>
@@ -457,9 +434,7 @@ export function ApprovalCard({
           </AgentDisclosure>
 
           {!interactive ? (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {result ?? statusLabel}
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{result ?? statusLabel}</p>
           ) : null}
         </div>
       </div>
