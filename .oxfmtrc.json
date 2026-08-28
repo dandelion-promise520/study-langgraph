@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [],
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/.agents/**"],
   "sortImports": {
     "groups": [
       "type-import",
@@ -13,7 +13,7 @@
     ]
   },
   "sortTailwindcss": {
-    "stylesheet": "./src/index.css",
+    "stylesheet": "./apps/frontend/src/index.css",
     "functions": ["clsx", "cn"],
     "preserveWhitespace": true
   },

@@ -16,7 +16,7 @@ export interface AppHeaderProps {
 /**
  * 【组件: AppHeader】
  * 作用：工作区主体区域顶部导航栏。
- * 
+ *
  * 包含：
  * 1. 侧边栏折叠/展开触发器按钮 (AnimatedSidebarTrigger)
  * 2. 当前会话/任务的标题与副标题

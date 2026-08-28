@@ -1,4 +1,5 @@
 > ## 文档索引
+>
 > 完整文档索引请访问：https://docs.langchain.com/llms.txt
 > 在进一步探索前，可利用此文件发现所有可用页面。
 
@@ -82,7 +83,7 @@ const modelWithTools = model.bindTools(tools);
 
 > [!TIP]
 > LangGraph 中的状态会在 Agent 执行过程中持久保留。
-> 
+>
 > `MessagesValue` 提供了一个内置的 reducer 用于追加消息。`llmCalls` 字段使用 `ReducedValue` 配合 `(x, y) => x + y` 来累加调用次数。
 
 ```typescript
@@ -100,10 +101,7 @@ import * as z from "zod";
 
 const MessagesState = new StateSchema({
   messages: MessagesValue,
-  llmCalls: new ReducedValue(
-    z.number().default(0),
-    { reducer: (x, y) => x + y }
-  ),
+  llmCalls: new ReducedValue(z.number().default(0), { reducer: (x, y) => x + y }),
 });
 ```
 
@@ -118,7 +116,7 @@ import type { GraphNode } from "@langchain/langgraph";
 const llmCall: GraphNode<typeof MessagesState> = async (state) => {
   const response = await modelWithTools.invoke([
     new SystemMessage(
-      "You are a helpful assistant tasked with performing arithmetic on a set of inputs."
+      "You are a helpful assistant tasked with performing arithmetic on a set of inputs.",
     ),
     ...state.messages,
   ]);
@@ -163,7 +161,10 @@ const toolNode: GraphNode<typeof MessagesState> = async (state) => {
 import { AIMessage } from "@langchain/core/messages";
 import { END, type ConditionalEdgeRouter } from "@langchain/langgraph";
 
-const shouldContinue: ConditionalEdgeRouter<{ InputSchema: typeof MessagesState; Nodes: "toolNode" }> = (state) => {
+const shouldContinue: ConditionalEdgeRouter<{
+  InputSchema: typeof MessagesState;
+  Nodes: "toolNode";
+}> = (state) => {
   const lastMessage = state.messages.at(-1);
 
   // 在访问 tool_calls 之前检查是否为 AIMessage
@@ -273,21 +274,20 @@ const modelWithTools = model.bindTools(tools);
 // 步骤 2: 定义状态 (State)
 const MessagesState = new StateSchema({
   messages: MessagesValue,
-  llmCalls: new ReducedValue(
-    z.number().default(0),
-    { reducer: (x, y) => x + y }
-  ),
+  llmCalls: new ReducedValue(z.number().default(0), { reducer: (x, y) => x + y }),
 });
 
 // 步骤 3: 定义模型节点 (Model Node)
 const llmCall: GraphNode<typeof MessagesState> = async (state) => {
   return {
-    messages: [await modelWithTools.invoke([
-      new SystemMessage(
-        "You are a helpful assistant tasked with performing arithmetic on a set of inputs."
-      ),
-      ...state.messages,
-    ])],
+    messages: [
+      await modelWithTools.invoke([
+        new SystemMessage(
+          "You are a helpful assistant tasked with performing arithmetic on a set of inputs.",
+        ),
+        ...state.messages,
+      ]),
+    ],
     llmCalls: 1,
   };
 };
@@ -311,7 +311,10 @@ const toolNode: GraphNode<typeof MessagesState> = async (state) => {
 };
 
 // 步骤 5: 定义流转逻辑
-const shouldContinue: ConditionalEdgeRouter<{ InputSchema: typeof MessagesState; Nodes: "toolNode" }> = (state) => {
+const shouldContinue: ConditionalEdgeRouter<{
+  InputSchema: typeof MessagesState;
+  Nodes: "toolNode";
+}> = (state) => {
   const lastMessage = state.messages.at(-1);
 
   if (!lastMessage || !AIMessage.isInstance(lastMessage)) {
@@ -343,6 +346,7 @@ for (const message of result.messages) {
   console.log(`[${message.type}]: ${message.text}`);
 }
 ```
+
 </details>
 
 ---
@@ -412,7 +416,7 @@ import { SystemMessage, type BaseMessage } from "@langchain/core/messages";
 const callLlm = task({ name: "callLlm" }, async (messages: BaseMessage[]) => {
   return modelWithTools.invoke([
     new SystemMessage(
-      "You are a helpful assistant tasked with performing arithmetic on a set of inputs."
+      "You are a helpful assistant tasked with performing arithmetic on a set of inputs.",
     ),
     ...messages,
   ]);
@@ -451,7 +455,7 @@ const agent = entrypoint({ name: "agent" }, async (messages: BaseMessage[]) => {
 
     // 执行工具调用
     const toolResults = await Promise.all(
-      modelResponse.tool_calls.map((toolCall) => callTool(toolCall))
+      modelResponse.tool_calls.map((toolCall) => callTool(toolCall)),
     );
     messages = addMessages(messages, [modelResponse, ...toolResults]);
     modelResponse = await callLlm(messages);
@@ -477,16 +481,8 @@ for (const message of result) {
 ```typescript
 import { ChatAnthropic } from "@langchain/anthropic";
 import { tool } from "@langchain/core/tools";
-import {
-  task,
-  entrypoint,
-  addMessages,
-} from "@langchain/langgraph";
-import {
-  SystemMessage,
-  HumanMessage,
-  type BaseMessage,
-} from "@langchain/core/messages";
+import { task, entrypoint, addMessages } from "@langchain/langgraph";
+import { SystemMessage, HumanMessage, type BaseMessage } from "@langchain/core/messages";
 import type { ToolCall } from "@langchain/core/messages/tool";
 import * as z from "zod";
 
@@ -535,7 +531,7 @@ const modelWithTools = model.bindTools(tools);
 const callLlm = task({ name: "callLlm" }, async (messages: BaseMessage[]) => {
   return modelWithTools.invoke([
     new SystemMessage(
-      "You are a helpful assistant tasked with performing arithmetic on a set of inputs."
+      "You are a helpful assistant tasked with performing arithmetic on a set of inputs.",
     ),
     ...messages,
   ]);
@@ -558,7 +554,7 @@ const agent = entrypoint({ name: "agent" }, async (messages: BaseMessage[]) => {
 
     // 执行工具调用
     const toolResults = await Promise.all(
-      modelResponse.tool_calls.map((toolCall) => callTool(toolCall))
+      modelResponse.tool_calls.map((toolCall) => callTool(toolCall)),
     );
     messages = addMessages(messages, [modelResponse, ...toolResults]);
     modelResponse = await callLlm(messages);
@@ -574,6 +570,7 @@ for (const message of result) {
   console.log(`[${message.type}]: ${message.text}`);
 }
 ```
+
 </details>
 
 ---

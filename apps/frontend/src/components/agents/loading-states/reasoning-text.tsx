@@ -3,6 +3,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useId, useState, type ReactNode } from "react";
+
 import { Loader } from "@/components/motion/loader";
 import { TextScramble } from "@/components/motion/text-scramble";
 import { EASE_OUT, SPRING_SWAP } from "@/lib/ease";
@@ -44,11 +45,7 @@ type PhraseProps = {
   shimmerDuration: number;
 };
 
-function CascadePhrase({
-  phrase,
-  reduce,
-  shimmerDuration,
-}: PhraseProps) {
+function CascadePhrase({ phrase, reduce, shimmerDuration }: PhraseProps) {
   const text = `${phrase}…`;
 
   if (reduce) {
@@ -134,10 +131,7 @@ function SwapPhrase({ phrase, reduce, shimmerDuration }: PhraseProps) {
   );
 }
 
-function ScramblePhrase({
-  phrase,
-  shimmerDuration,
-}: PhraseProps) {
+function ScramblePhrase({ phrase, shimmerDuration }: PhraseProps) {
   const target = `${phrase}…`;
 
   return (
@@ -173,9 +167,12 @@ export function ReasoningText({
   useEffect(() => {
     if (safePhrases.length < 2) return;
 
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % safePhrases.length);
-    }, Math.max(600, interval));
+    const timer = window.setInterval(
+      () => {
+        setIndex((current) => (current + 1) % safePhrases.length);
+      },
+      Math.max(600, interval),
+    );
 
     return () => window.clearInterval(timer);
   }, [interval, safePhrases.length]);
@@ -192,15 +189,11 @@ export function ReasoningText({
           className,
         )}
       >
-        <span aria-hidden="true" className="inline-flex size-3 shrink-0 items-center justify-center">
-          {indicator ?? (
-            <Loader
-              variant="ascii-line"
-              size={14}
-              speed={0.8}
-              label="Reasoning"
-            />
-          )}
+        <span
+          aria-hidden="true"
+          className="inline-flex size-3 shrink-0 items-center justify-center"
+        >
+          {indicator ?? <Loader variant="ascii-line" size={14} speed={0.8} label="Reasoning" />}
         </span>
 
         <span aria-hidden="true" className="grid overflow-hidden text-left">

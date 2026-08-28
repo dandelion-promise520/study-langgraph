@@ -2,6 +2,7 @@
 // beui.dev/components/agents/chat-app
 
 import { useEffect, useRef } from "react";
+
 import {
   AnimatedSidebarProvider,
   type AnimatedSidebarProviderProps,
@@ -89,9 +90,7 @@ export function ChatApp({
     >
       {/* A controlled `open` is the consumer's to change; fitting the shell
           would fire an onOpenChange they never asked for. */}
-      {props.open === undefined ? (
-        <ShellFit minWidth={collapseSidebarBelow} />
-      ) : null}
+      {props.open === undefined ? <ShellFit minWidth={collapseSidebarBelow} /> : null}
       {children}
     </AnimatedSidebarProvider>
   );

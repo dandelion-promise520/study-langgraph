@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+
 import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -122,12 +123,10 @@ export function RadioGroupItem({
         transition={SPRING_PRESS}
         data-state={selected ? "checked" : "unchecked"}
         className={cn(
-          "relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 outline-none transition-colors duration-200",
+          "relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200 outline-none",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "disabled:cursor-not-allowed disabled:opacity-60",
-          selected
-            ? "border-primary"
-            : "border-muted-foreground/50 hover:border-muted-foreground",
+          selected ? "border-primary" : "border-muted-foreground/50 hover:border-muted-foreground",
         )}
       >
         {selected ? (
@@ -139,7 +138,7 @@ export function RadioGroupItem({
         ) : null}
       </motion.button>
       {label ? (
-        <span className={cn("select-none text-sm text-foreground", disabled && "opacity-60")}>
+        <span className={cn("text-sm text-foreground select-none", disabled && "opacity-60")}>
           {label}
         </span>
       ) : null}

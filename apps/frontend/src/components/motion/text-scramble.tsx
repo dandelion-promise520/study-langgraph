@@ -1,12 +1,8 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+
 import { cn } from "@/lib/utils";
 
 const DEFAULT_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&@$?/";
@@ -48,8 +44,7 @@ export function TextScramble({
 
     const characters = text.split("");
     const startedAt = performance.now();
-    const animationDuration = duration
-      ?? Math.min(760, Math.max(420, characters.length * 32));
+    const animationDuration = duration ?? Math.min(760, Math.max(420, characters.length * 32));
     let frame = 0;
     let lastUpdate = 0;
 
@@ -58,10 +53,14 @@ export function TextScramble({
         lastUpdate = now;
         const progress = Math.min((now - startedAt) / animationDuration, 1);
         const settled = Math.floor(progress * characters.length);
-        setDisplay(characters.map((character, index) => {
-          if (index < settled || character === " ") return character;
-          return glyphs[Math.floor(Math.random() * glyphs.length)];
-        }).join(""));
+        setDisplay(
+          characters
+            .map((character, index) => {
+              if (index < settled || character === " ") return character;
+              return glyphs[Math.floor(Math.random() * glyphs.length)];
+            })
+            .join(""),
+        );
       }
 
       if (now - startedAt < animationDuration) {

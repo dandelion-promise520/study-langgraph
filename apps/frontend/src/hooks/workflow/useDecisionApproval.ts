@@ -5,14 +5,14 @@ import type { ApprovalCardStatus } from "@/components/agents/approval-card";
 /**
  * 【Hook: useDecisionApproval】
  * 作用：管理 Human-in-the-Loop (人机协同) 的最终业务决策审批卡片状态。
- * 
+ *
  * 核心原理：
  * 1. 状态机流转：
  *    - pending：等待用户在审批卡片上选择发布方案
  *    - submitting：用户点击提交，卡片展示提交中 Loading 动画
  *    - answered：提交成功，卡片转为已完成确认状态
  * 2. 封装定时器清理逻辑，防止在提交等待过程中组件卸载引起警告。
- * 
+ *
  * @param initialStatus 初始状态，默认为 "pending"
  */
 export function useDecisionApproval(initialStatus: ApprovalCardStatus = "pending") {

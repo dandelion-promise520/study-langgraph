@@ -1,24 +1,46 @@
 {
   "name": "langgraph",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*"
+    ],
+    "catalog": {
+      "typescript": "^7.0.2",
+      "@types/bun": "latest",
+      "oxfmt": "^0.65.0",
+      "oxlint": "^1.79.0",
+      "@langchain/core": "^1.2.8",
+      "@langchain/langgraph": "^1.4.10",
+      "@langchain/openai": "^1.5.8",
+      "langchain": "^1.5.8",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "@types/react": "^19.2.18",
+      "@types/react-dom": "^19.2.4",
+      "@types/node": "^24.13.3",
+      "zod": "^3.25.76"
+    }
+  },
   "type": "module",
   "module": "index.ts",
   "scripts": {
-    "dev": "bun run --filter './apps/*' dev"
+    "dev": "bun run --filter './apps/*' dev",
+    "fmt": "oxfmt --write",
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit && bun run --cwd apps/backend typecheck && bun run --cwd apps/frontend typecheck"
   },
   "dependencies": {
-    "@langchain/core": "^1.2.8",
-    "@langchain/langgraph": "^1.4.10",
-    "@langchain/openai": "^1.5.8",
-    "langchain": "^1.5.8"
+    "@langchain/core": "catalog:",
+    "@langchain/langgraph": "catalog:",
+    "@langchain/openai": "catalog:",
+    "langchain": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@types/bun": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:"
   }
 }

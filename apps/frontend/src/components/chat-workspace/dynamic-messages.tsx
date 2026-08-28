@@ -1,5 +1,7 @@
 import { Bot, User } from "lucide-react";
 
+import type { AddedMessage } from "@/types/agent";
+
 import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
 import {
   Message,
@@ -10,7 +12,6 @@ import {
 } from "@/components/agents/message";
 import { MessageBubble, MessageBubbleContent } from "@/components/agents/message-bubble";
 import { StreamingResponse } from "@/components/agents/streaming-response";
-import type { AddedMessage } from "@/types/agent";
 
 /**
  * 智能体身份标识头部组件
@@ -37,7 +38,7 @@ export interface DynamicMessagesProps {
 /**
  * 【组件: DynamicMessages】
  * 作用：渲染用户与 AI 助手实时交互产生的消息列表与思考 Loading 状态。
- * 
+ *
  * 包含：
  * 1. 用户发送的气泡消息（右侧/纯色背景）
  * 2. 助手回复的流式气泡消息（带打字机光标与操作按钮）

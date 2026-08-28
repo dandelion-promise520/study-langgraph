@@ -2,11 +2,7 @@
 // beui.dev/components/agents/chat-app
 
 import { ChevronDown } from "lucide-react";
-import {
-  type HTMLMotionProps,
-  motion,
-  useReducedMotion,
-} from "motion/react";
+import { type HTMLMotionProps, motion, useReducedMotion } from "motion/react";
 import {
   cloneElement,
   type ComponentPropsWithRef,
@@ -19,21 +15,12 @@ import {
   useId,
   useState,
 } from "react";
-import {
-  EASE_OUT,
-  SPRING_LAYOUT,
-  SPRING_SWAP,
-} from "@/lib/ease";
-import { cn } from "@/lib/utils";
-import { MessageSideContext } from "@/components/agents/message-context";
 
-export type MessageBubbleVariant =
-  | "solid"
-  | "soft"
-  | "tint"
-  | "outline"
-  | "ghost"
-  | "danger";
+import { MessageSideContext } from "@/components/agents/message-context";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
+import { cn } from "@/lib/utils";
+
+export type MessageBubbleVariant = "solid" | "soft" | "tint" | "outline" | "ghost" | "danger";
 export type MessageBubbleAlign = "start" | "end";
 
 interface MessageBubbleContextValue {
@@ -48,8 +35,7 @@ const MessageBubbleContext = createContext<MessageBubbleContextValue>({
 });
 const MessageBubbleLayoutContext = createContext<() => void>(() => {});
 
-export interface MessageBubbleProps
-  extends Omit<HTMLMotionProps<"div">, "children"> {
+export interface MessageBubbleProps extends Omit<HTMLMotionProps<"div">, "children"> {
   variant?: MessageBubbleVariant;
   /** Defaults to the surrounding Message alignment when omitted. */
   align?: MessageBubbleAlign;
@@ -58,8 +44,7 @@ export interface MessageBubbleProps
   children?: ReactNode;
 }
 
-export interface MessageBubbleContentProps
-  extends ComponentPropsWithRef<"div"> {
+export interface MessageBubbleContentProps extends ComponentPropsWithRef<"div"> {
   /** Replaces the content element while preserving bubble styling. */
   render?: ReactElement;
 }
@@ -68,8 +53,7 @@ export interface MessageBubbleGroupProps extends ComponentPropsWithRef<"div"> {
   spacing?: "compact" | "default";
 }
 
-export interface MessageBubbleCollapsibleProps
-  extends ComponentPropsWithRef<"div"> {
+export interface MessageBubbleCollapsibleProps extends ComponentPropsWithRef<"div"> {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -122,9 +106,7 @@ export function MessageBubble({
   const resolvedAlign = align ?? messageSide ?? "start";
 
   return (
-    <MessageBubbleContext.Provider
-      value={{ align: resolvedAlign, animateIn, variant }}
-    >
+    <MessageBubbleContext.Provider value={{ align: resolvedAlign, animateIn, variant }}>
       <motion.div
         data-slot="message-bubble"
         data-align={resolvedAlign}
@@ -132,10 +114,7 @@ export function MessageBubble({
         layout={layout}
         initial={initial ?? false}
         animate={animate}
-        exit={
-          exit ??
-          (reduce ? { opacity: 0 } : { opacity: 0, y: -3, scale: 0.99 })
-        }
+        exit={exit ?? (reduce ? { opacity: 0 } : { opacity: 0, y: -3, scale: 0.99 })}
         transition={transition ?? (reduce ? { duration: 0.12 } : SPRING_LAYOUT)}
         className={cn(
           "group/bubble flex w-full flex-col",
@@ -150,25 +129,19 @@ export function MessageBubble({
   );
 }
 
-function bubbleContentClass(
-  variant: MessageBubbleVariant,
-  interactive: boolean,
-) {
+function bubbleContentClass(variant: MessageBubbleVariant, interactive: boolean) {
   return cn(
-    "relative z-0 min-w-9 max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-6 text-foreground",
+    "relative z-0 max-w-[82%] min-w-9 rounded-2xl px-3.5 py-2.5 text-sm leading-6 text-foreground",
     "[&_a]:font-medium [&_a]:underline [&_a]:underline-offset-4 [&_code]:rounded [&_code]:bg-background/60 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p+p]:mt-2 [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-background/60 [&_pre]:p-3 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5",
     variant === "solid" && "text-background",
     variant === "ghost" && "w-full max-w-none rounded-none px-0 py-0",
     variant === "danger" && "text-destructive",
     interactive &&
-      "cursor-pointer text-left outline-none transition-[background-color,color,transform] duration-150 hover:brightness-[0.98] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.99]",
+      "cursor-pointer text-left transition-[background-color,color,transform] duration-150 outline-none hover:brightness-[0.98] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.99]",
   );
 }
 
-function bubbleSurfaceClass(
-  variant: MessageBubbleVariant,
-  align: MessageBubbleAlign,
-) {
+function bubbleSurfaceClass(variant: MessageBubbleVariant, align: MessageBubbleAlign) {
   return cn(
     "pointer-events-none absolute inset-0 -z-10 rounded-[inherit]",
     align === "end" ? "origin-bottom-right" : "origin-bottom-left",
@@ -188,15 +161,10 @@ export function MessageBubbleContent({
   ...props
 }: MessageBubbleContentProps) {
   const reduce = useReducedMotion() ?? false;
-  const { align = "start", animateIn, variant } =
-    useContext(MessageBubbleContext);
+  const { align = "start", animateIn, variant } = useContext(MessageBubbleContext);
   const [layoutVersion, setLayoutVersion] = useState(0);
-  const notifyLayout = useCallback(
-    () => setLayoutVersion((version) => version + 1),
-    [],
-  );
-  const interactive =
-    render?.type === "button" || render?.type === "a";
+  const notifyLayout = useCallback(() => setLayoutVersion((version) => version + 1), []);
+  const interactive = render?.type === "button" || render?.type === "a";
   const classes = cn(bubbleContentClass(variant, interactive), className);
   const composedChildren = (
     <>
@@ -228,17 +196,9 @@ export function MessageBubbleContent({
       ) : null}
       <MessageBubbleLayoutContext.Provider value={notifyLayout}>
         <motion.div
-          initial={
-            animateIn
-              ? reduce
-                ? { opacity: 0 }
-                : { opacity: 0 }
-              : false
-          }
+          initial={animateIn ? (reduce ? { opacity: 0 } : { opacity: 0 }) : false}
           animate={{ opacity: 1 }}
-          transition={
-            reduce ? { duration: 0.12, ease: EASE_OUT } : BUBBLE_CONTENT_REVEAL
-          }
+          transition={reduce ? { duration: 0.12, ease: EASE_OUT } : BUBBLE_CONTENT_REVEAL}
           className="relative"
         >
           {children}
@@ -262,12 +222,7 @@ export function MessageBubbleContent({
   }
 
   return (
-    <div
-      ref={ref}
-      data-slot="message-bubble-content"
-      className={classes}
-      {...props}
-    >
+    <div ref={ref} data-slot="message-bubble-content" className={classes} {...props}>
       {composedChildren}
     </div>
   );
@@ -281,11 +236,7 @@ export function MessageBubbleGroup({
   return (
     <div
       data-slot="message-bubble-group"
-      className={cn(
-        "flex w-full flex-col",
-        spacing === "compact" ? "gap-1.5" : "gap-3",
-        className,
-      )}
+      className={cn("flex w-full flex-col", spacing === "compact" ? "gap-1.5" : "gap-3", className)}
       {...props}
     />
   );
@@ -339,8 +290,7 @@ export function MessageBubbleCollapsible({
         className={cn(
           "transition-[mask-image] duration-200",
           !currentOpen && LINE_CLAMP_CLASS[collapsedLines],
-          !currentOpen &&
-            "[mask-image:linear-gradient(to_bottom,#000_68%,transparent_100%)]",
+          !currentOpen && "[mask-image:linear-gradient(to_bottom,#000_68%,transparent_100%)]",
           contentClassName,
         )}
       >
@@ -352,7 +302,7 @@ export function MessageBubbleCollapsible({
         aria-controls={contentId}
         onClick={() => setOpen(!currentOpen)}
         className={cn(
-          "mt-2 inline-flex h-7 items-center gap-1 rounded-full px-2 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+          "mt-2 inline-flex h-7 items-center gap-1 rounded-full px-2 text-xs font-medium text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
           triggerClassName,
         )}
       >

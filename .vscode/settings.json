@@ -1,0 +1,37 @@
+{
+  // 1. 指定 Tailwind v4 的 CSS 入口文件（解决 Monorepo 根目录下不识别子项目 CSS 的问题）
+  "tailwindCSS.experimental.configFile": "apps/frontend/src/index.css",
+
+  // 2. 官方设置：配置提供 Tailwind 提示的 HTML/JSX 属性列表（默认只有 class, className, ngClass, class:list）
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "class:list",
+    "contentClassName",
+    "viewportClassName",
+    "railClassName",
+    "panelClassName",
+    "iconClassName",
+    "previewClassName",
+    "previewContainerClassName"
+  ],
+
+  // 3. 支持在 cn(...)、cva(...)、clsx(...) 等辅助函数内部也获得自动补全
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["clsx\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+
+  // 4. 支持在 TypeScript / React (TSX) 中触发 Tailwind 提示
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // 5. 允许在字符串字面量中快速弹出补全建议
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
+}

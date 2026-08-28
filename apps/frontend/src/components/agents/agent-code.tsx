@@ -1,21 +1,11 @@
 "use client";
 
-import {
-  type CSSProperties,
-  Fragment,
-  useEffect,
-  useState,
-} from "react";
+import { type CSSProperties, Fragment, useEffect, useState } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
+
 import { cn } from "@/lib/utils";
 
-export type AgentCodeLanguage =
-  | "bash"
-  | "diff"
-  | "json"
-  | "text"
-  | "tsx"
-  | "typescript";
+export type AgentCodeLanguage = "bash" | "diff" | "json" | "text" | "tsx" | "typescript";
 
 export interface AgentCodeToken {
   content: string;
@@ -57,10 +47,7 @@ function tokenCacheKey(code: string, language: AgentCodeLanguage) {
   return `${language}\u0000${code}`;
 }
 
-export function useAgentCodeTokens(
-  code: string,
-  language: AgentCodeLanguage,
-) {
+export function useAgentCodeTokens(code: string, language: AgentCodeLanguage) {
   const key = tokenCacheKey(code, language);
   const cached = tokenCache.get(key);
   const [result, setResult] = useState<{
@@ -95,7 +82,7 @@ export function useAgentCodeTokens(
             light: token.variants.light?.color,
             dark: token.variants.dark?.color,
           })),
-      );
+        );
       tokenCache.set(key, lines);
       setResult({ key, code, language, lines });
     });
@@ -111,11 +98,7 @@ export function useAgentCodeTokens(
   return null;
 }
 
-export function AgentCodeLine({
-  code,
-  tokens,
-  className,
-}: AgentCodeLineProps) {
+export function AgentCodeLine({ code, tokens, className }: AgentCodeLineProps) {
   return (
     <span className={className}>
       {tokens
@@ -138,11 +121,7 @@ export function AgentCodeLine({
   );
 }
 
-export function AgentCode({
-  code,
-  language = "bash",
-  className,
-}: AgentCodeProps) {
+export function AgentCode({ code, language = "bash", className }: AgentCodeProps) {
   const tokens = useAgentCodeTokens(code, language);
   let offset = 0;
   const lines = code.split("\n").map((content) => {
@@ -154,7 +133,7 @@ export function AgentCode({
   return (
     <pre
       className={cn(
-        "m-0 overflow-x-auto whitespace-pre font-mono text-xs leading-5 text-foreground/85",
+        "m-0 overflow-x-auto font-mono text-xs leading-5 whitespace-pre text-foreground/85",
         className,
       )}
     >

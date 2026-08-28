@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "beui": {
+      "source": "starc007/ui-components",
+      "sourceType": "github",
+      "skillPath": "skills/beui/SKILL.md",
+      "computedHash": "c26ac007b804613b5275c9c1836a997ded209de8c71c039e4c82564d7befcaba"
+    },
     "deep-agents-core": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
@@ -36,6 +42,12 @@
       "sourceType": "github",
       "skillPath": "config/skills/ecosystem-primer/SKILL.md",
       "computedHash": "fdbae8d706b1f68ec366c7767a3180d70557b3a7e649030cff8f452fec9cf9f1"
+    },
+    "elysiajs": {
+      "source": "elysiajs/skills",
+      "sourceType": "github",
+      "skillPath": "elysia/SKILL.md",
+      "computedHash": "1f8cdb3c66e6127bd7e31fd5478bf912d976059896629cc58eec031f9bae0c74"
     },
     "eval-engineering": {
       "source": "langchain-ai/langchain-skills",
@@ -126,6 +138,12 @@
       "sourceType": "github",
       "skillPath": "config/skills/managed-deep-agents/SKILL.md",
       "computedHash": "e4f26dfc142ef97704ddc5e090b2636f2b67ba4542a52018d1860e851e608ed8"
+    },
+    "shadcn": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "f99ef49d9909d380ca683ceb8dc8c25775c20ee38140112c394e037d8c11ee18"
     },
     "swarm": {
       "source": "langchain-ai/langchain-skills",

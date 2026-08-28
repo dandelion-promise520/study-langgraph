@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { TextShimmer } from "@/components/motion/text-shimmer";
 import { cn } from "@/lib/utils";
 
@@ -16,11 +17,7 @@ export function ThinkingShimmer({
   className,
 }: ThinkingShimmerProps) {
   return (
-    <TextShimmer
-      as="span"
-      duration={duration}
-      className={cn("font-medium", className)}
-    >
+    <TextShimmer as="span" duration={duration} className={cn("font-medium", className)}>
       {children}
     </TextShimmer>
   );

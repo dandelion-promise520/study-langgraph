@@ -1,158 +1,135 @@
-import { useReducedMotion } from "motion/react";
-import type { ComponentProps } from "react";
+import { Bot, User } from "lucide-react";
+import { useState } from "react";
 
-import type { SidebarResource } from "@/components/agents/ai-sidebar";
-import { ChatApp } from "@/components/agents/chat-app";
-import { MessageGroup } from "@/components/agents/message";
-import { MessageScroller } from "@/components/agents/message-scroller";
+import { ChatApp } from "./components/agents/chat-app";
+import { ThinkingShimmer } from "./components/agents/loading-states/thinking-shimmer";
 import {
-  AppHeader,
-  AppSidebar,
-  AuditTimeline,
-  ChatInputBar,
-  DynamicMessages,
-} from "@/components/chat-workspace";
-import { AnimatedSidebarInset } from "@/components/motion/animated-sidebar";
-import {
-  useAgentChat,
-  useDecisionApproval,
-  useToolWorkflow,
-  useWorkspaceState,
-} from "@/hooks";
-import { cn } from "@/lib/utils";
+  Message,
+  MessageAvatar,
+  MessageBubble,
+  MessageBubbleContent,
+  MessageContent,
+  MessageHeader,
+} from "./components/agents/message";
+import { MessageScroller } from "./components/agents/message-scroller";
+import { PromptInput } from "./components/agents/prompt-input";
+import { StreamingResponse } from "./components/agents/streaming-response";
 
-// ==========================================
-// 1. 初始模拟配置数据
-// ==========================================
+type ChatItem = {
+  id: string;
+  from: "user" | "assistant";
+  content: string;
+  streaming?: boolean;
+};
 
-/** 侧边栏工作区资源树结构 */
-const initialResources: SidebarResource[] = [
-  {
-    id: "release",
-    label: "发布工作区",
-    kind: "project",
-    children: [
-      { id: "checkout", label: "结算流程审计", kind: "file" },
-      { id: "release-notes", label: "发布说明", kind: "file" },
-      { id: "references", label: "调研资料", kind: "bookmark" },
-    ],
-  },
-  {
-    id: "design",
-    label: "设计系统",
-    kind: "folder",
-    children: [
-      { id: "tokens", label: "动效规范", kind: "file" },
-      { id: "components", label: "组件清单", kind: "file" },
-    ],
-  },
-  { id: "archive", label: "归档记录", kind: "folder" },
-];
+export const App = () => {
+  const [messages, setMessages] = useState<ChatItem[]>([
+    {
+      id: "1",
+      from: "assistant",
+      content: "你好！我是你的 AI 助手，有什么可以帮你的？",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [pending, setPending] = useState(false);
 
-/** 模拟智能体流式打字回复文本模板 */
-const replyTemplate =
-  "好的，我将保持本次补丁的专注度，维持现有结算界面布局不变，并在最终发布前执行完整的自动化校验链路。";
+  const handleSend = (text: string) => {
+    if (!text.trim() || pending) return;
 
-// ==========================================
-// 2. 主应用组件 (App)
-// ==========================================
+    // 1、用户发送
+    const userMsg: ChatItem = { id: `user-${Date.now()}`, from: "user", content: text };
+    setMessages((prev) => [...prev, userMsg]);
+    setPending(true);
+    setInput("");
 
-/**
- * 【主应用页面: App】
- * 
- * 学习要点与架构设计：
- * 1. 状态与逻辑完全由自定义 Hooks 驱动 (hooks/)：
- *    - useWorkspaceState: 管理侧栏树与命令面板
- *    - useToolWorkflow: 管理工具审批状态机与 TodoList 动态联动
- *    - useDecisionApproval: 管理发布决策审批卡片
- *    - useAgentChat: 管理消息流式生成、打断与输入
- * 
- * 2. 界面展示完全由领域子组件承载 (components/chat-workspace/)：
- *    - AppSidebar: 侧边栏及全局快捷指令
- *    - AppHeader: 顶部面包屑与主题切换
- *    - AuditTimeline: 模拟工作流静态时间线
- *    - DynamicMessages: 动态对话历史与打字流
- *    - ChatInputBar: 底部 Prompt 输入栏
- */
-export function App({ className }: Pick<ComponentProps<typeof ChatApp>, "className">) {
-  // ① 减弱动效偏好：用于针对系统无障碍设置降级动效
-  const reduceMotion = useReducedMotion() ?? false;
+    // 2、模拟ai回复
+    setTimeout(() => {
+      setPending(false);
 
-  // ② 状态管理 Hooks
-  const {
-    items,
-    setItems,
-    activeResource,
-    setActiveResource,
-    commandOpen,
-    setCommandOpen,
-  } = useWorkspaceState(initialResources, "checkout");
+      const reply = `好的！关于“${text}”，我已经为你分析完成。我们可以分步骤进行处理。`;
+      const aiId = `ai-${Date.now()}`;
 
-  const { toolStatus, plan, approveTool, denyTool } = useToolWorkflow("pending");
+      setMessages((prev) => [
+        ...prev,
+        { id: aiId, content: "", from: "assistant", streaming: true },
+      ]);
 
-  const { approvalStatus, submitApproval } = useDecisionApproval("pending");
+      let i = 0;
+      const timer = setInterval(() => {
+        i++;
+        const currentText = reply.slice(0, i);
 
-  const { messages, input, setInput, pending, busy, submit, stop } = useAgentChat(
-    replyTemplate,
-    reduceMotion,
-  );
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === aiId ? { ...msg, content: currentText } : msg)),
+        );
+
+        if (i >= reply.length) {
+          clearInterval(timer);
+
+          setMessages((prev) =>
+            prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
+          );
+        }
+      }, 40);
+    }, 800);
+  };
 
   return (
-    <ChatApp sidebarWidth="17rem" className={cn("h-dvh", className)}>
-      {/* 1. 左侧工作区导航栏 */}
-      <AppSidebar
-        items={items}
-        activeResource={activeResource}
-        commandOpen={commandOpen}
-        onItemsChange={setItems}
-        onActiveResourceChange={setActiveResource}
-        onCommandOpenChange={setCommandOpen}
-      />
+    <ChatApp className="h-dvh flex-col">
+      {/* 消息滚动区 */}
+      <MessageScroller className="flex-1" contentClassName="mx-auto max-w-3xl py-6 px-4">
+        <div className="flex flex-col gap-4">
+          {messages.map(({ content, from, id, streaming }) => (
+            // 消息部分
+            <Message key={id} from={from} animateIn>
+              {/* 头像 */}
+              <MessageAvatar>{from === "assistant" ? <Bot></Bot> : <User></User>}</MessageAvatar>
+              {/* 名字 */}
+              <MessageContent>
+                <MessageHeader>
+                  <span>{from === "assistant" ? "AI 智能体" : "你"}</span>{" "}
+                </MessageHeader>
+                {/* 内容 */}
+                <MessageBubble variant={from === "assistant" ? "soft" : "solid"}>
+                  <MessageBubbleContent>
+                    {from === "assistant" ? (
+                      <StreamingResponse
+                        status={streaming ? "streaming" : "complete"}
+                        showActions={!streaming}
+                        copyText={content}
+                      >
+                        {content}
+                      </StreamingResponse>
+                    ) : (
+                      content
+                    )}
+                  </MessageBubbleContent>
+                </MessageBubble>
+              </MessageContent>
+            </Message>
+          ))}
+          {pending && (
+            <Message from="assistant" animateIn>
+              <MessageContent>
+                <ThinkingShimmer></ThinkingShimmer>
+              </MessageContent>
+            </Message>
+          )}
+        </div>
+      </MessageScroller>
 
-      {/* 2. 主体工作区容器 */}
-      <AnimatedSidebarInset className="min-h-0 bg-background">
-        {/* 顶部标题栏 */}
-        <AppHeader
-          title="结算模块发布"
-          subtitle="智能体工作区 · 定向修复补丁"
-        />
-
-        {/* 消息滚动浏览区 */}
-        <MessageScroller
-          busy={busy}
-          navigation="rail"
-          className="min-h-0 flex-1"
-          viewportClassName="px-3 py-5 sm:px-5"
-          contentClassName="mx-auto min-h-full w-full max-w-3xl"
-        >
-          <MessageGroup spacing="default">
-            {/* 工作流演示时间线（活动轨迹、计划清单、审批卡片、代码比对、图片生成） */}
-            <AuditTimeline
-              plan={plan}
-              toolStatus={toolStatus}
-              approvalStatus={approvalStatus}
-              onApproveTool={approveTool}
-              onDenyTool={denyTool}
-              onSubmitApproval={submitApproval}
-            />
-
-            {/* 动态追加的用户与智能体消息列表 */}
-            <DynamicMessages
-              messages={messages}
-              pending={pending}
-            />
-          </MessageGroup>
-        </MessageScroller>
-
-        {/* 底部 Prompt 提示词输入栏 */}
-        <ChatInputBar
-          value={input}
-          loading={busy}
-          onValueChange={setInput}
-          onSubmit={submit}
-          onStop={stop}
-        />
-      </AnimatedSidebarInset>
+      {/* 输入框 */}
+      <div className="border-t border-border p-3">
+        <div className="mx-auto max-w-3xl">
+          <PromptInput
+            value={input}
+            onValueChange={setInput}
+            onSubmit={handleSend}
+            loading={pending}
+            placeholder={pending ? "AI 正在思考中…" : "输入消息，按回车发送…"}
+          ></PromptInput>
+        </div>
+      </div>
     </ChatApp>
   );
-}
+};

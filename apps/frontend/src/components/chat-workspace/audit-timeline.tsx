@@ -9,12 +9,7 @@ import {
 import { CodeBlock } from "@/components/agents/code-block";
 import { FileDiff } from "@/components/agents/file-diff";
 import { ImageGeneration } from "@/components/agents/image-generation";
-import {
-  Message,
-  MessageAvatar,
-  MessageContent,
-  MessageHeader,
-} from "@/components/agents/message";
+import { Message, MessageAvatar, MessageContent, MessageHeader } from "@/components/agents/message";
 import { MessageBubble, MessageBubbleContent } from "@/components/agents/message-bubble";
 import { StreamingResponse } from "@/components/agents/streaming-response";
 import { TodoList, type TodoItem } from "@/components/agents/todo-list";
@@ -147,7 +142,7 @@ export interface AuditTimelineProps {
 /**
  * 【组件: AuditTimeline】
  * 作用：展示“结算流程审计与补丁修复”这条完整业务工作流的模拟时间线。
- * 
+ *
  * 包含的阶段节点：
  * 1. 用户原始需求提问
  * 2. 智能体活动轨迹 (AgentActivity) 与执行计划 (TodoList)

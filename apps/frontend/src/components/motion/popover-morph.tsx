@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+
 import { usePopoverPortalPosition } from "@/components/motion/popover-position";
 import { EASE_OUT, SPRING_PANEL } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -105,8 +106,7 @@ export function MorphPopover({
   const close = useCallback(() => {
     setOpen(false);
     const focused = document.activeElement;
-    const inPanel =
-      focused instanceof HTMLElement && contentRef.current?.contains(focused);
+    const inPanel = focused instanceof HTMLElement && contentRef.current?.contains(focused);
     if (!inPanel) return;
     const restore = trigger ?? (root && root.tabIndex >= 0 ? root : null);
     restore?.focus();
@@ -117,12 +117,7 @@ export function MorphPopover({
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     const onPointer = (e: PointerEvent) => {
       const target = e.target as Node;
-      if (
-        root &&
-        !root.contains(target) &&
-        !contentRef.current?.contains(target)
-      )
-        close();
+      if (root && !root.contains(target) && !contentRef.current?.contains(target)) close();
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointer);
@@ -175,9 +170,7 @@ export function MorphPopoverTrigger({ children }: MorphPopoverTriggerProps) {
   if (!isValidElement(children)) return children;
 
   const child = children as ReactElement<Record<string, unknown>>;
-  const childOnClick = child.props.onClick as
-    | ((e: unknown) => void)
-    | undefined;
+  const childOnClick = child.props.onClick as ((e: unknown) => void) | undefined;
   const childRef = (child.props as { ref?: Ref<HTMLElement> }).ref;
 
   return cloneElement(child, {
@@ -233,11 +226,7 @@ export function MorphPopoverContent({
   const ctx = useMorphContext("MorphPopoverContent");
   const reduce = useReducedMotion() ?? false;
   const [portalReady, setPortalReady] = useState(false);
-  const layout = usePopoverPortalPosition(
-    ctx.triggerRef,
-    ctx.contentRef,
-    portalReady && ctx.open,
-  );
+  const layout = usePopoverPortalPosition(ctx.triggerRef, ctx.contentRef, portalReady && ctx.open);
 
   useEffect(() => setPortalReady(true), []);
   const left = layout
@@ -302,10 +291,7 @@ export function MorphPopoverContent({
             aria-labelledby={ctx.triggerId}
             variants={clip}
             style={{ borderRadius: radius }}
-            className={cn(
-              "overflow-hidden border border-border bg-background",
-              className,
-            )}
+            className={cn("overflow-hidden border border-border bg-background", className)}
           >
             {children}
           </motion.div>

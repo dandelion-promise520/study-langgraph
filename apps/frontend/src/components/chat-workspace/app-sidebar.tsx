@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from "react";
+
 import {
   Clock3,
   FileText,
@@ -8,7 +10,6 @@ import {
   Settings,
   User,
 } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
 
 import { AISidebar, type SidebarResource } from "@/components/agents/ai-sidebar";
 import {
@@ -26,7 +27,7 @@ import { CommandPalette } from "@/components/motion/command-palette";
 
 /**
  * AppSidebar 组件的入参属性定义
- * 
+ *
  * 学习点：组件 Props 接口化
  * 将侧边栏所需的数据 (items, activeResource, commandOpen) 与状态变更回调清晰定义，
  * 使侧边栏成为一个纯粹的可复用展示与交互组件（受控组件模式 Controlled Component）。
@@ -49,7 +50,7 @@ export interface AppSidebarProps {
 /**
  * 【组件: AppSidebar】
  * 作用：智能体工作区左侧导航栏。
- * 
+ *
  * 包含：
  * 1. 顶部操作菜单（新建任务、全站搜索、运行记录）
  * 2. 全局快捷指令面板（CommandPalette, 支持快捷键 Ctrl/⌘ + J）

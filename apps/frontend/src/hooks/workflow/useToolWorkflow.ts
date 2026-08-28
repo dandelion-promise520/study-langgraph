@@ -6,7 +6,7 @@ import type { ToolApprovalStatus } from "@/components/agents/tool-approval";
 /**
  * 【Hook: useToolWorkflow】
  * 作用：管理智能体工具调用审批流程、模拟执行状态机与动态计划清单（TodoList）。
- * 
+ *
  * 核心原理：
  * 1. 状态机流转：
  *    - 初始状态：pending（等待用户审批）
@@ -17,7 +17,7 @@ import type { ToolApprovalStatus } from "@/components/agents/tool-approval";
  *      无需额外声明 useState 维护重复冗余数据。
  * 3. 定时器自动清理：
  *    - 在执行新的审批动作或组件卸载时，自动清理正在进行的延时任务，杜绝内存泄漏。
- * 
+ *
  * @param initialStatus 初始工具状态，默认为 "pending"
  */
 export function useToolWorkflow(initialStatus: ToolApprovalStatus = "pending") {

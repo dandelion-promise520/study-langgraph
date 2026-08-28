@@ -9,13 +9,7 @@ import {
   type GraphNode,
 } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
-import {
-  AIMessage,
-  HumanMessage,
-  SystemMessage,
-  tool,
-  ToolMessage,
-} from "langchain";
+import { AIMessage, HumanMessage, SystemMessage, tool, ToolMessage } from "langchain";
 import * as z from "zod";
 
 const model = new ChatOpenAI({
@@ -65,8 +59,9 @@ const modelWithTools = model.bindTools(tools);
 
 const MessagesState = new StateSchema({
   messages: MessagesValue,
-  llmCalls: new ReducedValue(z.number().default(0), {
-    reducer: (x, y) => x + y,
+  llmCalls: new ReducedValue(z.number().default(0) as any, {
+    inputSchema: z.number() as any,
+    reducer: (x: number, y: number) => x + y,
   }),
 });
 

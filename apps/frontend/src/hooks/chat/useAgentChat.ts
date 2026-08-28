@@ -7,7 +7,7 @@ import { useAgentStreaming } from "./useAgentStreaming";
 /**
  * 【Hook: useAgentChat】
  * 作用：管理智能体对话的核心生命周期与用户交互状态。
- * 
+ *
  * 包含的职责：
  * 1. 消息列表维护（messages）
  * 2. 用户输入框状态（input）
@@ -15,7 +15,7 @@ import { useAgentStreaming } from "./useAgentStreaming";
  * 4. 忙碌状态判断（busy = pending || 正在流式打字）
  * 5. 发送消息逻辑（submit：添加用户消息 -> 延迟模拟 -> 追加助手占位 -> 触发逐字打字机）
  * 6. 停止/中断生成逻辑（stop：清理延时器、截断当前流式状态）
- * 
+ *
  * @param defaultReply 当用户发送消息后，智能体模拟回复的文本模板
  * @param reduceMotion 是否开启无障碍减弱动效
  */
@@ -109,9 +109,7 @@ export function useAgentChat(defaultReply: string, reduceMotion = false) {
 
     // 将所有流式中的消息标记为已完成（streaming: false）
     setMessages((current) =>
-      current.map((message) =>
-        message.streaming ? { ...message, streaming: false } : message,
-      ),
+      current.map((message) => (message.streaming ? { ...message, streaming: false } : message)),
     );
 
     // 终止流式动画

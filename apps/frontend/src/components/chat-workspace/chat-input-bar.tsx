@@ -21,7 +21,7 @@ export interface ChatInputBarProps {
 /**
  * 【组件: ChatInputBar】
  * 作用：工作区底部的 Prompt 提示词输入区域。
- * 
+ *
  * 包含：
  * 1. 自动扩展的多行输入框（支持 Enter 快捷发送，Shift+Enter 换行）
  * 2. 模型档位切换菜单（标准均衡 / 极速响应 / 深度思考）

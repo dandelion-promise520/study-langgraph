@@ -5,13 +5,13 @@ import type { AddedMessage } from "@/types/agent";
 /**
  * 【Hook: useAgentStreaming】
  * 作用：模拟 AI 助手的打字机流式输出动效（基于 requestAnimationFrame）。
- * 
+ *
  * 核心原理：
  * 1. 当 activeReply 存在（即某条 assistant 消息正在输出）时启动动画循环。
  * 2. 根据时间差（毫秒）计算出当前应该展示的字符下标 (cursor)，逐帧更新消息内容。
  * 3. 当用户开启了“减弱动效”(reduce=true) 时，跳过逐字动画，直接一次性渲染完整文本。
  * 4. 在组件卸载或 activeReply 变化时，利用 useEffect 返回的清理函数取消未执行的 RAF，防止内存泄漏。
- * 
+ *
  * @param reply 完整的回复文本内容
  * @param reduce 是否开启了“减弱动效”（针对系统无障碍偏好或配置）
  * @param setMessages 用于更新外部消息列表状态的 dispatch 函数
@@ -32,9 +32,7 @@ export function useAgentStreaming(
     if (reduce) {
       setMessages((current) =>
         current.map((message) =>
-          message.id === activeReply
-            ? { ...message, content: reply, streaming: false }
-            : message,
+          message.id === activeReply ? { ...message, content: reply, streaming: false } : message,
         ),
       );
       setActiveReply(null);

@@ -2,15 +2,11 @@
 // beui.dev/components/agents/chat-app
 
 import { motion, useReducedMotion } from "motion/react";
-import {
-  type ComponentPropsWithRef,
-  createContext,
-  type ReactNode,
-  useContext,
-} from "react";
+import { type ComponentPropsWithRef, createContext, type ReactNode, useContext } from "react";
+
+import { MessageSideContext } from "@/components/agents/message-context";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
-import { MessageSideContext } from "@/components/agents/message-context";
 
 export {
   MessageBubble,
@@ -31,8 +27,10 @@ const MessageContext = createContext<MessageContextValue>({
   from: "assistant",
 });
 
-export interface MessageProps
-  extends Omit<ComponentPropsWithRef<typeof motion.article>, "children"> {
+export interface MessageProps extends Omit<
+  ComponentPropsWithRef<typeof motion.article>,
+  "children"
+> {
   from: MessageFrom;
   /** Plays a trailing-edge pop-up once when this message row mounts. */
   animateIn?: boolean;
@@ -114,9 +112,7 @@ export function Message({
                   transform: "translateY(-3px) scale(0.99)",
                 })
           }
-          transition={
-            transition ?? (reduce ? { duration: 0.12 } : MESSAGE_POP_UP)
-          }
+          transition={transition ?? (reduce ? { duration: 0.12 } : MESSAGE_POP_UP)}
           style={{
             transformOrigin: from === "user" ? "100% 100%" : "0% 100%",
             ...style,
@@ -135,19 +131,11 @@ export function Message({
   );
 }
 
-export function MessageGroup({
-  spacing = "compact",
-  className,
-  ...props
-}: MessageGroupProps) {
+export function MessageGroup({ spacing = "compact", className, ...props }: MessageGroupProps) {
   return (
     <div
       data-slot="message-group"
-      className={cn(
-        "flex w-full flex-col",
-        spacing === "compact" ? "gap-1.5" : "gap-4",
-        className,
-      )}
+      className={cn("flex w-full flex-col", spacing === "compact" ? "gap-1.5" : "gap-4", className)}
       {...props}
     />
   );
@@ -236,11 +224,7 @@ export function MessageMarker({ className, ...props }: MessageMarkerProps) {
   );
 }
 
-export function MessageTyping({
-  label = "Responding",
-  className,
-  ...props
-}: MessageTypingProps) {
+export function MessageTyping({ label = "Responding", className, ...props }: MessageTypingProps) {
   const reduce = useReducedMotion() ?? false;
 
   return (
@@ -255,11 +239,7 @@ export function MessageTyping({
           key={index}
           aria-hidden="true"
           className="size-1 rounded-full bg-current"
-          animate={
-            reduce
-              ? { opacity: 0.45 }
-              : { opacity: [0.28, 0.85, 0.28], y: [0, -2, 0] }
-          }
+          animate={reduce ? { opacity: 0.45 } : { opacity: [0.28, 0.85, 0.28], y: [0, -2, 0] }}
           transition={{
             duration: 1.05,
             ease: EASE_OUT,

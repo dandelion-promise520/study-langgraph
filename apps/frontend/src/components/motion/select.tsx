@@ -1,12 +1,7 @@
 "use client";
 
 import { Check, ChevronDown } from "lucide-react";
-import {
-  motion,
-  type Transition,
-  useReducedMotion,
-  type Variants,
-} from "motion/react";
+import { motion, type Transition, useReducedMotion, type Variants } from "motion/react";
 import {
   createContext,
   type ReactNode,
@@ -19,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -144,8 +140,7 @@ export function Select({
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     const onPointer = (e: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node))
-        setOpen(false);
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointer);
@@ -236,7 +231,7 @@ export function SelectTrigger({ className, children }: SelectTriggerProps) {
         borderBottomRightRadius: isTop ? INSTANT_TRANSITION : kfT,
       }}
       className={cn(
-        "relative z-10 flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors",
+        "relative z-10 flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors outline-none",
         "hover:border-(--color-border-strong) focus-visible:ring-2 focus-visible:ring-foreground/20",
         "disabled:pointer-events-none disabled:opacity-50",
         className,
@@ -264,9 +259,7 @@ export function SelectValue({ placeholder, className }: SelectValueProps) {
   const ctx = useSelectContext("SelectValue");
   const label = ctx.labelFor(ctx.value);
   return (
-    <span
-      className={cn(label ? "text-foreground" : "text-muted-foreground", className)}
-    >
+    <span className={cn(label ? "text-foreground" : "text-muted-foreground", className)}>
       {label ?? placeholder ?? "Select"}
     </span>
   );
@@ -353,9 +346,7 @@ export function SelectContent({ className, children }: SelectContentProps) {
         ctx.reduce
           ? { duration: 0.12 }
           : {
-              opacity: open
-                ? { duration: 0.18 }
-                : { duration: 0.16, delay: 0.12 },
+              opacity: open ? { duration: 0.18 } : { duration: 0.16, delay: 0.12 },
               height: open
                 ? { type: "spring", duration: 0.42, bounce: 0.14 }
                 : { duration: 0.26, ease: EASE_OUT, delay: 0.14 },
@@ -375,7 +366,7 @@ export function SelectContent({ className, children }: SelectContentProps) {
       // flush against the trigger, then separates into its own rounded pill;
       // sits above or below depending on available space
       className={cn(
-        "absolute left-0 right-0 z-20 rounded-xl border border-border bg-background shadow-lg",
+        "absolute right-0 left-0 z-20 rounded-xl border border-border bg-background shadow-lg",
         isTop ? "bottom-full" : "top-full",
         className,
       )}
@@ -400,12 +391,7 @@ export interface SelectItemProps {
   children: ReactNode;
 }
 
-export function SelectItem({
-  value,
-  disabled = false,
-  className,
-  children,
-}: SelectItemProps) {
+export function SelectItem({ value, disabled = false, className, children }: SelectItemProps) {
   const ctx = useSelectContext("SelectItem");
   const selected = ctx.value === value;
   const label = typeof children === "string" ? children : value;
@@ -424,7 +410,7 @@ export function SelectItem({
         disabled={disabled}
         onClick={() => ctx.select(value)}
         className={cn(
-          "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm outline-none transition-colors",
+          "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors outline-none",
           selected
             ? "bg-muted text-foreground"
             : "text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:bg-muted",
