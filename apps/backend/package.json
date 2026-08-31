@@ -9,13 +9,11 @@
   },
   "dependencies": {
     "@elysiajs/cors": "catalog:",
-    "@langchain/core": "catalog:",
     "@langchain/langgraph": "catalog:",
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
     "elysia": "catalog:",
-    "langchain": "catalog:",
-    "zod": "catalog:"
+    "langchain": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

@@ -1,4 +1,4 @@
-# Claude Guidelines
+# AI Agent Guidelines
 
 ## Commit convention
 
