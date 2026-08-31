@@ -127,7 +127,7 @@ export const App = () => {
             onSubmit={handleSend}
             loading={pending}
             placeholder={pending ? "AI 正在思考中…" : "输入消息，按回车发送…"}
-          ></PromptInput>
+          />
         </div>
       </div>
     </ChatApp>

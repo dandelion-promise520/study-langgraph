@@ -11,10 +11,10 @@ import {
   useState,
 } from "react";
 
+import { useDismiss } from "@/hooks/gestures/use-dismiss";
+import { useHoverGesture } from "@/hooks/gestures/use-hover-gesture";
+import { useTapGesture } from "@/hooks/gestures/use-tap-gesture";
 import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
-import { useDismiss } from "@/lib/hooks/use-dismiss";
-import { useHoverGesture } from "@/lib/hooks/use-hover-gesture";
-import { useTapGesture } from "@/lib/hooks/use-tap-gesture";
 import { cn } from "@/lib/utils";
 
 export interface PreviewRailItem {

@@ -31,8 +31,8 @@ import {
   MorphPopoverContent,
   MorphPopoverTrigger,
 } from "@/components/motion/popover-morph";
+import { useTouchCapable } from "@/hooks/gestures/use-touch-capable";
 import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
-import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
 import { cn } from "@/lib/utils";
 
 export type SidebarResourceKind = "folder" | "project" | "file" | "bookmark";

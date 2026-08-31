@@ -6,12 +6,13 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { useOnOpen } from "@/hooks/gestures/use-on-open";
+import { useRowCursor } from "@/hooks/gestures/use-row-cursor";
+import { useTouchCapable } from "@/hooks/gestures/use-touch-capable";
 import { EASE_OUT } from "@/lib/ease";
-import { useOnOpen } from "@/lib/hooks/use-on-open";
-import { useRowCursor } from "@/lib/hooks/use-row-cursor";
-import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
-import { PresenceGate } from "@/lib/presence-gate";
 import { cn } from "@/lib/utils";
+
+import { PresenceGate } from "./presence-gate";
 
 export type CommandItem = {
   id: string;

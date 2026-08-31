@@ -1,9 +1,10 @@
 {
-  "name": "langgraph",
+  "name": "langgraph-lab",
   "private": true,
   "workspaces": {
     "packages": [
-      "apps/*"
+      "apps/*",
+      "packages/*"
     ],
     "catalog": {
       "typescript": "^7.0.2",
@@ -23,19 +24,11 @@
     }
   },
   "type": "module",
-  "module": "index.ts",
   "scripts": {
     "dev": "bun run --filter './apps/*' dev",
     "fmt": "oxfmt --write",
     "lint": "oxlint",
-    "typecheck": "tsc --noEmit && bun run --cwd apps/backend typecheck && bun run --cwd apps/frontend typecheck"
-  },
-  "dependencies": {
-    "@langchain/core": "catalog:",
-    "@langchain/langgraph": "catalog:",
-    "@langchain/openai": "catalog:",
-    "langchain": "catalog:",
-    "zod": "catalog:"
+    "typecheck": "bun run --filter './apps/*' --filter './packages/*' typecheck"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

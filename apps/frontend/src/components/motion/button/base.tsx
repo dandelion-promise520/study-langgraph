@@ -10,8 +10,8 @@ import {
   useState,
 } from "react";
 
+import { useHoverCapable } from "@/hooks/gestures/use-hover-capable";
 import { EASE_OUT, SPRING_PRESS } from "@/lib/ease";
-import { useHoverCapable } from "@/lib/hooks/use-hover-capable";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "outline";
