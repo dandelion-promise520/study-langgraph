@@ -8,12 +8,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.4.2",
+    "@elysiajs/cors": "catalog:",
     "@langchain/core": "catalog:",
     "@langchain/langgraph": "catalog:",
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
-    "elysia": "latest",
+    "elysia": "catalog:",
     "langchain": "catalog:",
     "zod": "catalog:"
   },
