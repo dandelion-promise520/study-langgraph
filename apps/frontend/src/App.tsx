@@ -1,6 +1,7 @@
 import { Bot, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { sendChatMessage } from "./api";
 import { ChatApp } from "./components/agents/chat-app";
 import { ThinkingShimmer } from "./components/agents/loading-states/thinking-shimmer";
 import {
@@ -23,6 +24,13 @@ type ChatItem = {
 };
 
 export const App = () => {
+  useEffect(() => {
+    const getAiMessage = async () => {
+      console.log(await sendChatMessage({ message: "你好" }));
+    };
+    getAiMessage();
+  }, []);
+
   const [messages, setMessages] = useState<ChatItem[]>([
     {
       id: "1",

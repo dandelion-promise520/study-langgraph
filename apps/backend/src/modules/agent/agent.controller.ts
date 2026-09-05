@@ -1,4 +1,4 @@
-import type { ChatRequest, ChatResponse } from "./agent.model";
+import type { ChatRequestDto, ChatResponseDto } from "@lg-lab/types";
 
 import { agentService } from "./agent.service";
 
@@ -6,8 +6,8 @@ export class AgentController {
   /**
    * 处理聊天请求
    */
-  async chat(body: ChatRequest): Promise<ChatResponse> {
-    return await agentService.chat(body.message);
+  async chat(body: ChatRequestDto): Promise<ChatResponseDto> {
+    return await agentService.chat(body);
   }
 }
 

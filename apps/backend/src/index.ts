@@ -23,5 +23,6 @@ const app = new Elysia()
   .listen(env.PORT);
 
 console.log(`🦊 Elysia 已启动: http://localhost:${env.PORT}`);
+console.log(`openapi已启动: http://localhost:${env.PORT}/openapi`);
 
 export type App = typeof app;

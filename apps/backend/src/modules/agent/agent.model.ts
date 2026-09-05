@@ -1,14 +1,15 @@
-import { z } from "zod";
+import {
+  ChatRequestSchema,
+  ChatResponseSchema,
+  type ChatRequestDto,
+  type ChatResponseDto,
+} from "@lg-lab/types";
 
 export const AgentModels = {
-  ChatRequest: z.object({
-    message: z.string().min(1, "消息内容不能为空"),
-  }),
-  ChatResponse: z.object({
-    reply: z.string(),
-  }),
+  ChatRequest: ChatRequestSchema,
+  ChatResponse: ChatResponseSchema,
 };
 
-// 使用 z.infer 自动导出强类型
-export type ChatRequest = z.infer<typeof AgentModels.ChatRequest>;
-export type ChatResponse = z.infer<typeof AgentModels.ChatResponse>;
+// 导出强类型以保持对齐和兼容
+export type ChatRequest = ChatRequestDto;
+export type ChatResponse = ChatResponseDto;
