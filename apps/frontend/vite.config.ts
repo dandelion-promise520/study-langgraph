@@ -7,12 +7,12 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    tailwindcss(),
     codeInspectorPlugin({
       bundler: "vite",
       showSwitch: true,
     }),
+    react(),
+    tailwindcss(),
   ],
   resolve: {
     alias: {

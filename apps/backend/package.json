@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@elysia/openapi": "^1.4.16",
     "@elysiajs/cors": "catalog:",
     "@langchain/langgraph": "catalog:",
     "@langchain/openai": "catalog:",

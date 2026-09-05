@@ -1,3 +1,4 @@
+import openapi from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
@@ -6,14 +7,14 @@ import { agentModule } from "./modules/agent";
 
 const app = new Elysia()
   .use(cors())
+  .use(openapi())
   .use(agentModule)
   .get("/", () => ({
     status: "ok",
     service: "LangGraph Elysia Backend",
-    timestamp: new Date().toISOString(),
   }))
   .listen(env.PORT);
 
-console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`);
+console.log(`🦊 Elysia 已启动: http://localhost:${env.PORT}`);
 
 export type App = typeof app;
