@@ -37,7 +37,7 @@
     "commit": "git-cz",
     "cz": "czg ai",
     "dev": "bun run --parallel dev:backend dev:frontend",
-    "dev:backend": "bun --watch apps/backend/src/index.ts",
+    "dev:backend": "bun --env-file apps/backend/.env --watch apps/backend/src/index.ts",
     "dev:frontend": "bun run --filter '@lg-lab/frontend' dev",
     "fmt": "oxfmt --write",
     "lint": "oxlint",

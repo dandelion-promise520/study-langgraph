@@ -1,7 +1,7 @@
 import type { ChatRequestDto, ChatResponseDto } from "@lg-lab/types";
 
-import { instance } from "../instance";
+import { request } from "../instance";
 
 export const sendChatMessage = (data: ChatRequestDto, signal?: AbortSignal) => {
-  return instance.post<ChatResponseDto>("/agent/chat", data, { signal });
+  return request.post<ChatResponseDto>("/agent/chat", data, { signal });
 };

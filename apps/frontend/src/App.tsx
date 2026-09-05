@@ -1,5 +1,5 @@
 import { Bot, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { sendChatMessage } from "./api";
 import { ChatApp } from "./components/agents/chat-app";
@@ -24,13 +24,6 @@ type ChatItem = {
 };
 
 export const App = () => {
-  useEffect(() => {
-    const getAiMessage = async () => {
-      console.log(await sendChatMessage({ message: "你好" }));
-    };
-    getAiMessage();
-  }, []);
-
   const [messages, setMessages] = useState<ChatItem[]>([
     {
       id: "1",
@@ -41,7 +34,7 @@ export const App = () => {
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
 
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     if (!text.trim() || pending) return;
 
     // 1、用户发送
@@ -50,13 +43,12 @@ export const App = () => {
     setPending(true);
     setInput("");
 
-    // 2、模拟ai回复
-    setTimeout(() => {
+    // 2、调用真实接口
+    try {
+      const { reply } = await sendChatMessage({ message: text });
       setPending(false);
 
-      const reply = `好的！关于“${text}”，我已经为你分析完成。我们可以分步骤进行处理。`;
       const aiId = `ai-${Date.now()}`;
-
       setMessages((prev) => [
         ...prev,
         { id: aiId, content: "", from: "assistant", streaming: true },
@@ -79,7 +71,51 @@ export const App = () => {
           );
         }
       }, 40);
-    }, 800);
+    } catch (error) {
+      setPending(false);
+
+      const errorMessage = error instanceof Error ? error.message : "网络异常，请稍后重试";
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `err-${Date.now()}`,
+          content: `请求失败${errorMessage}`,
+          from: "assistant",
+        },
+      ]);
+    }
+
+    // 2、模拟ai回复
+    // setTimeout(() => {
+    //   setPending(false);
+
+    //   const reply = `好的！关于“${text}”，我已经为你分析完成。我们可以分步骤进行处理。`;
+    //   const aiId = `ai-${Date.now()}`;
+
+    //   setMessages((prev) => [
+    //     ...prev,
+    //     { id: aiId, content: "", from: "assistant", streaming: true },
+    //   ]);
+
+    //   let i = 0;
+    //   const timer = setInterval(() => {
+    //     i++;
+    //     const currentText = reply.slice(0, i);
+
+    //     setMessages((prev) =>
+    //       prev.map((msg) => (msg.id === aiId ? { ...msg, content: currentText } : msg)),
+    //     );
+
+    //     if (i >= reply.length) {
+    //       clearInterval(timer);
+
+    //       setMessages((prev) =>
+    //         prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
+    //       );
+    //     }
+    //   }, 40);
+    // }, 800);
   };
 
   return (

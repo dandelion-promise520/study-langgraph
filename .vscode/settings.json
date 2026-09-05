@@ -33,5 +33,10 @@
   // 5. 允许在字符串字面量中快速弹出补全建议
   "editor.quickSuggestions": {
     "strings": "on"
+  },
+
+  // 6.保存时自动整理并移除没用的 import
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
   }
 }
