@@ -1,13 +1,20 @@
 import openapi from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { env } from "./config/env";
 import { agentModule } from "./modules/agent";
 
 const app = new Elysia()
   .use(cors())
-  .use(openapi())
+  .use(
+    openapi({
+      mapJsonSchema: {
+        zod: zodToJsonSchema,
+      },
+    }),
+  )
   .use(agentModule)
   .get("/", () => ({
     status: "ok",

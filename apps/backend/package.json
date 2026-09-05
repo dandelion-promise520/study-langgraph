@@ -14,7 +14,8 @@
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
     "elysia": "catalog:",
-    "langchain": "catalog:"
+    "langchain": "catalog:",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

@@ -26,11 +26,16 @@
       "@commitlint/cli": "^21.2.2",
       "@commitlint/config-conventional": "^21.2.2",
       "husky": "^9.1.7",
-      "lint-staged": "^17.4.1"
+      "lint-staged": "^17.4.1",
+      "commitizen": "^4.3.2",
+      "cz-git": "^1.14.0",
+      "czg": "^1.14.0"
     }
   },
   "type": "module",
   "scripts": {
+    "commit": "git-cz",
+    "cz": "czg ai",
     "dev": "bun run --parallel dev:backend dev:frontend",
     "dev:backend": "bun --watch apps/backend/src/index.ts",
     "dev:frontend": "bun run --filter '@lg-lab/frontend' dev",
@@ -43,10 +48,18 @@
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "@types/bun": "catalog:",
+    "commitizen": "catalog:",
+    "cz-git": "catalog:",
+    "czg": "catalog:",
     "husky": "catalog:",
     "lint-staged": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "typescript": "catalog:"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
   }
 }
