@@ -1,10 +1,11 @@
 import type { ChatRequestDto, ChatResponseDto } from "@lg-lab/types";
 
-import { HumanMessage } from "@langchain/core/messages";
+import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
 
 import { simpleAgent } from "./agent.graph";
 
 export class AgentService {
+  // 普通调用（非流式）
   async chat(body: ChatRequestDto): Promise<ChatResponseDto> {
     // 1. 调用 LangGraph
     const result = await simpleAgent.invoke({
@@ -19,6 +20,23 @@ export class AgentService {
         : JSON.stringify(lastMessage?.content ?? "");
 
     return { reply };
+  }
+
+  // 流式输出（异步生成器）
+  async *chatStream(body: ChatRequestDto) {
+    const eventStream = await simpleAgent.streamEvents(
+      { messages: [new HumanMessage(body.message)] },
+      { version: "v3" },
+    );
+
+    for await (const event of eventStream) {
+      if (event.method === "messages") {
+        const chunk = event.params.data as AIMessageChunk;
+        if (typeof chunk?.content === "string" && chunk.content) {
+          yield chunk.content;
+        }
+      }
+    }
   }
 }
 
