@@ -1,6 +1,6 @@
 import type { ChatRequestDto, ChatResponseDto } from "@lg-lab/types";
 
-import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
+import { HumanMessage } from "@langchain/core/messages";
 
 import { simpleAgent } from "./agent.graph";
 
@@ -24,17 +24,14 @@ export class AgentService {
 
   // 流式输出（异步生成器）
   async *chatStream(body: ChatRequestDto) {
-    const eventStream = await simpleAgent.streamEvents(
+    const stream = await simpleAgent.stream(
       { messages: [new HumanMessage(body.message)] },
-      { version: "v3" },
+      { streamMode: "messages" },
     );
 
-    for await (const event of eventStream) {
-      if (event.method === "messages") {
-        const chunk = event.params.data as AIMessageChunk;
-        if (typeof chunk?.content === "string" && chunk.content) {
-          yield chunk.content;
-        }
+    for await (const [chunk] of stream) {
+      if (typeof chunk.content === "string" && chunk.content) {
+        yield chunk.content;
       }
     }
   }
