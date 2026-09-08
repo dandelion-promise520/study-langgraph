@@ -18,7 +18,7 @@ export const agentModule = new Elysia({ prefix: "/agent" })
   )
   // 2、sse流式传输
   .post(
-    "chatStream",
+    "/chat/stream",
     ({ body }) => {
       return agentController.chatStream(body);
     },

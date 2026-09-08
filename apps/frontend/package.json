@@ -13,10 +13,11 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@elysiajs/eden": "catalog:",
     "@fontsource-variable/inter": "^5.3.0",
+    "@lg-lab/backend": "workspace:*",
     "@lg-lab/types": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
-    "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.34.0",

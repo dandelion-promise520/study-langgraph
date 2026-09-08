@@ -1,2 +1,2 @@
 export * from "./agent";
-export * from "./instance";
+export * from "./eden";
