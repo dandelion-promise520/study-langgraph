@@ -1,7 +1,7 @@
 import { Bot, User } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { sendChatMessage } from "./api";
+import { getErrorMessage, sendChatMessageStream } from "./api";
 import { ChatApp } from "./components/agents/chat-app";
 import { ThinkingShimmer } from "./components/agents/loading-states/thinking-shimmer";
 import {
@@ -33,6 +33,9 @@ export const App = () => {
   ]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
+  const [threadId] = useState<string>(() => `thread-${Date.now()}`);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleSend = async (text: string) => {
     if (!text.trim() || pending) return;
@@ -43,79 +46,51 @@ export const App = () => {
     setPending(true);
     setInput("");
 
-    // 2、调用真实接口
+    // 2、准备接受ai回复的占位
+    const aiId = `ai-${Date.now()}`;
+    const aiMsg: ChatItem = {
+      id: aiId,
+      from: "assistant",
+      content: "",
+      streaming: true,
+    };
+    setMessages((prev) => [...prev, aiMsg]);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
-      const { reply } = await sendChatMessage({ message: text });
-      setPending(false);
+      const stream = sendChatMessageStream({ message: text, threadId }, controller.signal);
 
-      const aiId = `ai-${Date.now()}`;
-      setMessages((prev) => [
-        ...prev,
-        { id: aiId, content: "", from: "assistant", streaming: true },
-      ]);
-
-      let i = 0;
-      const timer = setInterval(() => {
-        i++;
-        const currentText = reply.slice(0, i);
-
+      for await (const delta of stream) {
         setMessages((prev) =>
-          prev.map((msg) => (msg.id === aiId ? { ...msg, content: currentText } : msg)),
+          prev.map((msg) => (msg.id === aiId ? { ...msg, content: msg.content + delta } : msg)),
         );
+      }
 
-        if (i >= reply.length) {
-          clearInterval(timer);
-
-          setMessages((prev) =>
-            prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
-          );
-        }
-      }, 40);
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
+      );
     } catch (error) {
+      if (!controller.signal.aborted) {
+        const errorMessage = getErrorMessage(error, "请求失败");
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiId
+              ? {
+                  ...msg,
+                  content: msg.content
+                    ? `${msg.content}\n\n[异常中断：${errorMessage}]`
+                    : `请求失败:${errorMessage}`,
+                }
+              : msg,
+          ),
+        );
+      }
+    } finally {
       setPending(false);
-
-      const errorMessage = error instanceof Error ? error.message : "网络异常，请稍后重试";
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `err-${Date.now()}`,
-          content: `请求失败${errorMessage}`,
-          from: "assistant",
-        },
-      ]);
+      abortControllerRef.current = null;
     }
-
-    // 2、模拟ai回复
-    // setTimeout(() => {
-    //   setPending(false);
-
-    //   const reply = `好的！关于“${text}”，我已经为你分析完成。我们可以分步骤进行处理。`;
-    //   const aiId = `ai-${Date.now()}`;
-
-    //   setMessages((prev) => [
-    //     ...prev,
-    //     { id: aiId, content: "", from: "assistant", streaming: true },
-    //   ]);
-
-    //   let i = 0;
-    //   const timer = setInterval(() => {
-    //     i++;
-    //     const currentText = reply.slice(0, i);
-
-    //     setMessages((prev) =>
-    //       prev.map((msg) => (msg.id === aiId ? { ...msg, content: currentText } : msg)),
-    //     );
-
-    //     if (i >= reply.length) {
-    //       clearInterval(timer);
-
-    //       setMessages((prev) =>
-    //         prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
-    //       );
-    //     }
-    //   }, 40);
-    // }, 800);
   };
 
   return (
@@ -137,13 +112,17 @@ export const App = () => {
                 <MessageBubble variant={from === "assistant" ? "soft" : "solid"}>
                   <MessageBubbleContent>
                     {from === "assistant" ? (
-                      <StreamingResponse
-                        status={streaming ? "streaming" : "complete"}
-                        showActions={!streaming}
-                        copyText={content}
-                      >
-                        {content}
-                      </StreamingResponse>
+                      streaming && !content ? (
+                        <ThinkingShimmer />
+                      ) : (
+                        <StreamingResponse
+                          status={streaming ? "streaming" : "complete"}
+                          showActions={!streaming}
+                          copyText={content}
+                        >
+                          {content}
+                        </StreamingResponse>
+                      )
                     ) : (
                       content
                     )}
@@ -152,13 +131,6 @@ export const App = () => {
               </MessageContent>
             </Message>
           ))}
-          {pending && (
-            <Message from="assistant" animateIn>
-              <MessageContent>
-                <ThinkingShimmer></ThinkingShimmer>
-              </MessageContent>
-            </Message>
-          )}
         </div>
       </MessageScroller>
 

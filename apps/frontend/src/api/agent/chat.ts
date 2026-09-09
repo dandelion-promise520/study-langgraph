@@ -9,19 +9,9 @@ export const sendChatMessage = async (
   data: ChatRequestDto,
   signal?: AbortSignal,
 ): Promise<ChatResponseDto> => {
-  const { data: res, error } = await client.agent.chat.post(data, {
+  const { data: res } = await client.agent.chat.post(data, {
     fetch: { signal },
   });
-
-  if (error) {
-    const message =
-      typeof error.value === "object" && error.value && "message" in error.value
-        ? String((error.value as { message: unknown }).message)
-        : typeof error.value === "string"
-          ? error.value
-          : "请求失败";
-    throw new Error(message);
-  }
 
   return res as ChatResponseDto;
 };
@@ -33,19 +23,9 @@ export const sendChatMessageStream = async function* (
   data: ChatRequestDto,
   signal?: AbortSignal,
 ): AsyncGenerator<string> {
-  const { data: stream, error } = await client.agent.chat.stream.post(data, {
+  const { data: stream } = await client.agent.chat.stream.post(data, {
     fetch: { signal },
   });
-
-  if (error) {
-    const message =
-      typeof error.value === "object" && error.value && "message" in error.value
-        ? String((error.value as { message: unknown }).message)
-        : typeof error.value === "string"
-          ? error.value
-          : "流式请求连接失败";
-    throw new Error(message);
-  }
 
   if (!stream) {
     return;
@@ -65,10 +45,8 @@ export const sendChatMessageStream = async function* (
     }
 
     // 3. 正常增量消息事件
-    if (chunk.event === "message") {
-      if (chunk.data.delta) {
-        yield chunk.data.delta;
-      }
+    if (chunk.event === "message" && chunk.data.delta) {
+      yield chunk.data.delta;
     }
   }
 };
