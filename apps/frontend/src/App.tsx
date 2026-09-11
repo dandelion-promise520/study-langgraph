@@ -38,6 +38,17 @@ export const App = () => {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    setMessages((prev) => prev.map((msg) => (msg.streaming ? { ...msg, streaming: false } : msg)));
+
+    setPending(false);
+  };
+
   const handleSend = async (text: string) => {
     if (!text.trim() || pending) return;
 
@@ -91,6 +102,9 @@ export const App = () => {
     } finally {
       setPending(false);
       abortControllerRef.current = null;
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
+      );
     }
   };
 
@@ -148,6 +162,7 @@ export const App = () => {
             value={input}
             onValueChange={setInput}
             onSubmit={handleSend}
+            onStop={handleStop}
             loading={pending}
             placeholder={pending ? "AI 正在思考中…" : "输入消息，按回车发送…"}
           />
