@@ -1,2 +1,2 @@
-bunx lint-staged
+bun --bun x lint-staged
 bun run typecheck

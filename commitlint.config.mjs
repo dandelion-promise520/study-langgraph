@@ -1,16 +1,133 @@
 import { defineConfig } from "cz-git";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+
+/**
+ * 1. 动态获取 Monorepo 所有子包名
+ * 优先使用 Bun.Glob 高性能扫描，降级使用 node:fs
+ */
+function getWorkspacePackages() {
+  if (typeof Bun !== "undefined") {
+    try {
+      const glob = new Bun.Glob("{apps,packages}/*");
+      const pkgs = new Set();
+      for (const item of glob.scanSync({ onlyFiles: false })) {
+        const normalized = item.replace(/\\/g, "/");
+        const parts = normalized.split("/");
+        if (parts.length >= 2 && !parts[1].startsWith(".")) {
+          pkgs.add(parts[1]);
+        }
+      }
+      return Array.from(pkgs);
+    } catch {
+      // 忽略异常，降级到通用方式
+    }
+  }
+
+  const dirs = ["apps", "packages"];
+  const pkgs = new Set();
+  for (const dir of dirs) {
+    if (fs.existsSync(dir)) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isDirectory() && !entry.name.startsWith(".")) {
+          pkgs.add(entry.name);
+        }
+      }
+    }
+  }
+  return Array.from(pkgs);
+}
+
+const workspacePackages = getWorkspacePackages();
+const baseScopes = ["root", "agent", "ui", "motion", "config", "deps"];
+const allScopes = Array.from(new Set([...baseScopes, ...workspacePackages]));
+
+/**
+ * 2. 获取暂存区或工作区变更文件列表
+ */
+function getChangedFiles() {
+  try {
+    let output = execSync("git diff --cached --name-only", { encoding: "utf8" }).trim();
+    if (!output) {
+      output = execSync("git diff --name-only", { encoding: "utf8" }).trim();
+    }
+    return output ? output.split(/\r?\n/).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * 3. 分层动态推断 scope
+ */
+function getDynamicScope() {
+  const files = getChangedFiles();
+  if (files.length === 0) return "";
+
+  // 依赖变更 (deps)
+  if (files.every((f) => f === "bun.lock" || f.endsWith("/package.json") || f === "package.json")) {
+    if (files.some((f) => f.includes("lock"))) return "deps";
+  }
+
+  // 工程与工具链配置 (config)
+  const configFiles = [
+    "commitlint.config.mjs",
+    ".lintstagedrc.json",
+    ".oxfmtrc.json",
+    ".oxlintrc.json",
+    "tsconfig.json",
+    "tsconfig.base.json",
+  ];
+  if (
+    files.every(
+      (f) => configFiles.includes(f) || f.startsWith(".husky/") || f.startsWith(".vscode/"),
+    )
+  ) {
+    return "config";
+  }
+
+  // 核心智能体模块 (agent)
+  if (files.every((f) => f.startsWith("apps/backend/src/agent/"))) {
+    return "agent";
+  }
+
+  // 前端交互动画 (motion)
+  if (
+    files.every(
+      (f) => f.startsWith("apps/frontend/") && (f.includes("/motion/") || f.includes("motion")),
+    )
+  ) {
+    return "motion";
+  }
+
+  // 前端公共 UI (ui)
+  if (files.every((f) => f.startsWith("apps/frontend/src/components/ui/"))) {
+    return "ui";
+  }
+
+  // 动态包匹配：改动集中在某个子包中
+  for (const pkg of workspacePackages) {
+    if (files.every((f) => f.startsWith(`apps/${pkg}/`) || f.startsWith(`packages/${pkg}/`))) {
+      return pkg;
+    }
+  }
+
+  // 根目录杂项与文档 (root)
+  if (files.every((f) => !f.includes("/") || f.startsWith("docs/"))) {
+    return "root";
+  }
+
+  return "";
+}
 
 export default defineConfig({
   extends: ["@commitlint/config-conventional"],
   rules: {
-    "scope-enum": [
-      2,
-      "always",
-      ["root", "backend", "frontend", "types", "agent", "ui", "motion", "config", "deps"],
-    ],
+    "scope-enum": [2, "always", allScopes],
     "scope-empty": [0, "always"],
   },
   prompt: {
+    defaultScope: getDynamicScope(),
     // 中文交互界面
     messages: {
       type: "选择你要提交的更改类型:",
