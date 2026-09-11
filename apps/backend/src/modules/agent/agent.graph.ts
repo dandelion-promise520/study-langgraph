@@ -1,5 +1,12 @@
 import { SystemMessage } from "@langchain/core/messages";
-import { END, MessagesValue, START, StateGraph, StateSchema } from "@langchain/langgraph";
+import {
+  END,
+  MemorySaver,
+  MessagesValue,
+  START,
+  StateGraph,
+  StateSchema,
+} from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 
 import { env } from "../../config/env";
@@ -29,9 +36,11 @@ const callModel = async (state: typeof AgentState.State) => {
   return { messages: [response] };
 };
 
+const checkpointer = new MemorySaver();
+
 // 4. 组装流水线：START -> callModel -> END
 export const simpleAgent = new StateGraph(AgentState)
   .addNode("callModel", callModel)
   .addEdge(START, "callModel")
   .addEdge("callModel", END)
-  .compile();
+  .compile({ checkpointer });

@@ -10,6 +10,7 @@ import {
   MessageBubble,
   MessageBubbleContent,
   MessageContent,
+  MessageGroup,
   MessageHeader,
 } from "./components/agents/message";
 import { MessageScroller } from "./components/agents/message-scroller";
@@ -96,41 +97,47 @@ export const App = () => {
   return (
     <ChatApp className="h-dvh flex-col">
       {/* 消息滚动区 */}
-      <MessageScroller className="flex-1" contentClassName="mx-auto max-w-3xl py-6 px-4">
+      <MessageScroller
+        navigation="rail"
+        className="flex-1"
+        contentClassName="mx-auto max-w-3xl py-6 px-4"
+      >
         <div className="flex flex-col gap-4">
-          {messages.map(({ content, from, id, streaming }) => (
-            // 消息部分
-            <Message key={id} from={from} animateIn>
-              {/* 头像 */}
-              <MessageAvatar>{from === "assistant" ? <Bot></Bot> : <User></User>}</MessageAvatar>
-              {/* 名字 */}
-              <MessageContent>
-                <MessageHeader>
-                  <span>{from === "assistant" ? "AI 智能体" : "你"}</span>{" "}
-                </MessageHeader>
-                {/* 内容 */}
-                <MessageBubble variant={from === "assistant" ? "soft" : "solid"}>
-                  <MessageBubbleContent>
-                    {from === "assistant" ? (
-                      streaming && !content ? (
-                        <ThinkingShimmer />
+          <MessageGroup spacing="default">
+            {messages.map(({ content, from, id, streaming }) => (
+              // 消息部分
+              <Message key={id} from={from} animateIn>
+                {/* 头像 */}
+                <MessageAvatar>{from === "assistant" ? <Bot></Bot> : <User></User>}</MessageAvatar>
+                {/* 名字 */}
+                <MessageContent>
+                  <MessageHeader>
+                    <span>{from === "assistant" ? "AI 智能体" : "你"}</span>{" "}
+                  </MessageHeader>
+                  {/* 内容 */}
+                  <MessageBubble variant={from === "assistant" ? "soft" : "solid"}>
+                    <MessageBubbleContent>
+                      {from === "assistant" ? (
+                        streaming && !content ? (
+                          <ThinkingShimmer />
+                        ) : (
+                          <StreamingResponse
+                            status={streaming ? "streaming" : "complete"}
+                            showActions={!streaming}
+                            copyText={content}
+                          >
+                            {content}
+                          </StreamingResponse>
+                        )
                       ) : (
-                        <StreamingResponse
-                          status={streaming ? "streaming" : "complete"}
-                          showActions={!streaming}
-                          copyText={content}
-                        >
-                          {content}
-                        </StreamingResponse>
-                      )
-                    ) : (
-                      content
-                    )}
-                  </MessageBubbleContent>
-                </MessageBubble>
-              </MessageContent>
-            </Message>
-          ))}
+                        content
+                      )}
+                    </MessageBubbleContent>
+                  </MessageBubble>
+                </MessageContent>
+              </Message>
+            ))}
+          </MessageGroup>
         </div>
       </MessageScroller>
 
