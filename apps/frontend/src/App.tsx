@@ -37,7 +37,7 @@ type ChatItem = {
   streaming?: boolean;
 };
 
-const INITIAL_SUSSIONS: SidebarResource[] = [
+const INITIAL_SESSIONS: SidebarResource[] = [
   {
     id: "thread-init-1",
     label: "初始欢迎对话",
@@ -51,9 +51,9 @@ const INITIAL_SUSSIONS: SidebarResource[] = [
 ];
 
 export const App = () => {
-  const [input, setInput] = useState("");
-  const [pending, setPending] = useState(false);
-  const [sessions, setSessions] = useState<SidebarResource[]>(INITIAL_SUSSIONS);
+  const [inputMap, setInputMap] = useState<Record<string, string>>({});
+  const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
+  const [sessions, setSessions] = useState<SidebarResource[]>(INITIAL_SESSIONS);
   const [activeThreadId, setActiveThreadId] = useState<string>("thread-init-1");
   const [messagesMap, setMessagesMap] = useState<Record<string, ChatItem[]>>({
     "thread-init-1": [{ id: "msg-1", from: "assistant", content: "会话一" }],
@@ -61,10 +61,17 @@ export const App = () => {
   });
 
   const currentMessages = messagesMap[activeThreadId] ?? [];
+  const isActivePending = pendingMap[activeThreadId] ?? false;
 
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const abortControllersRef = useRef(new Map<string, AbortController>());
 
-  const activeSesion = sessions.find((s) => s.id === activeThreadId);
+  const input = inputMap[activeThreadId] ?? "";
+
+  const activeSession = sessions.find((s) => s.id === activeThreadId);
+
+  const setActiveInput = (next: string) => {
+    setInputMap((prev) => ({ ...prev, [activeThreadId]: next }));
+  };
 
   const updateSessionMessages = (
     targetThreadId: string,
@@ -103,29 +110,25 @@ export const App = () => {
   const handleSelectSession = (threadId: string) => {
     if (threadId === activeThreadId) return;
 
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      setPending(false);
-    }
-
     setActiveThreadId(threadId);
   };
 
   const handleStop = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
+    const controller = abortControllersRef.current.get(activeThreadId);
+    if (controller) {
+      controller.abort();
+      abortControllersRef.current.delete(activeThreadId);
     }
 
     updateSessionMessages(activeThreadId, (prev) =>
       prev.map((msg) => (msg.streaming ? { ...msg, streaming: false } : msg)),
     );
 
-    setPending(false);
+    setPendingMap((prev) => ({ ...prev, [activeThreadId]: false }));
   };
 
   const handleSend = async (text: string) => {
-    if (!text.trim() || pending) return;
+    if (!text.trim() || isActivePending) return;
 
     const currentThreadID = activeThreadId;
 
@@ -133,8 +136,8 @@ export const App = () => {
     const userMsg: ChatItem = { id: `user-${Date.now()}`, from: "user", content: text };
     updateSessionMessages(currentThreadID, (prev) => [...prev, userMsg]);
 
-    setPending(true);
-    setInput("");
+    setPendingMap((prev) => ({ ...prev, [currentThreadID]: true }));
+    setInputMap((prev) => ({ ...prev, [currentThreadID]: "" }));
 
     // 2、准备接受ai回复的占位
     const aiId = `ai-${Date.now()}`;
@@ -147,7 +150,7 @@ export const App = () => {
     updateSessionMessages(currentThreadID, (prev) => [...prev, aiMsg]);
 
     const controller = new AbortController();
-    abortControllerRef.current = controller;
+    abortControllersRef.current.set(currentThreadID, controller);
 
     try {
       const stream = sendChatMessageStream(
@@ -181,8 +184,8 @@ export const App = () => {
         );
       }
     } finally {
-      setPending(false);
-      abortControllerRef.current = null;
+      abortControllersRef.current.delete(currentThreadID);
+      setPendingMap((prev) => ({ ...prev, [currentThreadID]: false }));
       updateSessionMessages(currentThreadID, (prev) =>
         prev.map((msg) => (msg.id === aiId ? { ...msg, streaming: false } : msg)),
       );
@@ -239,7 +242,7 @@ export const App = () => {
             </AnimatedSidebarTrigger>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">
-                {activeSesion?.label ?? "新会话"}
+                {activeSession?.label ?? "新会话"}
               </p>
               <p className="truncate text-[11px] text-foreground">ID: {activeThreadId}</p>
             </div>
@@ -298,11 +301,11 @@ export const App = () => {
           <div className="mx-auto max-w-3xl">
             <PromptInput
               value={input}
-              onValueChange={setInput}
+              onValueChange={setActiveInput}
               onSubmit={handleSend}
               onStop={handleStop}
-              loading={pending}
-              placeholder={pending ? "AI 正在思考中…" : "输入消息，按回车发送…"}
+              loading={isActivePending}
+              placeholder={isActivePending ? "AI 正在思考中…" : "输入消息，按回车发送…"}
             />
           </div>
         </div>
