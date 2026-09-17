@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["bun"]
+    "types": ["bun", "node"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "prisma.config.ts"]
 }

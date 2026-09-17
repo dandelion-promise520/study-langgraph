@@ -2,10 +2,12 @@
   "name": "@lg-lab/backend",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
+    "contract:emit": "prisma contract emit",
     "dev": "bun run --watch src/index.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -16,12 +18,17 @@
     "@langchain/langgraph": "catalog:",
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
+    "@prisma/orm-postgres": "^8.0.0-rc.11",
+    "dotenv": "^17.4.2",
     "elysia": "catalog:",
     "langchain": "catalog:",
     "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
+    "@prisma/cli-engine": "0.4.0",
     "@types/bun": "catalog:",
+    "@types/node": "^22.20.3",
+    "prisma": "^8.0.0-rc.15",
     "typescript": "catalog:"
   }
 }
