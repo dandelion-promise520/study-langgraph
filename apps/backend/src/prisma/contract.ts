@@ -4,7 +4,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
   // 通用基础时间戳结构（复用继承模式）
   const withTimeStamps = () => ({
     createdAt: field.temporal.createdAtString(),
-    updateAt: field.temporal.updatedAtString(),
+    updatedAt: field.temporal.updatedAtString(),
   });
 
   // 用户表

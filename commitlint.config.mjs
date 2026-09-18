@@ -47,26 +47,65 @@ const allScopes = Array.from(new Set([...baseScopes, ...workspacePackages]));
  */
 function getChangedFiles() {
   try {
-    let output = execSync("git diff --cached --name-only", { encoding: "utf8" }).trim();
+    let output = execSync("git diff --cached --name-only", {
+      encoding: "utf8",
+    }).trim();
     if (!output) {
       output = execSync("git diff --name-only", { encoding: "utf8" }).trim();
     }
-    return output ? output.split(/\r?\n/).filter(Boolean) : [];
+    return output
+      ? output
+          .split(/\r?\n/)
+          .filter(Boolean)
+          .map((f) => f.replace(/\\/g, "/"))
+      : [];
   } catch {
     return [];
   }
 }
 
 /**
- * 3. 分层动态推断 scope
+ * 3. 推断单文件所属 Scope
  */
-function getDynamicScope() {
-  const files = getChangedFiles();
-  if (files.length === 0) return "";
+function inferScopeForFile(file) {
+  // 核心智能体模块 (agent)
+  if (
+    file.startsWith("apps/backend/src/modules/agent/") ||
+    file.startsWith("apps/backend/src/agent/")
+  ) {
+    return "agent";
+  }
+
+  // 前端交互动画 (motion)
+  if (
+    file.startsWith("apps/frontend/") &&
+    (file.includes("/motion/") || file.includes("motion"))
+  ) {
+    return "motion";
+  }
+
+  // 前端公共 UI (ui)
+  if (file.startsWith("apps/frontend/src/components/ui/")) {
+    return "ui";
+  }
+
+  // 子包匹配 (backend, frontend, types 等)
+  for (const pkg of workspacePackages) {
+    if (
+      file.startsWith(`apps/${pkg}/`) ||
+      file.startsWith(`packages/${pkg}/`)
+    ) {
+      return pkg;
+    }
+  }
 
   // 依赖变更 (deps)
-  if (files.every((f) => f === "bun.lock" || f.endsWith("/package.json") || f === "package.json")) {
-    if (files.some((f) => f.includes("lock"))) return "deps";
+  if (
+    file === "bun.lock" ||
+    file.endsWith("/package.json") ||
+    file === "package.json"
+  ) {
+    return "deps";
   }
 
   // 工程与工具链配置 (config)
@@ -77,47 +116,65 @@ function getDynamicScope() {
     ".oxlintrc.json",
     "tsconfig.json",
     "tsconfig.base.json",
+    "cspell.json",
   ];
   if (
-    files.every(
-      (f) => configFiles.includes(f) || f.startsWith(".husky/") || f.startsWith(".vscode/"),
-    )
+    configFiles.includes(file) ||
+    file.startsWith(".husky/") ||
+    file.startsWith(".vscode/") ||
+    file.startsWith(".cspell/")
   ) {
     return "config";
   }
 
-  // 核心智能体模块 (agent)
-  if (files.every((f) => f.startsWith("apps/backend/src/agent/"))) {
-    return "agent";
-  }
-
-  // 前端交互动画 (motion)
-  if (
-    files.every(
-      (f) => f.startsWith("apps/frontend/") && (f.includes("/motion/") || f.includes("motion")),
-    )
-  ) {
-    return "motion";
-  }
-
-  // 前端公共 UI (ui)
-  if (files.every((f) => f.startsWith("apps/frontend/src/components/ui/"))) {
-    return "ui";
-  }
-
-  // 动态包匹配：改动集中在某个子包中
-  for (const pkg of workspacePackages) {
-    if (files.every((f) => f.startsWith(`apps/${pkg}/`) || f.startsWith(`packages/${pkg}/`))) {
-      return pkg;
-    }
-  }
-
   // 根目录杂项与文档 (root)
-  if (files.every((f) => !f.includes("/") || f.startsWith("docs/"))) {
+  if (!file.includes("/") || file.startsWith("docs/")) {
     return "root";
   }
 
   return "";
+}
+
+/**
+ * 4. 分层动态推断 multi-scope 列表
+ */
+function getDynamicScope() {
+  const files = getChangedFiles();
+  if (files.length === 0) return [];
+
+  // 排除通常随代码变动附带的辅助文件（如拼写检查本地词库、IDE 临时设置）
+  const noisePatterns = [/^\.cspell\//, /^\.vscode\//];
+  const significantFiles = files.filter(
+    (f) => !noisePatterns.some((pattern) => pattern.test(f)),
+  );
+  const targetFiles = significantFiles.length > 0 ? significantFiles : files;
+
+  const detected = new Set();
+  for (const file of targetFiles) {
+    const s = inferScopeForFile(file);
+    if (s && allScopes.includes(s)) {
+      detected.add(s);
+    }
+  }
+
+  const detectedScopes = Array.from(detected);
+  if (detectedScopes.length === 0) return [];
+
+  // 区分业务/模块 Scope 与底层设施 Scope (deps/config/root)
+  const businessScopes = new Set([
+    ...workspacePackages,
+    "agent",
+    "ui",
+    "motion",
+  ]);
+  const matchedBusiness = detectedScopes.filter((s) => businessScopes.has(s));
+
+  // 如果改动涉及具体业务/模块，优先以业务模块为准（避免因修改配置或依赖带上干扰项）
+  if (matchedBusiness.length > 0) {
+    return matchedBusiness;
+  }
+
+  return detectedScopes;
 }
 
 export default defineConfig({
@@ -127,11 +184,13 @@ export default defineConfig({
     "scope-empty": [0, "always"],
   },
   prompt: {
+    enableMultipleScopes: true,
+    scopeEnumSeparator: ",",
     defaultScope: getDynamicScope(),
     // 中文交互界面
     messages: {
       type: "选择你要提交的更改类型:",
-      scope: "选择更改影响的范围（与 scope-enum 保持一致）:",
+      scope: "选择更改影响的范围（多选，按空格键选择，回车确认）:",
       customScope: "请输入自定义的 scope:",
       subject: "填写简短精炼的变更描述（祈使句，小写开头）:",
       body: '填写更加详细的变更描述（可选）。使用 "|" 换行:',

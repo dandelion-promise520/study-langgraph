@@ -58,7 +58,7 @@
                   "kind": "scalar"
                 }
               },
-              "updateAt": {
+              "updatedAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
@@ -97,8 +97,8 @@
                 "threadId": {
                   "column": "threadId"
                 },
-                "updateAt": {
-                  "column": "updateAt"
+                "updatedAt": {
+                  "column": "updatedAt"
                 }
               },
               "namespaceId": "public",
@@ -128,7 +128,7 @@
                   "kind": "scalar"
                 }
               },
-              "updateAt": {
+              "updatedAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
@@ -182,8 +182,8 @@
                 "title": {
                   "column": "title"
                 },
-                "updateAt": {
-                  "column": "updateAt"
+                "updatedAt": {
+                  "column": "updatedAt"
                 },
                 "userId": {
                   "column": "userId"
@@ -226,7 +226,7 @@
                   "kind": "scalar"
                 }
               },
-              "updateAt": {
+              "updatedAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
@@ -261,8 +261,8 @@
                 "name": {
                   "column": "name"
                 },
-                "updateAt": {
-                  "column": "updateAt"
+                "updatedAt": {
+                  "column": "updatedAt"
                 }
               },
               "namespaceId": "public",
@@ -309,7 +309,7 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "updateAt": {
+                "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
                   "nullable": false
@@ -347,7 +347,7 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "updateAt": {
+                "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
                   "nullable": false
@@ -397,7 +397,7 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "updateAt": {
+                "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
                   "nullable": false
@@ -420,10 +420,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c54d6e7f7bcb34f479e8221a7163b41b37471806a15825b412a765a5f5d0f68f"
+    "storageHash": "542ce1fe2d05a7dfe292c9e03150ed98a2629ed16ecb829ee12252c4cb891625"
   },
   "execution": {
-    "executionHash": "b99c3afd21ecc2b6562aad8fc9eeffadfc29b9b62b7727411e64739f8d954d2e",
+    "executionHash": "de277f1434294aff6f76b96110c6a19731e90107c4bc4afa6f7ba73f114205a3",
     "mutations": {
       "defaults": [
         {
@@ -436,7 +436,7 @@
             "kind": "generator"
           },
           "ref": {
-            "column": "updateAt",
+            "column": "updatedAt",
             "namespace": "public",
             "table": "Message"
           }
@@ -451,7 +451,7 @@
             "kind": "generator"
           },
           "ref": {
-            "column": "updateAt",
+            "column": "updatedAt",
             "namespace": "public",
             "table": "Thread"
           }
@@ -477,7 +477,7 @@
             "kind": "generator"
           },
           "ref": {
-            "column": "updateAt",
+            "column": "updatedAt",
             "namespace": "public",
             "table": "User"
           }
