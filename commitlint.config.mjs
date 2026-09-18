@@ -170,11 +170,23 @@ function getDynamicScope() {
   const matchedBusiness = detectedScopes.filter((s) => businessScopes.has(s));
 
   // 如果改动涉及具体业务/模块，优先以业务模块为准（避免因修改配置或依赖带上干扰项）
-  if (matchedBusiness.length > 0) {
-    return matchedBusiness;
+  const finalScopes =
+    matchedBusiness.length > 0 ? matchedBusiness : detectedScopes;
+
+  // cz-git / czg 在 AI 模式 (czg ai / bun run commit:ai) 下跳过了 Scope 交互提问，
+  // 并且源码内部硬编码了 if (isString(options.defaultScope)) answers.scope = options.defaultScope;
+  // 若传入 Array 会被 czg ai 静默丢弃导致 scope 为空。
+  // 因此：在 AI 模式下返回逗号分隔的字符串（如 "backend,types"），常规交互模式下返回数组供复选框预选。
+  const isAiMode =
+    process.env.czai === "1" ||
+    process.argv.includes("ai") ||
+    process.env.npm_lifecycle_event === "commit:ai";
+
+  if (isAiMode) {
+    return finalScopes.join(",");
   }
 
-  return detectedScopes;
+  return finalScopes;
 }
 
 export default defineConfig({

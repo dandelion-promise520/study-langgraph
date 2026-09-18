@@ -88,3 +88,17 @@ type(scope?): subject
 
 - 严禁在回复或文档中使用任何 emoji 表情符号。
 - 保持客观、专业、严谨的技术表述风格。
+
+---
+
+## 架构与类型规范 (Architecture & Type Conventions)
+
+### 1. 公开契约与内部私有类型边界 (Public DTO vs Internal Types)
+
+- **跨端契约集中管理**：所有涉及跨端与跨服务交互的数据结构（HTTP 请求体、查询参数、响应体、SSE 消息负载等 DTO）必须集中在 `packages/types` 中使用 Zod 定义并导出 TypeScript 强类型，实现前后端单一事实来源。
+- **模块内部类型就近维护**：仅限后端内部业务逻辑或状态机（如 LangGraph 节点 State、中间计算结果、内部辅助结构）使用的私有类型，必须就近放置于对应业务模块目录内（如 `*.graph.ts` 或 `*.model.ts`），严禁随意上提至公共 `packages/types` 造成全局类型污染。
+
+### 2. 数据库实体与 API 传输对象解耦 (Entity vs DTO Decoupling)
+
+- **实体集中契约驱动**：数据库表结构集中在 `apps/backend/src/prisma/contract.ts` 中统一定义与维护，作为底层持久化实体的单一事实来源。
+- **严禁数据库实体直接穿透为 API 响应**：即使 Prisma 自动推导了完整的数据库模型类型，对外暴露接口时也必须在 `packages/types` 中定义对应的 DTO 进行结构映射。禁止直接将底层持久化实体暴露给客户端，以确保底层表结构变更不破坏对外契约，并防止敏感字段泄漏。

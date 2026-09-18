@@ -1,0 +1,60 @@
+import type { CreateThreadDto, MessageDto, ThreadDto, UpdateThreadDto } from "@lg-lab/types";
+
+import { db } from "../../prisma/db";
+
+export class ThreadService {
+  // 获取所有会话
+  async getThreads(): Promise<ThreadDto[]> {
+    return await db.orm.public.Thread.select("id", "title", "createdAt", "updatedAt")
+      .orderBy((t) => t.updatedAt.desc())
+      .all();
+  }
+
+  // 新建会话
+  async createThread(data: CreateThreadDto): Promise<ThreadDto> {
+    const id = data.id ?? `thread-${Date.now()}`;
+
+    return db.orm.public.Thread.create({
+      id,
+      title: data.title ?? "新会话",
+    });
+  }
+
+  // 重命名会话
+  async updateThread(id: string, data: UpdateThreadDto) {
+    await db.orm.public.Thread.where({ id }).update({ title: data.title });
+  }
+
+  // 删除会话
+  async deleteThread(id: string) {
+    await db.orm.public.Thread.where({ id }).delete();
+    await db.orm.public.Message.where({ threadId: id }).delete();
+  }
+
+  // 查询指定会话历史消息
+  async getMessages(threadId: string): Promise<MessageDto[]> {
+    return await db.orm.public.Message.select(
+      "id",
+      "threadId",
+      "role",
+      "content",
+      "createdAt",
+      "updatedAt",
+    )
+      .where({ threadId })
+      .orderBy((m) => m.createdAt.asc())
+      .all();
+  }
+
+  // 保存单条消息
+  async saveMessage(threadId: string, role: "user" | "assistant", content: string) {
+    await db.orm.public.Message.create({
+      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      threadId,
+      role,
+      content,
+    });
+  }
+}
+
+export const threadService = new ThreadService();
