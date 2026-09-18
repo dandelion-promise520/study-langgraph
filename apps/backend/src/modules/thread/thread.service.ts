@@ -10,6 +10,11 @@ export class ThreadService {
       .all();
   }
 
+  // 按id查一个会话
+  async getThreadById(id: string): Promise<ThreadDto | null> {
+    return await db.orm.public.Thread.first({ id });
+  }
+
   // 新建会话
   async createThread(data: CreateThreadDto): Promise<ThreadDto> {
     const id = data.id ?? `thread-${Date.now()}`;
@@ -27,8 +32,8 @@ export class ThreadService {
 
   // 删除会话
   async deleteThread(id: string) {
-    await db.orm.public.Thread.where({ id }).delete();
     await db.orm.public.Message.where({ threadId: id }).delete();
+    await db.orm.public.Thread.where({ id }).delete();
   }
 
   // 查询指定会话历史消息
@@ -54,6 +59,8 @@ export class ThreadService {
       role,
       content,
     });
+
+    await db.orm.public.Thread.where({ id: threadId }).update({});
   }
 }
 

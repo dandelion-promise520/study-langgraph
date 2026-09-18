@@ -5,6 +5,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { env } from "./config/env";
 import { agentModule } from "./modules/agent";
+import { threadModule } from "./modules/thread";
 
 const app = new Elysia()
   .use(cors())
@@ -16,6 +17,7 @@ const app = new Elysia()
     }),
   )
   .use(agentModule)
+  .use(threadModule)
   .get("/", () => ({
     status: "ok",
     service: "LangGraph Elysia Backend",

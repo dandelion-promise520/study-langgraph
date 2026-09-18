@@ -3,7 +3,7 @@ import Elysia from "elysia";
 import { threadController } from "./thread.controller";
 import { ThreadModels } from "./thread.model";
 
-export const threadModule = new Elysia({ prefix: "threads" })
+export const threadModule = new Elysia({ prefix: "/threads" })
   .model(ThreadModels)
   // 获取会话
   .get("/", async () => {
@@ -18,7 +18,7 @@ export const threadModule = new Elysia({ prefix: "threads" })
     { body: "CreateThread" },
   )
   //重命名会话
-  .post(
+  .patch(
     "/:id",
     async ({ params, body }) => {
       return await threadController.updateThreads(params.id, body);
