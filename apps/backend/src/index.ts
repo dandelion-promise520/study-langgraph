@@ -1,6 +1,7 @@
 import openapi from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
+import { rateLimit } from "elysia-rate-limit";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { env } from "./config/env";
@@ -9,6 +10,18 @@ import { threadModule } from "./modules/thread";
 
 const app = new Elysia()
   .use(cors())
+  .use(
+    rateLimit({
+      duration: 60 * 1000, // 限流时间窗口：1 分钟（60000 ms）
+      max: 100, // 单个 IP 每分钟最多允许 100 次请求
+      scoping: "global", // 作用域：全局所有路由生效
+      headers: true, // 自动在响应头返回 RateLimit-* 相关信息
+      skip: (request) => {
+        const url = new URL(request.url);
+        return url.pathname === "/" || url.pathname.startsWith("/openapi");
+      }, //白名单放行：跳过根路径健康探针与 OpenAPI 文档页面，防止文档刷新被限流
+    }),
+  )
   .use(
     openapi({
       mapJsonSchema: {

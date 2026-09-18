@@ -31,6 +31,7 @@
         "@prisma/orm-postgres": "^8.0.0-rc.11",
         "dotenv": "^17.4.2",
         "elysia": "catalog:",
+        "elysia-rate-limit": "^5.1.1",
         "langchain": "catalog:",
         "zod-to-json-schema": "^3.25.2",
       },
@@ -121,6 +122,8 @@
     "@alchemy.run/floci": ["@alchemy.run/floci@2.0.0-beta.74", "https://registry.npmmirror.com/@alchemy.run/floci/-/floci-2.0.0-beta.74.tgz", { "peerDependencies": { "effect": ">=4.0.0-rc.110 || >=4.0.0" } }, "sha512-JxQ1d1N8TzRXliJxI9HEM1DVIIONPB/NpPYx0S3EjGC6m0qM5Q5NzLJBXozxUL85mDTWba4cAodrpMF9oDIdsg=="],
 
     "@alchemy.run/node-utils": ["@alchemy.run/node-utils@2.0.0-beta.74", "https://registry.npmmirror.com/@alchemy.run/node-utils/-/node-utils-2.0.0-beta.74.tgz", {}, "sha512-UH7mbmF0qZWL0b5xURFaRbKR2qNXdvxEjIq86FdqSKacnH0lsHSgGzNKFbDSKFAY1u6Kq3unHFmgRk7UAD/YTQ=="],
+
+    "@alloc/quick-lru": ["@alloc/quick-lru@5.2.0", "https://registry.npmmirror.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz", {}, "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="],
 
     "@ark/schema": ["@ark/schema@0.56.2", "https://registry.npmmirror.com/@ark/schema/-/schema-0.56.2.tgz", { "dependencies": { "@ark/util": "0.56.2" } }, "sha512-Qx4D2JFbBWpntiHZaTv7bGG4H/M2rigiknezKg/WVyDSaLdE4YCcWAOoFB7pjjDqHbbV2OqRfntm1nnXvwMexg=="],
 
@@ -1179,6 +1182,8 @@
     "electron-to-chromium": ["electron-to-chromium@1.5.417", "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.5.417.tgz", {}, "sha512-4T+DTDWuMPM4aHlHwWdAVCVWwp7LDilnhzkj+c/Lbj91XSQrLuOmZSLtS9Q4iIqjlPUbPOnC624zDVVHCHaolQ=="],
 
     "elysia": ["elysia@1.4.30", "https://registry.npmmirror.com/elysia/-/elysia-1.4.30.tgz", { "dependencies": { "cookie": "^1.1.1", "exact-mirror": "^0.2.7", "fast-decode-uri-component": "^1.0.1", "memoirist": "^0.4.0" }, "peerDependencies": { "@sinclair/typebox": ">= 0.34.0 < 1", "@types/bun": ">= 1.2.0", "file-type": ">= 20.0.0", "openapi-types": ">= 12.0.0", "typescript": ">= 5.0.0" }, "optionalPeers": ["@types/bun", "typescript"] }, "sha512-S2qqV0CbM4faB1hQQ5IYoeYnAUinjHlzRduxaBc4OoNqh0GjOc8k6tt3hv5ozWcG6Svr6hugw6JL4zNke4jwfA=="],
+
+    "elysia-rate-limit": ["elysia-rate-limit@5.1.1", "https://registry.npmmirror.com/elysia-rate-limit/-/elysia-rate-limit-5.1.1.tgz", { "dependencies": { "@alloc/quick-lru": "5.2.0", "debug": "4.4.3" }, "peerDependencies": { "elysia": ">= 2.0.0" } }, "sha512-f6bwGBEOR26Vy9R7pjCTfFAfnyJsub1Um4Zp0/4bGVfCuSlvI1+SWl5l6D+7SiP3gl84mZv9CVdzVDyqbYdNNA=="],
 
     "emoji-regex": ["emoji-regex@8.0.0", "https://registry.npmmirror.com/emoji-regex/-/emoji-regex-8.0.0.tgz", {}, "sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A=="],
 

@@ -24,6 +24,7 @@
     "@prisma/orm-postgres": "^8.0.0-rc.11",
     "dotenv": "^17.4.2",
     "elysia": "catalog:",
+    "elysia-rate-limit": "^5.1.1",
     "langchain": "catalog:",
     "zod-to-json-schema": "^3.25.2"
   },
