@@ -1,35 +1,54 @@
 import { defineContract } from "@prisma/orm-postgres/contract-builder";
 
 export const contract = defineContract({}, ({ field, model, rel }) => {
+  // 通用基础时间戳结构（复用继承模式）
+  const withTimeStamps = () => ({
+    createdAt: field.temporal.createdAtString(),
+    updateAt: field.temporal.updatedAtString(),
+  });
+
+  // 用户表
   const User = model("User", {
     fields: {
       id: field.id.uuidv7String(),
       email: field.text().unique(),
-      username: field.text().optional(),
       name: field.text().optional(),
-      createdAt: field.temporal.createdAtString(),
-      updatedAt: field.temporal.updatedAtString(),
+      ...withTimeStamps(),
     },
   });
 
-  const Post = model("Post", {
+  // 会话表
+  const Thread = model("Thread", {
     fields: {
-      id: field.id.uuidv7String(),
-      title: field.text(),
-      content: field.text().optional(),
-      authorId: field.uuidString(),
-      createdAt: field.temporal.createdAtString(),
-      updatedAt: field.temporal.updatedAtString(),
+      id: field.text().id(),
+      title: field.text().default("新会话"),
+      userId: field.uuidString().optional(),
+      ...withTimeStamps(),
+    },
+  });
+
+  // 消息表
+  const Message = model("Message", {
+    fields: {
+      id: field.text().id(),
+      threadId: field.text(),
+      role: field.text(),
+      content: field.text(),
+      ...withTimeStamps(),
     },
   });
 
   return {
     models: {
       User: User.relations({
-        posts: rel.hasMany(Post, { by: "authorId" }),
+        threads: rel.hasMany(Thread, { by: "userId" }),
       }),
-      Post: Post.relations({
-        author: rel.belongsTo(User, { from: "authorId", to: "id" }),
+      Thread: Thread.relations({
+        user: rel.belongsTo(User, { from: "userId", to: "id" }),
+        messages: rel.hasMany(Message, { by: "threadId" }),
+      }),
+      Message: Message.relations({
+        thread: rel.belongsTo(Thread, { from: "threadId", to: "id" }),
       }),
     },
   };

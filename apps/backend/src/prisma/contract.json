@@ -4,8 +4,12 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "Post": {
-      "model": "Post",
+    "Message": {
+      "model": "Message",
+      "namespace": "public"
+    },
+    "Thread": {
+      "model": "Thread",
       "namespace": "public"
     },
     "User": {
@@ -17,20 +21,10 @@
     "namespaces": {
       "public": {
         "models": {
-          "Post": {
+          "Message": {
             "fields": {
-              "authorId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 36
-                  }
-                }
-              },
               "content": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -46,11 +40,85 @@
               "id": {
                 "nullable": false,
                 "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 36
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "threadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updateAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "thread": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": ["threadId"],
+                  "targetFields": ["id"]
+                },
+                "to": {
+                  "model": "Thread",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "content": {
+                  "column": "content"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "role": {
+                  "column": "role"
+                },
+                "threadId": {
+                  "column": "threadId"
+                },
+                "updateAt": {
+                  "column": "updateAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Message"
+            }
+          },
+          "Thread": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "title": {
@@ -60,20 +128,41 @@
                   "kind": "scalar"
                 }
               },
-              "updatedAt": {
+              "updateAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
                   "kind": "scalar"
                 }
+              },
+              "userId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 36
+                  }
+                }
               }
             },
             "relations": {
-              "author": {
-                "cardinality": "N:1",
-                "nullable": false,
+              "messages": {
+                "cardinality": "1:N",
                 "on": {
-                  "localFields": ["authorId"],
+                  "localFields": ["id"],
+                  "targetFields": ["threadId"]
+                },
+                "to": {
+                  "model": "Message",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": ["userId"],
                   "targetFields": ["id"]
                 },
                 "to": {
@@ -84,12 +173,6 @@
             },
             "storage": {
               "fields": {
-                "authorId": {
-                  "column": "authorId"
-                },
-                "content": {
-                  "column": "content"
-                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -99,12 +182,15 @@
                 "title": {
                   "column": "title"
                 },
-                "updatedAt": {
-                  "column": "updatedAt"
+                "updateAt": {
+                  "column": "updateAt"
+                },
+                "userId": {
+                  "column": "userId"
                 }
               },
               "namespaceId": "public",
-              "table": "Post"
+              "table": "Thread"
             }
           },
           "User": {
@@ -140,30 +226,23 @@
                   "kind": "scalar"
                 }
               },
-              "updatedAt": {
+              "updateAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
                   "kind": "scalar"
                 }
-              },
-              "username": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {
-              "posts": {
+              "threads": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": ["id"],
-                  "targetFields": ["authorId"]
+                  "targetFields": ["userId"]
                 },
                 "to": {
-                  "model": "Post",
+                  "model": "Thread",
                   "namespace": "public"
                 }
               }
@@ -182,11 +261,8 @@
                 "name": {
                   "column": "name"
                 },
-                "updatedAt": {
-                  "column": "updatedAt"
-                },
-                "username": {
-                  "column": "username"
+                "updateAt": {
+                  "column": "updateAt"
                 }
               },
               "namespaceId": "public",
@@ -202,20 +278,12 @@
       "public": {
         "entries": {
           "table": {
-            "Post": {
+            "Message": {
               "columns": {
-                "authorId": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": false,
-                  "typeParams": {
-                    "length": 36
-                  }
-                },
                 "content": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": true
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -227,22 +295,70 @@
                   "nullable": false
                 },
                 "id": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": false,
-                  "typeParams": {
-                    "length": 36
-                  }
-                },
-                "title": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
-                "updatedAt": {
+                "role": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "threadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updateAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
                   "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": ["id"]
+              },
+              "uniques": []
+            },
+            "Thread": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "新会话"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updateAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 36
+                  }
                 }
               },
               "foreignKeys": [],
@@ -281,15 +397,10 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "updatedAt": {
+                "updateAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
                   "nullable": false
-                },
-                "username": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
                 }
               },
               "foreignKeys": [],
@@ -309,21 +420,25 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "bd6cd4febdccf911cbc0230a0ee66d1eeb16a0f11a9a95931dbe32fc35a3feeb"
+    "storageHash": "c54d6e7f7bcb34f479e8221a7163b41b37471806a15825b412a765a5f5d0f68f"
   },
   "execution": {
-    "executionHash": "fded2d39ac902307abfa1d94180d6742a85b04ee38d7795237e17f66b04315ae",
+    "executionHash": "b99c3afd21ecc2b6562aad8fc9eeffadfc29b9b62b7727411e64739f8d954d2e",
     "mutations": {
       "defaults": [
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
             "kind": "generator"
           },
           "ref": {
-            "column": "id",
+            "column": "updateAt",
             "namespace": "public",
-            "table": "Post"
+            "table": "Message"
           }
         },
         {
@@ -336,9 +451,9 @@
             "kind": "generator"
           },
           "ref": {
-            "column": "updatedAt",
+            "column": "updateAt",
             "namespace": "public",
-            "table": "Post"
+            "table": "Thread"
           }
         },
         {
@@ -362,7 +477,7 @@
             "kind": "generator"
           },
           "ref": {
-            "column": "updatedAt",
+            "column": "updateAt",
             "namespace": "public",
             "table": "User"
           }
