@@ -4,5 +4,6 @@
  */
 export * from "./chat";
 export * from "./gestures";
+export * from "./thread";
 export * from "./workflow";
 export * from "./workspace";

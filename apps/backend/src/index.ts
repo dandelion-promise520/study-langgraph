@@ -6,9 +6,22 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { env } from "./config/env";
 import { agentModule } from "./modules/agent";
+import { healthModule } from "./modules/health";
 import { threadModule } from "./modules/thread";
 
 const app = new Elysia()
+  // 请求进入日志
+  .onRequest(({ request }) => {
+    console.log(`--> ${request.method} ${new URL(request.url).pathname}`);
+  })
+  // 响应完成日志
+  .onAfterResponse(({ request, set }) => {
+    console.log(`<-- ${request.method} ${new URL(request.url).pathname} ${set.status ?? 200}`);
+  })
+  // 全局未捕获异常日志
+  .onError(({ code, error, request }) => {
+    console.error(`[Error] ${request.method} ${request.url} [${code}]:`, error);
+  })
   .use(cors())
   .use(
     rateLimit({
@@ -18,8 +31,10 @@ const app = new Elysia()
       headers: true, // 自动在响应头返回 RateLimit-* 相关信息
       skip: (request) => {
         const url = new URL(request.url);
-        return url.pathname === "/" || url.pathname.startsWith("/openapi");
-      }, //白名单放行：跳过根路径健康探针与 OpenAPI 文档页面，防止文档刷新被限流
+        return (
+          url.pathname === "/" || url.pathname === "/health" || url.pathname.startsWith("/openapi")
+        );
+      }, //白名单放行：跳过根路径健 康探针与 OpenAPI 文档页面，防止文档刷新被限流
     }),
   )
   .use(
@@ -29,6 +44,7 @@ const app = new Elysia()
       },
     }),
   )
+  .use(healthModule)
   .use(agentModule)
   .use(threadModule)
   .get("/", () => ({
