@@ -89,7 +89,7 @@ function TextSlot({ value, children }: { value: string; children: ReactNode }) {
     const nextWidth = measureRef.current?.offsetWidth;
     if (!nextWidth) return;
     setWidth((current) => (current === nextWidth ? current : nextWidth));
-  });
+  }, [children, cascade]);
 
   return (
     <motion.span

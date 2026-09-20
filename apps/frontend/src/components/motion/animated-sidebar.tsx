@@ -336,6 +336,9 @@ function MobileSidebar({
       (firstFocusable ?? panelRef.current)?.focus({ preventScroll: true });
     });
 
+    // 1. 在返回 cleanup 函数前，将当前 DOM 引用快照到局部变量
+    const triggerElement = context.triggerRef.current;
+
     return () => {
       cancelAnimationFrame(focusFrame);
       body.style.position = previousBodyStyles.position;
@@ -344,7 +347,7 @@ function MobileSidebar({
       body.style.right = previousBodyStyles.right;
       body.style.overflow = previousBodyStyles.overflow;
       window.scrollTo(0, scrollY);
-      context.triggerRef.current?.focus({ preventScroll: true });
+      triggerElement?.focus({ preventScroll: true });
     };
   }, [context.openMobile, context.triggerRef]);
 

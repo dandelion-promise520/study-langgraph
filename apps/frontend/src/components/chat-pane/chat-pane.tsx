@@ -17,7 +17,7 @@ import { MessageScroller } from "@/components/agents/message-scroller";
 import { PromptInput } from "@/components/agents/prompt-input";
 import { StreamingResponse } from "@/components/agents/streaming-response";
 import { AnimatedSidebarInset, AnimatedSidebarTrigger } from "@/components/motion/animated-sidebar";
-import { THREAD_QUERY_KEYS, useThreadMessages } from "@/hooks/thread";
+import { THREAD_QUERY_KEYS, useThreadMessages, useThreads } from "@/hooks/thread";
 
 export type ChatMessage = {
   id: string;
@@ -27,12 +27,14 @@ export type ChatMessage = {
 };
 
 interface ChatPaneProps {
-  threadId: string; // 核心：必须是非空的 string！
+  threadId: string | null;
   threadTitle?: string;
+  onThreadCreated?: (newThreadId: string) => void;
 }
 
-export const ChatPane = ({ threadId, threadTitle }: ChatPaneProps) => {
+export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPaneProps) => {
   const queryClient = useQueryClient();
+  const { createThread } = useThreads();
 
   // 1. 获取当前会话的历史消息（threadId 必有值，不再需要任何判空与 skipToken）
   const { data: serverMessages = [] } = useThreadMessages(threadId);
@@ -70,7 +72,24 @@ export const ChatPane = ({ threadId, threadTitle }: ChatPaneProps) => {
 
   // 5. 发送消息（无需判空，直接发起流式）
   const handleSend = async (text: string) => {
-    if (!text.trim() || isGenerating) return;
+    const trimmed = text.trim();
+    if (!trimmed || isGenerating) return;
+
+    let targetThreadId = threadId;
+
+    // 如果是空状态，就新建一个会话
+    if (!targetThreadId) {
+      try {
+        const title = trimmed.length > 20 ? `${trimmed.slice(0, 20)}...` : trimmed;
+        const newThread = await createThread({ title });
+        targetThreadId = newThread.id;
+        // 通知路由层进行静默替换或跳转
+        onThreadCreated?.(targetThreadId);
+      } catch (error) {
+        console.error("新建会话失败", error);
+        return;
+      }
+    }
 
     setDraft("");
     setIsGenerating(true);
@@ -84,7 +103,10 @@ export const ChatPane = ({ threadId, threadTitle }: ChatPaneProps) => {
     abortControllerRef.current = controller;
 
     try {
-      const stream = sendChatMessageStream({ message: text, threadId }, controller.signal);
+      const stream = sendChatMessageStream(
+        { message: text, threadId: targetThreadId },
+        controller.signal,
+      );
 
       for await (const delta of stream) {
         setStreamingAiMessage((prev) => (prev ? { ...prev, content: prev.content + delta } : null));
@@ -109,7 +131,7 @@ export const ChatPane = ({ threadId, threadTitle }: ChatPaneProps) => {
 
       // 核心对齐：后端在流式中已将消息全部落库，失效缓存以重新拉取真实消息
       await queryClient.invalidateQueries({
-        queryKey: THREAD_QUERY_KEYS.messages(threadId),
+        queryKey: THREAD_QUERY_KEYS.messages(targetThreadId),
       });
 
       // 清空打字机临时状态，平滑过渡给 persistedMessages
@@ -129,7 +151,6 @@ export const ChatPane = ({ threadId, threadTitle }: ChatPaneProps) => {
             <p className="truncate text-sm font-medium text-foreground">
               {threadTitle ?? "新会话"}
             </p>
-            <p className="truncate text-[11px] text-muted-foreground">ID: {threadId}</p>
           </div>
         </div>
       </header>

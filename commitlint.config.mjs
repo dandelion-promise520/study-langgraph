@@ -77,10 +77,7 @@ function inferScopeForFile(file) {
   }
 
   // 前端交互动画 (motion)
-  if (
-    file.startsWith("apps/frontend/") &&
-    (file.includes("/motion/") || file.includes("motion"))
-  ) {
+  if (file.startsWith("apps/frontend/") && (file.includes("/motion/") || file.includes("motion"))) {
     return "motion";
   }
 
@@ -91,20 +88,13 @@ function inferScopeForFile(file) {
 
   // 子包匹配 (backend, frontend, types 等)
   for (const pkg of workspacePackages) {
-    if (
-      file.startsWith(`apps/${pkg}/`) ||
-      file.startsWith(`packages/${pkg}/`)
-    ) {
+    if (file.startsWith(`apps/${pkg}/`) || file.startsWith(`packages/${pkg}/`)) {
       return pkg;
     }
   }
 
   // 依赖变更 (deps)
-  if (
-    file === "bun.lock" ||
-    file.endsWith("/package.json") ||
-    file === "package.json"
-  ) {
+  if (file === "bun.lock" || file.endsWith("/package.json") || file === "package.json") {
     return "deps";
   }
 
@@ -144,9 +134,7 @@ function getDynamicScope() {
 
   // 排除通常随代码变动附带的辅助文件（如拼写检查本地词库、IDE 临时设置）
   const noisePatterns = [/^\.cspell\//, /^\.vscode\//];
-  const significantFiles = files.filter(
-    (f) => !noisePatterns.some((pattern) => pattern.test(f)),
-  );
+  const significantFiles = files.filter((f) => !noisePatterns.some((pattern) => pattern.test(f)));
   const targetFiles = significantFiles.length > 0 ? significantFiles : files;
 
   const detected = new Set();
@@ -161,17 +149,11 @@ function getDynamicScope() {
   if (detectedScopes.length === 0) return [];
 
   // 区分业务/模块 Scope 与底层设施 Scope (deps/config/root)
-  const businessScopes = new Set([
-    ...workspacePackages,
-    "agent",
-    "ui",
-    "motion",
-  ]);
+  const businessScopes = new Set([...workspacePackages, "agent", "ui", "motion"]);
   const matchedBusiness = detectedScopes.filter((s) => businessScopes.has(s));
 
   // 如果改动涉及具体业务/模块，优先以业务模块为准（避免因修改配置或依赖带上干扰项）
-  const finalScopes =
-    matchedBusiness.length > 0 ? matchedBusiness : detectedScopes;
+  const finalScopes = matchedBusiness.length > 0 ? matchedBusiness : detectedScopes;
 
   // cz-git / czg 在 AI 模式 (czg ai / bun run commit:ai) 下跳过了 Scope 交互提问，
   // 并且源码内部硬编码了 if (isString(options.defaultScope)) answers.scope = options.defaultScope;

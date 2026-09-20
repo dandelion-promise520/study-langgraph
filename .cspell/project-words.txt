@@ -1,6 +1,9 @@
 autoincrement
+beui
 checkpointer
 czai
 elysiajs
 lintstagedrc
+shiki
+stylesheet
 uuidv

@@ -41,7 +41,7 @@
     "dev:backend": "bun --env-file apps/backend/.env --watch apps/backend/src/index.ts",
     "dev:frontend": "bun run --filter '@lg-lab/frontend' dev",
     "fmt": "oxfmt --write",
-    "lint": "oxlint",
+    "lint": "bun run --filter './apps/*' --filter './packages/*' lint",
     "prepare": "husky",
     "typecheck": "bun run --filter './apps/*' --filter './packages/*' typecheck"
   },

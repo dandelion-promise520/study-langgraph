@@ -1,9 +1,16 @@
+import {
+  createRootRouteWithContext,
+  Outlet,
+  useMatchRoute,
+  useNavigate,
+} from "@tanstack/react-router";
 import { MessageSquarePlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { AISidebar, type SidebarResource } from "./components/agents/ai-sidebar";
-import { ChatApp } from "./components/agents/chat-app";
-import { ChatPane } from "./components/chat-pane";
+import type { MyRouterContext } from "@/router";
+
+import { AISidebar, type SidebarResource } from "@/components/agents/ai-sidebar";
+import { ChatApp } from "@/components/agents/chat-app";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -13,17 +20,22 @@ import {
   AnimatedSidebarMenu,
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
-} from "./components/motion/animated-sidebar";
-import { useThreads } from "./hooks/thread";
+} from "@/components/motion/animated-sidebar";
+import { useThreads } from "@/hooks/thread";
 
-export const App = () => {
-  // 1. 服务端会话列表与变更 Hook
-  const { threads, createThread, renameThread } = useThreads();
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  component: RootComponent,
+});
 
-  // 2. 选中的会话 ID
-  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+function RootComponent() {
+  const navigate = useNavigate();
+  const matchRoute = useMatchRoute();
+  const match = matchRoute({ to: "/c/$threadId" });
 
-  // 3. 格式化给侧边栏
+  // 服务端会话列表与变更 Hook
+  const { threads, renameThread } = useThreads();
+
+  // 格式化给侧边栏
   const sessions: SidebarResource[] = useMemo(
     () =>
       threads.map((t) => ({
@@ -34,24 +46,15 @@ export const App = () => {
     [threads],
   );
 
-  // 4. 当前生效的会话（派生值）
-  const activeThreadId =
-    selectedThreadId && threads.some((t) => t.id === selectedThreadId)
-      ? selectedThreadId
-      : (threads[0]?.id ?? null);
+  // 当前激活会话
+  const activeThreadId = match ? match.threadId : null;
 
-  const activeSession = sessions.find((s) => s.id === activeThreadId);
-
-  // 5. 新建与重命名交互
-  const handleNewSession = async () => {
-    try {
-      const newThread = await createThread();
-      setSelectedThreadId(newThread.id);
-    } catch (error) {
-      console.error("新建会话失败:", error);
-    }
+  // 新建会话直接跳转到根路径
+  const handleNewSession = () => {
+    navigate({ to: "/" });
   };
 
+  // 重命名会话
   const handleRenameSession = async (item: SidebarResource, nextLabel: string) => {
     const trimmed = nextLabel.trim();
     if (!trimmed || trimmed === item.label) return;
@@ -89,7 +92,11 @@ export const App = () => {
               <AISidebar
                 activeId={activeThreadId}
                 items={sessions}
-                onActiveChange={setSelectedThreadId}
+                onActiveChange={(id) => {
+                  if (id) {
+                    navigate({ to: "/c/$threadId", params: { threadId: id } });
+                  }
+                }}
                 onRename={handleRenameSession}
               />
             </AnimatedSidebarGroupContent>
@@ -97,25 +104,8 @@ export const App = () => {
         </AnimatedSidebarContent>
       </AnimatedSidebar>
 
-      {/* 右侧主视窗：在这里做全局唯一的一次守卫拦截！ */}
-      {activeThreadId ? (
-        // 给 key={activeThreadId}：切换会话时 React 会自动重置内部状态，极其省心
-        <ChatPane
-          key={activeThreadId}
-          threadId={activeThreadId}
-          threadTitle={activeSession?.label}
-        />
-      ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground">
-          <p className="text-sm">暂无活跃会话</p>
-          <button
-            onClick={handleNewSession}
-            className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
-          >
-            立即创建新会话
-          </button>
-        </div>
-      )}
+      {/* 右侧主视窗 */}
+      <Outlet />
     </ChatApp>
   );
-};
+}
