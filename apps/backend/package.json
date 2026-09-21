@@ -20,6 +20,7 @@
     "@elysiajs/cors": "catalog:",
     "@langchain/core": "catalog:",
     "@langchain/langgraph": "catalog:",
+    "@langchain/langgraph-checkpoint-postgres": "catalog:",
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
     "@prisma/orm-postgres": "^8.0.0-rc.11",

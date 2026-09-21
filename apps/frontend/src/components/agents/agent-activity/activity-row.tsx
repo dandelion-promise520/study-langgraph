@@ -1,3 +1,5 @@
+import { EASE_OUT, SPRING_LAYOUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import {
   Check,
   Circle,
@@ -12,9 +14,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-
-import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 import type {
   AgentActivityItem,

@@ -1,6 +1,5 @@
+import { db } from "@backend/prisma/db";
 import Elysia from "elysia";
-
-import { db } from "../../prisma/db";
 
 const pingDatabase = async () => {
   const plan = db.raw.sql`SELECT 1`.affectedCount().build();

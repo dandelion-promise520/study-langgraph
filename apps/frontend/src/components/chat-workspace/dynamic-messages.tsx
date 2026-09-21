@@ -1,17 +1,17 @@
-import { Bot, User } from "lucide-react";
+import type { AddedMessage } from "@frontend/types/agent";
 
-import type { AddedMessage } from "@/types/agent";
-
-import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
 import {
   Message,
   MessageAvatar,
+  MessageBubble,
+  MessageBubbleContent,
   MessageContent,
   MessageFooter,
   MessageHeader,
-} from "@/components/agents/message";
-import { MessageBubble, MessageBubbleContent } from "@/components/agents/message-bubble";
-import { StreamingResponse } from "@/components/agents/streaming-response";
+  StreamingResponse,
+  ThinkingShimmer,
+} from "@frontend/components/agents";
+import { Bot, User } from "lucide-react";
 
 /**
  * 智能体身份标识头部组件

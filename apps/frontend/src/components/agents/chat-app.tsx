@@ -1,14 +1,13 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
-import { useEffect, useRef } from "react";
-
 import {
   AnimatedSidebarProvider,
   type AnimatedSidebarProviderProps,
   useAnimatedSidebar,
-} from "@/components/motion/animated-sidebar";
-import { cn } from "@/lib/utils";
+} from "@frontend/components/motion/animated-sidebar";
+import { cn } from "@frontend/lib/utils";
+import { useEffect, useRef } from "react";
 
 /**
  * Shell width below which a docked sidebar leaves too little room for the

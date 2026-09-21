@@ -1,24 +1,27 @@
-import { Bot, User } from "lucide-react";
-
-import { AgentActivity } from "@/components/agents/agent-activity";
 import {
+  AgentActivity,
   ApprovalCard,
-  type ApprovalCardQuestion,
-  type ApprovalCardStatus,
-} from "@/components/agents/approval-card";
-import { CodeBlock } from "@/components/agents/code-block";
-import { FileDiff } from "@/components/agents/file-diff";
-import { ImageGeneration } from "@/components/agents/image-generation";
-import { Message, MessageAvatar, MessageContent, MessageHeader } from "@/components/agents/message";
-import { MessageBubble, MessageBubbleContent } from "@/components/agents/message-bubble";
-import { StreamingResponse } from "@/components/agents/streaming-response";
-import { TodoList, type TodoItem } from "@/components/agents/todo-list";
-import {
+  CodeBlock,
+  FileDiff,
+  ImageGeneration,
+  Message,
+  MessageAvatar,
+  MessageBubble,
+  MessageBubbleContent,
+  MessageContent,
+  MessageHeader,
+  StreamingResponse,
+  TodoList,
   ToolApproval,
   ToolApprovalCode,
+  ToolResult,
+  ToolResultOutput,
+  type ApprovalCardQuestion,
+  type ApprovalCardStatus,
+  type TodoItem,
   type ToolApprovalStatus,
-} from "@/components/agents/tool-approval";
-import { ToolResult, ToolResultOutput } from "@/components/agents/tool-result";
+} from "@frontend/components/agents";
+import { Bot, User } from "lucide-react";
 
 // ==========================================
 // 静态模拟演示数据

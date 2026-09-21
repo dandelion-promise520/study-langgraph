@@ -1,6 +1,9 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { MessageSideContext } from "@frontend/components/agents/message-context";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { type HTMLMotionProps, motion, useReducedMotion } from "motion/react";
 import {
@@ -15,10 +18,6 @@ import {
   useId,
   useState,
 } from "react";
-
-import { MessageSideContext } from "@/components/agents/message-context";
-import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type MessageBubbleVariant = "solid" | "soft" | "tint" | "outline" | "ghost" | "danger";
 export type MessageBubbleAlign = "start" | "end";

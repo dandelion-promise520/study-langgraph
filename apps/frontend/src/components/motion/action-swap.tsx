@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 
+import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import {
   AnimatePresence,
   motion,
@@ -10,9 +12,6 @@ import {
   type Variants,
 } from "motion/react";
 import { useState } from "react";
-
-import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ActionSwapItem = {
   id: string;

@@ -1,13 +1,12 @@
 "use client";
 
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { useFavicon } from "@frontend/hooks/gestures/use-favicon";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { BookOpenText, ChevronDown, ExternalLink, Globe2 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useCallback, useId, useState } from "react";
-
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { useFavicon } from "@/hooks/gestures/use-favicon";
-import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export interface CitationItem {
   id: string;

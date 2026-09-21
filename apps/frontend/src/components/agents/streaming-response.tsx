@@ -1,14 +1,17 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import {
+  type CitationItem,
+  CitationList,
+  CitationStack,
+} from "@frontend/components/agents/citations";
+import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Check, ChevronDown, Copy, RotateCcw, ThumbsDown, ThumbsUp } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
-
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { type CitationItem, CitationList, CitationStack } from "@/components/agents/citations";
-import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type StreamingResponseStatus = "streaming" | "complete" | "error";
 export type StreamingResponseFeedback = "up" | "down" | null;

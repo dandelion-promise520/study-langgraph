@@ -1,5 +1,8 @@
 "use client";
 
+import { useHoverCapable } from "@frontend/hooks/gestures/use-hover-capable";
+import { EASE_OUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, type HTMLMotionProps, motion, useReducedMotion } from "motion/react";
 import {
   forwardRef,
@@ -9,10 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { useHoverCapable } from "@/hooks/gestures/use-hover-capable";
-import { EASE_OUT, SPRING_PRESS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "outline";
 export type ButtonSize = "sm" | "md" | "lg" | "icon";

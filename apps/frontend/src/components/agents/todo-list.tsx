@@ -1,6 +1,10 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { ActionSwapRollText } from "@frontend/components/motion/action-swap-roll";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { ChevronDown, ListTodo } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -12,11 +16,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { ActionSwapRollText } from "@/components/motion/action-swap-roll";
-import { EASE_OUT, SPRING_LAYOUT, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type TodoItemStatus = "pending" | "in-progress" | "completed" | "cancelled";
 

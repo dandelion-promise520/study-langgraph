@@ -1,15 +1,8 @@
+import { env } from "@backend/config/env";
 import { SystemMessage } from "@langchain/core/messages";
-import {
-  END,
-  MemorySaver,
-  MessagesValue,
-  START,
-  StateGraph,
-  StateSchema,
-} from "@langchain/langgraph";
+import { END, MessagesValue, START, StateGraph, StateSchema } from "@langchain/langgraph";
+import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { ChatOpenAI } from "@langchain/openai";
-
-import { env } from "../../config/env";
 
 // 1. 初始化模型
 const model = new ChatOpenAI({
@@ -36,7 +29,7 @@ const callModel = async (state: typeof AgentState.State) => {
   return { messages: [response] };
 };
 
-const checkpointer = new MemorySaver();
+export const checkpointer = PostgresSaver.fromConnString(env.DATABASE_URL);
 
 // 4. 组装流水线：START -> callModel -> END
 export const simpleAgent = new StateGraph(AgentState)

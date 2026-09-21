@@ -1,10 +1,9 @@
 "use client";
 
+import { EASE_IN_OUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 import { forwardRef, useState } from "react";
-
-import { EASE_IN_OUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 import { Button, type ButtonProps } from "./base";
 

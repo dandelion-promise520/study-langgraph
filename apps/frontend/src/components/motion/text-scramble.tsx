@@ -1,9 +1,8 @@
 "use client";
 
+import { cn } from "@frontend/lib/utils";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-
-import { cn } from "@/lib/utils";
 
 const DEFAULT_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&@$?/";
 

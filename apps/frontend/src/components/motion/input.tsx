@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, animate, motion, useReducedMotion } from "motion/react";
 import {
   forwardRef,
@@ -10,8 +11,6 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from "react";
-
-import { cn } from "@/lib/utils";
 
 export type InputClassNames = {
   root?: string;

@@ -1,6 +1,14 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import {
+  type AgentCodeLanguage,
+  AgentCodeLine,
+  useAgentCodeTokens,
+} from "@frontend/components/agents/agent-code";
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { SPRING_PRESS, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Check, ChevronDown, Copy, FileCode2, LoaderCircle } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import {
@@ -12,15 +20,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import {
-  type AgentCodeLanguage,
-  AgentCodeLine,
-  useAgentCodeTokens,
-} from "@/components/agents/agent-code";
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type FileDiffStatus = "streaming" | "complete";
 export type FileDiffLineType = "added" | "removed" | "context";

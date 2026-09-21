@@ -1,6 +1,6 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import type { AddedMessage } from "@frontend/types/agent";
 
-import type { AddedMessage } from "@/types/agent";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 /**
  * 【Hook: useAgentStreaming】

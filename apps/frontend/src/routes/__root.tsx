@@ -1,16 +1,6 @@
-import {
-  createRootRouteWithContext,
-  Outlet,
-  useMatchRoute,
-  useNavigate,
-} from "@tanstack/react-router";
-import { MessageCircle, MessageSquarePlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import type { MyRouterContext } from "@frontend/router";
 
-import type { MyRouterContext } from "@/router";
-
-import { AISidebar, type SidebarResource } from "@/components/agents/ai-sidebar";
-import { ChatApp } from "@/components/agents/chat-app";
+import { AISidebar, ChatApp, type SidebarResource } from "@frontend/components/agents";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -20,10 +10,21 @@ import {
   AnimatedSidebarMenu,
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
-} from "@/components/motion/animated-sidebar";
-import { Button, StatefulButton, type ButtonState } from "@/components/motion/button";
-import { CenterMorphModal, CenterMorphModalContent } from "@/components/motion/center-morph-modal";
-import { useThreads } from "@/hooks/thread";
+  Button,
+  CenterMorphModal,
+  CenterMorphModalContent,
+  StatefulButton,
+  type ButtonState,
+} from "@frontend/components/motion";
+import { useThreads } from "@frontend/hooks";
+import {
+  createRootRouteWithContext,
+  Outlet,
+  useMatchRoute,
+  useNavigate,
+} from "@tanstack/react-router";
+import { MessageCircle, MessageSquarePlus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
@@ -80,11 +81,6 @@ function RootComponent() {
   // 抽离一个通用的安全关窗与重置函数
   const handleCloseModal = () => {
     setModalOpen(false);
-
-    setTimeout(() => {
-      setDeleteState("idle");
-      setDeleteItem(null);
-    }, 200);
   };
 
   // 确认删除
@@ -94,12 +90,9 @@ function RootComponent() {
       await deleteThread(item.id);
       setDeleteState("success");
 
+      // 保留一个短暂的视觉停留
       setTimeout(() => {
         handleCloseModal();
-
-        if (activeThreadId === item.id) {
-          navigate({ to: "/" });
-        }
       }, 500);
     } catch (error) {
       setDeleteState("error");
@@ -159,7 +152,17 @@ function RootComponent() {
           else setModalOpen(true);
         }}
       >
-        <CenterMorphModalContent ariaLabel="删除聊天?">
+        <CenterMorphModalContent
+          ariaLabel="删除聊天?"
+          onExitComplete={() => {
+            // 弹窗动画结束后触发
+            setDeleteState("idle");
+            if (deleteItem && activeThreadId === deleteItem.id) {
+              navigate({ to: "/" });
+            }
+            setDeleteItem(null);
+          }}
+        >
           <div className="flex flex-col gap-4 p-7 sm:p-8">
             {/* 标题 */}
             <p className="text-xl">删除聊天?</p>
@@ -176,7 +179,9 @@ function RootComponent() {
                   className="cursor-pointer"
                   variant="outline"
                   size="md"
-                  onClick={handleCloseModal}
+                  onClick={() => {
+                    handleCloseModal();
+                  }}
                 >
                   取消
                 </Button>

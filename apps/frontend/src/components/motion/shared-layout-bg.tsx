@@ -1,5 +1,7 @@
 "use client";
 
+import { SPRING_LAYOUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import {
   AnimatePresence,
   type HTMLMotionProps,
@@ -20,9 +22,6 @@ import {
   useId,
   useState,
 } from "react";
-
-import { SPRING_LAYOUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export interface SharedLayoutBgProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   children: ReactNode;

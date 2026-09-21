@@ -1,18 +1,17 @@
 "use client";
 // beui.dev/components/agents/loading-states
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useId, useState, type ReactNode } from "react";
-
-import { Loader } from "@/components/motion/loader";
-import { TextScramble } from "@/components/motion/text-scramble";
-import { EASE_OUT, SPRING_SWAP } from "@/lib/ease";
+import { Loader } from "@frontend/components/motion/loader";
+import { TextScramble } from "@frontend/components/motion/text-scramble";
+import { EASE_OUT, SPRING_SWAP } from "@frontend/lib/ease";
 import {
   TEXT_SHIMMER_CLASS_NAME,
   TEXT_SHIMMER_KEYFRAMES,
   textShimmerStyle,
-} from "@/lib/text-shimmer";
-import { cn } from "@/lib/utils";
+} from "@frontend/lib/text-shimmer";
+import { cn } from "@frontend/lib/utils";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 
 const DEFAULT_PHRASES = [
   "Thinking",

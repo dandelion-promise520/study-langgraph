@@ -1,6 +1,6 @@
-import { useState } from "react";
+import type { SidebarResource } from "@frontend/components/agents/ai-sidebar";
 
-import type { SidebarResource } from "@/components/agents/ai-sidebar";
+import { useState } from "react";
 
 /**
  * 【Hook: useWorkspaceState】

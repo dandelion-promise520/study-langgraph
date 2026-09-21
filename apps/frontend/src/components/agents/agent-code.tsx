@@ -1,9 +1,8 @@
 "use client";
 
+import { cn } from "@frontend/lib/utils";
 import { type CSSProperties, Fragment, useEffect, useState } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
-
-import { cn } from "@/lib/utils";
 
 export type AgentCodeLanguage = "bash" | "diff" | "json" | "text" | "tsx" | "typescript";
 

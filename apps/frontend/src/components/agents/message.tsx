@@ -1,21 +1,20 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { MessageSideContext } from "@frontend/components/agents/message-context";
+import { EASE_OUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 import { type ComponentPropsWithRef, createContext, type ReactNode, useContext } from "react";
-
-import { MessageSideContext } from "@/components/agents/message-context";
-import { EASE_OUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export {
   MessageBubble,
   MessageBubbleCollapsible,
   MessageBubbleContent,
   MessageBubbleGroup,
-} from "@/components/agents/message-bubble";
-export { MessageScroller } from "@/components/agents/message-scroller";
-export type { MessageScrollerProps } from "@/components/agents/message-scroller";
+} from "@frontend/components/agents/message-bubble";
+export { MessageScroller } from "@frontend/components/agents/message-scroller";
+export type { MessageScrollerProps } from "@frontend/components/agents/message-scroller";
 
 export type MessageFrom = "user" | "assistant";
 

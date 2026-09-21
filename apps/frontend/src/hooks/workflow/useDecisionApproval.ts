@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { ApprovalCardStatus } from "@frontend/components/agents/approval-card";
 
-import type { ApprovalCardStatus } from "@/components/agents/approval-card";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * 【Hook: useDecisionApproval】

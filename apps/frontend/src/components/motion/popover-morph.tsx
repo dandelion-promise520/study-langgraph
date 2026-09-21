@@ -1,5 +1,8 @@
 "use client";
 
+import { usePopoverPortalPosition } from "@frontend/components/motion/popover-position";
+import { EASE_OUT, SPRING_PANEL } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   cloneElement,
@@ -17,10 +20,6 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-
-import { usePopoverPortalPosition } from "@/components/motion/popover-position";
-import { EASE_OUT, SPRING_PANEL } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 type Side = "top" | "bottom";
 type Align = "start" | "end";

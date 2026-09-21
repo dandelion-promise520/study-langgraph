@@ -26,6 +26,7 @@
         "@elysiajs/cors": "catalog:",
         "@langchain/core": "catalog:",
         "@langchain/langgraph": "catalog:",
+        "@langchain/langgraph-checkpoint-postgres": "catalog:",
         "@langchain/openai": "catalog:",
         "@lg-lab/types": "workspace:*",
         "@prisma/orm-postgres": "^8.0.0-rc.11",
@@ -99,6 +100,7 @@
     "@elysiajs/eden": "^1.4.9",
     "@langchain/core": "^1.2.8",
     "@langchain/langgraph": "^1.4.10",
+    "@langchain/langgraph-checkpoint-postgres": "^1.0.5",
     "@langchain/openai": "^1.5.8",
     "@types/bun": "^1.4.0",
     "@types/node": "^24.13.3",
@@ -494,6 +496,8 @@
     "@langchain/langgraph": ["@langchain/langgraph@1.4.13", "https://registry.npmmirror.com/@langchain/langgraph/-/langgraph-1.4.13.tgz", { "dependencies": { "@langchain/langgraph-checkpoint": "^1.1.5", "@langchain/langgraph-sdk": "~1.10.0", "@langchain/protocol": "^0.0.18", "@standard-schema/spec": "1.1.0" }, "peerDependencies": { "@langchain/core": "^1.1.48", "zod": "^3.25.32 || ^4.2.0" } }, "sha512-LO1ak6jNQ9jR13tm7Ay4Yh2/otrH7LNVUwWTAI7WJigVdW5Fb6LuYSZUzVn4S7sVSiyVFfnrUcDTd8c7eAzPrQ=="],
 
     "@langchain/langgraph-checkpoint": ["@langchain/langgraph-checkpoint@1.1.5", "https://registry.npmmirror.com/@langchain/langgraph-checkpoint/-/langgraph-checkpoint-1.1.5.tgz", { "peerDependencies": { "@langchain/core": "^1.1.48" } }, "sha512-BwDwl5VeTOh6CVuiIPgsUgfK51vTJDMSbFcSCUfjJWsl8/DPdK/mbv+ejxJstkSk/BlSPMP4JfXWcN6jD2ea2Q=="],
+
+    "@langchain/langgraph-checkpoint-postgres": ["@langchain/langgraph-checkpoint-postgres@1.0.5", "https://registry.npmmirror.com/@langchain/langgraph-checkpoint-postgres/-/langgraph-checkpoint-postgres-1.0.5.tgz", { "dependencies": { "pg": "^8.12.0" }, "peerDependencies": { "@langchain/core": "^1.1.44", "@langchain/langgraph-checkpoint": "^1.1.4" } }, "sha512-kCpp9pOidYDexhOvpWN4Z6G4npr4+OH8Qe/2oo38NLbRa+AzMcuZDiEI8y9bh4v5fcMy/dhlJClCSQzl86ddUw=="],
 
     "@langchain/langgraph-sdk": ["@langchain/langgraph-sdk@1.10.0", "https://registry.npmmirror.com/@langchain/langgraph-sdk/-/langgraph-sdk-1.10.0.tgz", { "dependencies": { "@langchain/protocol": "^0.0.19", "@types/json-schema": "^7.0.15", "p-queue": "^9.0.1", "p-retry": "^7.1.1" }, "peerDependencies": { "@langchain/core": "^1.1.48", "react": "^18 || ^19", "react-dom": "^18 || ^19" }, "optionalPeers": ["react", "react-dom"] }, "sha512-cPPkh+hMNgeOaGtJRrqs1AjZde45cG2+Ma9Sc10wz2RyvT8SKToCKS+VvkS18SsLajnmq6/FKVmthq6rnUVYOw=="],
 

@@ -1,14 +1,13 @@
 "use client";
 // beui.dev/components/motion/theme-toggle
 
+import { ActionSwapIcon } from "@frontend/components/motion/action-swap";
+import { EASE_OUT_CSS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState, type ComponentPropsWithoutRef } from "react";
-
-import { ActionSwapIcon } from "@/components/motion/action-swap";
-import { EASE_OUT_CSS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ThemeVariant = "rectangle" | "circle" | "circle-blur" | "blinds";
 

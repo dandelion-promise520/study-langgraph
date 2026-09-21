@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { TodoItem } from "@frontend/components/agents/todo-list";
+import type { ToolApprovalStatus } from "@frontend/components/agents/tool-approval";
 
-import type { TodoItem } from "@/components/agents/todo-list";
-import type { ToolApprovalStatus } from "@/components/agents/tool-approval";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * 【Hook: useToolWorkflow】

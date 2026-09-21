@@ -1,5 +1,7 @@
 "use client";
 
+import { SPRING_LAYOUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { motion, MotionConfig, useReducedMotion } from "motion/react";
 import {
   createContext,
@@ -10,9 +12,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-import { SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 type RadioCtx = {
   value: string;

@@ -1,17 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import {
-  Clock3,
-  FileText,
-  Home,
-  MessageSquarePlus,
-  Plus,
-  Search,
-  Settings,
-  User,
-} from "lucide-react";
-
-import { AISidebar, type SidebarResource } from "@/components/agents/ai-sidebar";
+import { AISidebar, type SidebarResource } from "@frontend/components/agents/ai-sidebar";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -22,8 +11,18 @@ import {
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
   AnimatedSidebarRail,
-} from "@/components/motion/animated-sidebar";
-import { CommandPalette } from "@/components/motion/command-palette";
+} from "@frontend/components/motion/animated-sidebar";
+import { CommandPalette } from "@frontend/components/motion/command-palette";
+import {
+  Clock3,
+  FileText,
+  Home,
+  MessageSquarePlus,
+  Plus,
+  Search,
+  Settings,
+  User,
+} from "lucide-react";
 
 /**
  * AppSidebar 组件的入参属性定义

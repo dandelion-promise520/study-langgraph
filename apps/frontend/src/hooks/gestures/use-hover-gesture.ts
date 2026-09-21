@@ -1,8 +1,7 @@
 "use client";
 
+import { isHoveringPointer } from "@frontend/lib/motion/touch";
 import { useMemo, useRef } from "react";
-
-import { isHoveringPointer } from "@/lib/motion/touch";
 
 interface BoundaryEvent {
   pointerId: number;

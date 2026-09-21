@@ -1,14 +1,13 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { AgentCode, type AgentCodeLanguage } from "@frontend/components/agents/agent-code";
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Check, ChevronDown, CircleAlert, LoaderCircle, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
-
-import { AgentCode, type AgentCodeLanguage } from "@/components/agents/agent-code";
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ToolApprovalStatus =
   | "pending"

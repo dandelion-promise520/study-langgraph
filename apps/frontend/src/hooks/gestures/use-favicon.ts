@@ -1,8 +1,7 @@
 "use client";
 
+import { getFaviconUrl } from "@frontend/lib/motion/favicon";
 import { useCallback, useState } from "react";
-
-import { getFaviconUrl } from "@/lib/motion/favicon";
 
 export function useFavicon(url?: string) {
   const resolved = url ? getFaviconUrl(url) : null;

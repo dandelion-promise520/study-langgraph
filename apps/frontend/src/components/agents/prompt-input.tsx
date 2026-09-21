@@ -1,6 +1,20 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { Button } from "@frontend/components/motion/button";
+import {
+  MorphPopover,
+  MorphPopoverContent,
+  MorphPopoverTrigger,
+} from "@frontend/components/motion/popover-morph";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@frontend/components/motion/select";
+import { SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { ArrowUp, Plus, Square } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -14,16 +28,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { Button } from "@/components/motion/button";
-import {
-  MorphPopover,
-  MorphPopoverContent,
-  MorphPopoverTrigger,
-} from "@/components/motion/popover-morph";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/motion/select";
-import { SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export interface PromptModel {
   value: string;

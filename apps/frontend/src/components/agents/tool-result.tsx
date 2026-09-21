@@ -1,6 +1,11 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { AgentCode, type AgentCodeLanguage } from "@frontend/components/agents/agent-code";
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { ActionSwapRollText } from "@frontend/components/motion/action-swap-roll";
+import { SPRING_PRESS, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import {
   Ban,
   Braces,
@@ -24,12 +29,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { AgentCode, type AgentCodeLanguage } from "@/components/agents/agent-code";
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { ActionSwapRollText } from "@/components/motion/action-swap-roll";
-import { SPRING_PRESS, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ToolResultStatus = "running" | "success" | "error" | "cancelled";
 export type ToolResultKind = "terminal" | "request" | "custom";

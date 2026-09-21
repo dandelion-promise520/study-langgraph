@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { AddedMessage } from "@frontend/types/agent";
 
-import type { AddedMessage } from "@/types/agent";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useAgentStreaming } from "./useAgentStreaming";
 

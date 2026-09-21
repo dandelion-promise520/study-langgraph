@@ -1,11 +1,10 @@
 "use client";
 
+import { useHoverCapable } from "@frontend/hooks/gestures/use-hover-capable";
+import { SPRING_MOUSE } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { useRef, type ReactNode } from "react";
-
-import { useHoverCapable } from "@/hooks/gestures/use-hover-capable";
-import { SPRING_MOUSE } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export interface MagneticProps {
   children: ReactNode;

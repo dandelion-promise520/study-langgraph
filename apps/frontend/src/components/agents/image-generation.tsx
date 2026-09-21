@@ -3,13 +3,12 @@
 
 import type { CSSProperties, ReactNode } from "react";
 
+import { useHoverCapable } from "@frontend/hooks/gestures/use-hover-capable";
+import { EASE_IN_OUT, EASE_OUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Check, CircleAlert, RotateCcw } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
-
-import { useHoverCapable } from "@/hooks/gestures/use-hover-capable";
-import { EASE_IN_OUT, EASE_OUT, SPRING_PRESS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type ImageGenerationStatus = "queued" | "generating" | "refining" | "complete" | "error";
 

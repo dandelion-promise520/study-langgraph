@@ -2,6 +2,14 @@
 // beui.dev/components/agents/chat-app
 
 import {
+  MorphPopover,
+  MorphPopoverContent,
+  MorphPopoverTrigger,
+} from "@frontend/components/motion/popover-morph";
+import { useTouchCapable } from "@frontend/hooks/gestures/use-touch-capable";
+import { EASE_OUT, SPRING_LAYOUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
+import {
   ArrowDown,
   ArrowUp,
   Bookmark,
@@ -26,15 +34,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import {
-  MorphPopover,
-  MorphPopoverContent,
-  MorphPopoverTrigger,
-} from "@/components/motion/popover-morph";
-import { useTouchCapable } from "@/hooks/gestures/use-touch-capable";
-import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export type SidebarResourceKind = "folder" | "project" | "file" | "bookmark";
 

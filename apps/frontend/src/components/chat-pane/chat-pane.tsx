@@ -1,11 +1,6 @@
 import type { MessageDto } from "@lg-lab/types";
 
-import { useQueryClient } from "@tanstack/react-query";
-import { Bot, PanelLeft, User } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-
-import { getErrorMessage, sendChatMessageStream } from "@/api";
-import { ThinkingShimmer } from "@/components/agents/loading-states/thinking-shimmer";
+import { getErrorMessage, sendChatMessageStream } from "@frontend/api";
 import {
   Message,
   MessageAvatar,
@@ -14,12 +9,16 @@ import {
   MessageContent,
   MessageGroup,
   MessageHeader,
-} from "@/components/agents/message";
-import { MessageScroller } from "@/components/agents/message-scroller";
-import { PromptInput } from "@/components/agents/prompt-input";
-import { StreamingResponse } from "@/components/agents/streaming-response";
-import { AnimatedSidebarInset, AnimatedSidebarTrigger } from "@/components/motion/animated-sidebar";
-import { THREAD_QUERY_KEYS, useThreadMessages, useThreads } from "@/hooks/thread";
+  MessageScroller,
+  PromptInput,
+  StreamingResponse,
+  ThinkingShimmer,
+} from "@frontend/components/agents";
+import { AnimatedSidebarInset, AnimatedSidebarTrigger } from "@frontend/components/motion";
+import { THREAD_QUERY_KEYS, useThreadMessages, useThreads } from "@frontend/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { Bot, PanelLeft, User } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 
 export type ChatMessage = {
   id: string;

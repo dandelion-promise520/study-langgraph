@@ -1,3 +1,5 @@
+import { PreviewRail, type PreviewRailItem } from "@frontend/components/motion/preview-rail";
+import { cn } from "@frontend/lib/utils";
 import { useReducedMotion } from "motion/react";
 import {
   type ComponentPropsWithRef,
@@ -8,9 +10,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { PreviewRail, type PreviewRailItem } from "@/components/motion/preview-rail";
-import { cn } from "@/lib/utils";
 
 const PREVIEW_TITLE_LENGTH = 56;
 const PREVIEW_DESCRIPTION_LENGTH = 88;

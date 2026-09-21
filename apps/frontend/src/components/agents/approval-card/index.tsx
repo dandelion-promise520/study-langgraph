@@ -1,6 +1,14 @@
 "use client";
 // beui.dev/components/agents/chat-app
 
+import { AgentDisclosure } from "@frontend/components/agents/agent-disclosure";
+import { ActionSwapRollText } from "@frontend/components/motion/action-swap-roll";
+import { Button } from "@frontend/components/motion/button";
+import { Checkbox } from "@frontend/components/motion/checkbox";
+import { Input } from "@frontend/components/motion/input";
+import { RadioGroup, RadioGroupItem } from "@frontend/components/motion/radio";
+import { EASE_OUT, SPRING_SWAP } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,15 +20,6 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-import { AgentDisclosure } from "@/components/agents/agent-disclosure";
-import { ActionSwapRollText } from "@/components/motion/action-swap-roll";
-import { Button } from "@/components/motion/button";
-import { Checkbox } from "@/components/motion/checkbox";
-import { Input } from "@/components/motion/input";
-import { RadioGroup, RadioGroupItem } from "@/components/motion/radio";
-import { EASE_OUT, SPRING_SWAP } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 import type {
   ApprovalCardAnswer,

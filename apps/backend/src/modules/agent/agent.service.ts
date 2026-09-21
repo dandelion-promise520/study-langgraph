@@ -1,8 +1,8 @@
 import type { ChatRequestDto, ChatResponseDto } from "@lg-lab/types";
 
+import { threadService } from "@backend/modules/thread/thread.service";
 import { HumanMessage } from "@langchain/core/messages";
 
-import { threadService } from "../thread/thread.service";
 import { simpleAgent } from "./agent.graph";
 
 export class AgentService {

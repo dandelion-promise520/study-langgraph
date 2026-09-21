@@ -1,16 +1,15 @@
 "use client";
 // beui.dev/components/blocks/command-palette
 
+import { useOnOpen } from "@frontend/hooks/gestures/use-on-open";
+import { useRowCursor } from "@frontend/hooks/gestures/use-row-cursor";
+import { useTouchCapable } from "@frontend/hooks/gestures/use-touch-capable";
+import { EASE_OUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Search, type LucideIcon } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-
-import { useOnOpen } from "@/hooks/gestures/use-on-open";
-import { useRowCursor } from "@/hooks/gestures/use-row-cursor";
-import { useTouchCapable } from "@/hooks/gestures/use-touch-capable";
-import { EASE_OUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 import { PresenceGate } from "./presence-gate";
 

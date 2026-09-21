@@ -1,15 +1,21 @@
+import { env } from "@backend/config/env";
+import { agentModule, healthModule, threadModule } from "@backend/modules";
+import { checkpointer } from "@backend/modules/agent/agent.graph";
 import openapi from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
-import { env } from "./config/env";
-import { agentModule } from "./modules/agent";
-import { healthModule } from "./modules/health";
-import { threadModule } from "./modules/thread";
-
 const app = new Elysia()
+  .onStart(async () => {
+    try {
+      await checkpointer.setup();
+      console.log("LangGraph Postgres 检查点表已就绪");
+    } catch (error) {
+      console.error("LangGraph Postgres 检查点表初始化失败:", error);
+    }
+  })
   // 请求进入日志
   .onRequest(({ request }) => {
     console.log(`--> ${request.method} ${new URL(request.url).pathname}`);

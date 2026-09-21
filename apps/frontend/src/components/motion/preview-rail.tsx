@@ -1,5 +1,10 @@
 "use client";
 
+import { useDismiss } from "@frontend/hooks/gestures/use-dismiss";
+import { useHoverGesture } from "@frontend/hooks/gestures/use-hover-gesture";
+import { useTapGesture } from "@frontend/hooks/gestures/use-tap-gesture";
+import { EASE_OUT, SPRING_LAYOUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   type MouseEvent,
@@ -10,12 +15,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { useDismiss } from "@/hooks/gestures/use-dismiss";
-import { useHoverGesture } from "@/hooks/gestures/use-hover-gesture";
-import { useTapGesture } from "@/hooks/gestures/use-tap-gesture";
-import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 export interface PreviewRailItem {
   id: string;

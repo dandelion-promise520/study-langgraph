@@ -1,10 +1,9 @@
 "use client";
 
+import { EASE_OUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useId } from "react";
-
-import { EASE_OUT, SPRING_PRESS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 const CHECK_PATH = "M5 13l4 4L19 7";
 const INDETERMINATE_PATH = "M6 12h12";

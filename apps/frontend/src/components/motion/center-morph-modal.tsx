@@ -1,6 +1,9 @@
 "use client";
 // beui.dev/components/motion/center-morph-modal
 
+import { EASE_OUT } from "@frontend/lib/ease";
+import { PresenceGate } from "@frontend/lib/presence-gate";
+import { cn } from "@frontend/lib/utils";
 import { X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -18,10 +21,6 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-
-import { EASE_OUT } from "@/lib/ease";
-import { PresenceGate } from "@/lib/presence-gate";
-import { cn } from "@/lib/utils";
 
 type CenterMorphModalContextValue = {
   open: boolean;
@@ -148,6 +147,7 @@ export interface CenterMorphModalContentProps {
   closeButtonLabel?: string;
   className?: string;
   backdropClassName?: string;
+  onExitComplete?: () => void;
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -185,6 +185,7 @@ export function CenterMorphModalContent({
   dismissible = true,
   showCloseButton = true,
   closeButtonLabel = "Close modal",
+  onExitComplete,
   className,
   backdropClassName,
 }: CenterMorphModalContentProps) {
@@ -244,7 +245,7 @@ export function CenterMorphModalContent({
   if (!mounted) return null;
 
   return createPortal(
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={onExitComplete}>
       {context.open ? (
         <PresenceGate>
           {({ isPresent, gate }) => (

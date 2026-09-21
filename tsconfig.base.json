@@ -26,6 +26,13 @@
     /* Configurable Relaxations */
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    /* Paths */
+    "paths": {
+      "@backend/*": ["./apps/backend/src/*"],
+      "@frontend/*": ["./apps/frontend/src/*"],
+      "@lg-lab/types": ["./packages/types/src/index.ts"]
+    }
   }
 }

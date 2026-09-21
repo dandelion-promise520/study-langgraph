@@ -1,5 +1,7 @@
 "use client";
 
+import { EASE_OUT } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { Check, ChevronDown } from "lucide-react";
 import { motion, type Transition, useReducedMotion, type Variants } from "motion/react";
 import {
@@ -14,9 +16,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { EASE_OUT } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 const INSTANT_TRANSITION: Transition = { duration: 0 };
 

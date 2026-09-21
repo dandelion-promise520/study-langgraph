@@ -1,6 +1,5 @@
+import { PromptInput } from "@frontend/components/agents";
 import { FolderKanban, Paperclip, WandSparkles } from "lucide-react";
-
-import { PromptInput } from "@/components/agents/prompt-input";
 
 /**
  * ChatInputBar 组件的入参属性定义

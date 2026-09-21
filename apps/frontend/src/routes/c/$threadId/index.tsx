@@ -1,7 +1,6 @@
+import { ChatPane } from "@frontend/components/chat-pane";
+import { useThreads } from "@frontend/hooks";
 import { createFileRoute } from "@tanstack/react-router";
-
-import { ChatPane } from "@/components/chat-pane";
-import { useThreads } from "@/hooks";
 
 export const Route = createFileRoute("/c/$threadId/")({
   component: ThreadChatPage,

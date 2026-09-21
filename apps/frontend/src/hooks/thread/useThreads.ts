@@ -1,8 +1,13 @@
 import type { CreateThreadDto, UpdateThreadDto } from "@lg-lab/types";
 
+import {
+  createThread,
+  deleteThread,
+  getThreadMessages,
+  getThreads,
+  updateThread,
+} from "@frontend/api";
 import { skipToken, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { createThread, deleteThread, getThreadMessages, getThreads, updateThread } from "@/api";
 
 export const THREAD_QUERY_KEYS = {
   all: ["threads"] as const,

@@ -1,3 +1,6 @@
+import { SharedLayoutBg } from "@frontend/components/motion/shared-layout-bg";
+import { EASE_DRAWER, EASE_OUT, SPRING_LAYOUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { cn } from "@frontend/lib/utils";
 import { ChevronRight } from "lucide-react";
 import {
   AnimatePresence,
@@ -22,10 +25,6 @@ import {
   useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
-
-import { SharedLayoutBg } from "@/components/motion/shared-layout-bg";
-import { EASE_DRAWER, EASE_OUT, SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
-import { cn } from "@/lib/utils";
 
 type SidebarState = "expanded" | "collapsed";
 type SidebarSide = "left" | "right";

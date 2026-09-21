@@ -6,7 +6,7 @@ import type {
   UpdateThreadDto,
 } from "@lg-lab/types";
 
-import { db } from "../../prisma/db";
+import { db } from "@backend/prisma/db";
 
 export class ThreadService {
   // 获取所有会话
