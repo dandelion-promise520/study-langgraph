@@ -1,4 +1,10 @@
-import type { CreateThreadDto, MessageDto, ThreadDto, UpdateThreadDto } from "@lg-lab/types";
+import type {
+  CreateThreadDto,
+  MessageDto,
+  MessageRole,
+  ThreadDto,
+  UpdateThreadDto,
+} from "@lg-lab/types";
 
 import { db } from "../../prisma/db";
 
@@ -58,7 +64,7 @@ export class ThreadService {
   }
 
   // 保存单条消息
-  async saveMessage(threadId: string, role: "user" | "assistant", content: string) {
+  async saveMessage(threadId: string, role: MessageRole, content: string) {
     await db.orm.public.Message.create({
       id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       threadId,

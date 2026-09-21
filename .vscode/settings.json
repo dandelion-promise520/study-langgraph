@@ -1,6 +1,6 @@
 {
   // 1. 指定 Tailwind v4 的 CSS 入口文件（解决 Monorepo 根目录下不识别子项目 CSS 的问题）
-  "tailwindCSS.experimental.configFile": "apps/frontend/src/index.css",
+  "tailwindCSS.experimental.configFile": "apps/frontend/src/styles/index.css",
 
   // 2. 官方设置：配置提供 Tailwind 提示的 HTML/JSX 属性列表（默认只有 class, className, ngClass, class:list）
   "tailwindCSS.classAttributes": [

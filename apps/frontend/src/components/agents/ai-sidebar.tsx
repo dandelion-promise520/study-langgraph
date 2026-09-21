@@ -12,6 +12,7 @@ import {
   type LucideIcon,
   MoreHorizontal,
   Pencil,
+  Trash2,
   Undo2,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -80,6 +81,7 @@ export interface AISidebarProps {
   onMove?: (move: SidebarResourceMove) => void | Promise<void>;
   onMoveError?: (error: unknown, move: SidebarResourceMove) => void;
   onRename?: (item: SidebarResource, label: string) => void | Promise<void>;
+  onDelete?: (item: SidebarResource) => void | Promise<void>;
   activeId?: string | null;
   defaultActiveId?: string | null;
   onActiveChange?: (id: string) => void;
@@ -278,16 +280,29 @@ function ResourceMenuAction({
   icon: Icon,
   onSelect,
   children,
+  classname,
+  destructive = false,
 }: {
   icon: LucideIcon;
   onSelect: () => void;
   children: ReactNode;
+  classname?: string;
+  destructive?: boolean;
 }) {
   return (
     <button
       type="button"
-      onClick={onSelect}
-      className="flex h-8 w-full items-center gap-2 rounded-lg px-2.5 text-left text-xs text-foreground transition-colors outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect();
+      }}
+      className={cn(
+        "flex h-8 w-full items-center gap-2 rounded-lg px-2.5 text-left text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        destructive
+          ? "text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:bg-destructive/10"
+          : "text-foreground hover:bg-muted focus-visible:bg-muted",
+        classname,
+      )}
     >
       <Icon aria-hidden="true" className="size-3.5 shrink-0" />
       <span className="min-w-0 truncate">{children}</span>
@@ -319,6 +334,7 @@ interface ResourceRowProps {
   onToggle: () => void;
   renderIcon?: (item: SidebarResource) => ReactNode;
   renderMenu?: AISidebarProps["renderMenu"];
+  onDelete?: AISidebarProps["onDelete"];
   setRef: (node: HTMLDivElement | null) => void;
 }
 
@@ -346,6 +362,7 @@ function ResourceRow({
   onToggle,
   renderIcon,
   renderMenu,
+  onDelete,
   setRef,
 }: ResourceRowProps) {
   const reduce = useReducedMotion() ?? false;
@@ -408,6 +425,17 @@ function ResourceRow({
         <ResourceMenuAction icon={Undo2} onSelect={runFromMenu(moves.out)}>
           Move out
         </ResourceMenuAction>
+      ) : null}
+      {onDelete ? (
+        <>
+          <ResourceMenuAction
+            icon={Trash2}
+            destructive
+            onSelect={runFromMenu(() => onDelete(row.item))}
+          >
+            Delete
+          </ResourceMenuAction>
+        </>
       ) : null}
     </>
   );
@@ -541,6 +569,7 @@ export function AISidebar({
   onMove,
   onMoveError,
   onRename,
+  onDelete,
   activeId,
   defaultActiveId = null,
   onActiveChange,
@@ -908,6 +937,7 @@ export function AISidebar({
               }}
               renderIcon={renderIcon}
               renderMenu={renderMenu}
+              onDelete={onDelete}
               setRef={(node) => {
                 if (node) rowRefs.current.set(row.item.id, node);
                 else rowRefs.current.delete(row.item.id);

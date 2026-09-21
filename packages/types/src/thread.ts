@@ -19,11 +19,15 @@ export const UpdateThreadSchema = z.object({
   title: z.string().min(1, "会话标题不能为空"),
 });
 
+// 消息角色枚举
+export const MessageRoleSchema = z.enum(["user", "assistant"]);
+export type MessageRole = z.infer<typeof MessageRoleSchema>;
+
 // 历史消息对象
 export const MessageSchema = z.object({
   id: z.string(),
   threadId: z.string(),
-  role: z.string(),
+  role: MessageRoleSchema,
   content: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),

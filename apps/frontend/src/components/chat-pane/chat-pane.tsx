@@ -1,3 +1,5 @@
+import type { MessageDto } from "@lg-lab/types";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { Bot, PanelLeft, User } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
@@ -36,42 +38,62 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
   const queryClient = useQueryClient();
   const { createThread } = useThreads();
 
-  // 1. 获取当前会话的历史消息（threadId 必有值，不再需要任何判空与 skipToken）
+  // 获取当前会话的历史消息
   const { data: serverMessages = [] } = useThreadMessages(threadId);
 
+  // 映射成组件库形式的数据
   const persistedMessages: ChatMessage[] = useMemo(
     () =>
       serverMessages.map((msg) => ({
         id: msg.id,
-        from: msg.role === "user" ? ("user" as const) : ("assistant" as const),
+        from: msg.role === "user" ? "user" : "assistant",
         content: msg.content,
       })),
     [serverMessages],
   );
 
-  // 2. 本地瞬时状态（完全局限于当前会话，不再需要任何复杂字典！）
+  // 输入框中文字的state
   const [draft, setDraft] = useState("");
+
+  // 用户发出的消息
+  const [sendingUserMessage, setSendingUserMessage] = useState<ChatMessage | null>(null);
+
+  // AI生成中状态
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // 流式输出的ai消息
   const [streamingAiMessage, setStreamingAiMessage] = useState<ChatMessage | null>(null);
 
-  // 3. 界面合成消息：已落库的数据库消息 + 正在吐字的单条临时 AI 消息
+  // 界面合成消息：已落库的数据库消息 + 正在吐字的单条临时 AI 消息
   const displayedMessages = useMemo(() => {
-    if (!streamingAiMessage) return persistedMessages;
-    return [...persistedMessages, streamingAiMessage];
-  }, [persistedMessages, streamingAiMessage]);
+    const list = [...persistedMessages];
+
+    if (sendingUserMessage) {
+      list.push(sendingUserMessage);
+    }
+
+    if (streamingAiMessage) {
+      list.push(streamingAiMessage);
+    }
+
+    return list;
+  }, [persistedMessages, streamingAiMessage, sendingUserMessage]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // 4. 停止生成（无需判空，直接操作）
+  // 停止生成
   const handleStop = () => {
+    // 暂停
     abortControllerRef.current?.abort();
+    // ref置空
     abortControllerRef.current = null;
     setIsGenerating(false);
     setStreamingAiMessage((prev) => (prev ? { ...prev, streaming: false } : null));
   };
 
-  // 5. 发送消息（无需判空，直接发起流式）
+  // 发送消息
   const handleSend = async (text: string) => {
+    // 如果没打字不让发
     const trimmed = text.trim();
     if (!trimmed || isGenerating) return;
 
@@ -80,27 +102,40 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
     // 如果是空状态，就新建一个会话
     if (!targetThreadId) {
       try {
+        // 用前20个用户打的字当标题
         const title = trimmed.length > 20 ? `${trimmed.slice(0, 20)}...` : trimmed;
+        // 调接口创一个会话
         const newThread = await createThread({ title });
         targetThreadId = newThread.id;
-        // 通知路由层进行静默替换或跳转
+        // 通知路由层进行静默替换
         onThreadCreated?.(targetThreadId);
       } catch (error) {
         console.error("新建会话失败", error);
         return;
       }
     }
-
+    // 置空输入框
     setDraft("");
     setIsGenerating(true);
 
+    // 立即展示用户发出的消息与思考中占位气泡
     const now = Date.now();
-    const aiId = `ai-${now}`;
-    // 立即展示思考中占位气泡
-    setStreamingAiMessage({ id: aiId, from: "assistant", content: "", streaming: true });
+    const userTempId = `user-temp-${now}`;
+    const aiTempId = `ai-${now}`;
+
+    setSendingUserMessage({ id: userTempId, from: "user", content: trimmed });
+    setStreamingAiMessage({
+      id: aiTempId,
+      from: "assistant",
+      content: "",
+      streaming: true,
+    });
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
+
+    // 临时拿到后端流式实时返回的值，以便暂停时能展示
+    let currentAiText = "";
 
     try {
       const stream = sendChatMessageStream(
@@ -109,6 +144,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
       );
 
       for await (const delta of stream) {
+        currentAiText += delta;
         setStreamingAiMessage((prev) => (prev ? { ...prev, content: prev.content + delta } : null));
       }
     } catch (error) {
@@ -126,15 +162,43 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
         );
       }
     } finally {
+      const wasAborted = controller.signal.aborted;
       abortControllerRef.current = null;
       setIsGenerating(false);
 
-      // 核心对齐：后端在流式中已将消息全部落库，失效缓存以重新拉取真实消息
+      if (wasAborted) {
+        // 中断的时候给目前ai吐的塞进缓存
+        const userMsg: MessageDto = {
+          id: userTempId,
+          threadId: targetThreadId,
+          role: "user",
+          content: trimmed,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        const aiMsg: MessageDto = {
+          id: aiTempId,
+          threadId: targetThreadId,
+          role: "assistant",
+          content: currentAiText,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        queryClient.setQueryData<MessageDto[]>(
+          THREAD_QUERY_KEYS.messages(targetThreadId),
+          (old = []) => [...old, userMsg, ...(aiMsg ? [aiMsg] : [])],
+        );
+      }
+
+      // 正常结束：后端在流式中已将消息全部落库，失效缓存以重新拉取真实消息
       await queryClient.invalidateQueries({
         queryKey: THREAD_QUERY_KEYS.messages(targetThreadId),
       });
 
-      // 清空打字机临时状态，平滑过渡给 persistedMessages
+      // 清空本地两条临时状态
+      setSendingUserMessage(null);
       setStreamingAiMessage(null);
     }
   };

@@ -20,6 +20,21 @@
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "message_role": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "user",
+                "value": "user"
+              },
+              {
+                "name": "assistant",
+                "value": "assistant"
+              }
+            ]
+          }
+        },
         "models": {
           "Message": {
             "fields": {
@@ -49,6 +64,12 @@
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "message_role",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "threadId": {
@@ -279,6 +300,13 @@
         "entries": {
           "table": {
             "Message": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('user', 'assistant')",
+                  "name": "Message_role_check_207dfd80",
+                  "prefix": "Message_role_check"
+                }
+              ],
               "columns": {
                 "content": {
                   "codecId": "pg/text@1",
@@ -302,7 +330,13 @@
                 "role": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "message_role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "threadId": {
                   "codecId": "pg/text@1",
@@ -414,13 +448,19 @@
                 }
               ]
             }
+          },
+          "valueSet": {
+            "message_role": {
+              "kind": "valueSet",
+              "values": ["user", "assistant"]
+            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "542ce1fe2d05a7dfe292c9e03150ed98a2629ed16ecb829ee12252c4cb891625"
+    "storageHash": "f96d835af68bb88163498151d180651a66d46154d0722490aea81a5f0eb5d0c0"
   },
   "execution": {
     "executionHash": "de277f1434294aff6f76b96110c6a19731e90107c4bc4afa6f7ba73f114205a3",

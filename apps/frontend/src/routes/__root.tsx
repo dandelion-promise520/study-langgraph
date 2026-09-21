@@ -4,8 +4,8 @@ import {
   useMatchRoute,
   useNavigate,
 } from "@tanstack/react-router";
-import { MessageSquarePlus } from "lucide-react";
-import { useMemo } from "react";
+import { MessageCircle, MessageSquarePlus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import type { MyRouterContext } from "@/router";
 
@@ -21,6 +21,8 @@ import {
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
 } from "@/components/motion/animated-sidebar";
+import { Button, StatefulButton, type ButtonState } from "@/components/motion/button";
+import { CenterMorphModal, CenterMorphModalContent } from "@/components/motion/center-morph-modal";
 import { useThreads } from "@/hooks/thread";
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -33,7 +35,7 @@ function RootComponent() {
   const match = matchRoute({ to: "/c/$threadId" });
 
   // 服务端会话列表与变更 Hook
-  const { threads, renameThread } = useThreads();
+  const { threads, renameThread, deleteThread } = useThreads();
 
   // 格式化给侧边栏
   const sessions: SidebarResource[] = useMemo(
@@ -65,6 +67,46 @@ function RootComponent() {
     }
   };
 
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [deleteState, setDeleteState] = useState<ButtonState>("idle");
+  const [deleteItem, setDeleteItem] = useState<SidebarResource | null>(null);
+
+  // 打开删除会话模态框，并deleteItem信息
+  const handleDeleteSession = async (item: SidebarResource) => {
+    setDeleteItem(item);
+    setModalOpen(true);
+  };
+
+  // 抽离一个通用的安全关窗与重置函数
+  const handleCloseModal = () => {
+    setModalOpen(false);
+
+    setTimeout(() => {
+      setDeleteState("idle");
+      setDeleteItem(null);
+    }, 200);
+  };
+
+  // 确认删除
+  const handleConfirmDelete = async (item: SidebarResource) => {
+    try {
+      setDeleteState("loading");
+      await deleteThread(item.id);
+      setDeleteState("success");
+
+      setTimeout(() => {
+        handleCloseModal();
+
+        if (activeThreadId === item.id) {
+          navigate({ to: "/" });
+        }
+      }, 500);
+    } catch (error) {
+      setDeleteState("error");
+      console.error("删除会话失败", error);
+    }
+  };
+
   return (
     <ChatApp sidebarWidth="16rem" className="h-dvh w-full rounded-none border-0">
       {/* 左侧边栏 */}
@@ -92,6 +134,8 @@ function RootComponent() {
               <AISidebar
                 activeId={activeThreadId}
                 items={sessions}
+                renderIcon={() => <MessageCircle className="size-4" />}
+                onDelete={handleDeleteSession}
                 onActiveChange={(id) => {
                   if (id) {
                     navigate({ to: "/c/$threadId", params: { threadId: id } });
@@ -106,6 +150,55 @@ function RootComponent() {
 
       {/* 右侧主视窗 */}
       <Outlet />
+
+      {/* 二次确认模态框 */}
+      <CenterMorphModal
+        open={modalOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCloseModal();
+          else setModalOpen(true);
+        }}
+      >
+        <CenterMorphModalContent ariaLabel="删除聊天?">
+          <div className="flex flex-col gap-4 p-7 sm:p-8">
+            {/* 标题 */}
+            <p className="text-xl">删除聊天?</p>
+            <div className="flex flex-col gap-4">
+              {/* 主区域 */}
+              <div className="flex">
+                <span className="text-md tracking-tight text-foreground">这会删除</span>
+                <span className="font-bold">"{deleteItem?.label}"</span>
+              </div>
+
+              {/* 按钮组 */}
+              <div className="flex gap-4 self-end">
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  size="md"
+                  onClick={handleCloseModal}
+                >
+                  取消
+                </Button>
+                <StatefulButton
+                  className="cursor-pointer bg-destructive hover:bg-destructive/90"
+                  state={deleteState}
+                  variant="primary"
+                  size="md"
+                  onClick={() => {
+                    if (!deleteItem) return;
+                    handleConfirmDelete(deleteItem);
+                  }}
+                  loadingText="删除中"
+                  successText="删除完成"
+                >
+                  删除
+                </StatefulButton>
+              </div>
+            </div>
+          </div>
+        </CenterMorphModalContent>
+      </CenterMorphModal>
     </ChatApp>
   );
 }

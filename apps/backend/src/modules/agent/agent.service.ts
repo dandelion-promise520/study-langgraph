@@ -65,15 +65,18 @@ export class AgentService {
     // 存个整体回复进数据库
     let fullReply = "";
 
-    for await (const [chunk] of stream) {
-      if (typeof chunk.content === "string" && chunk.content) {
-        fullReply += chunk.content;
-        yield chunk.content;
+    try {
+      for await (const [chunk] of stream) {
+        if (typeof chunk.content === "string" && chunk.content) {
+          fullReply += chunk.content;
+          yield chunk.content;
+        }
       }
-    }
-    if (fullReply) {
-      // 保存ai回复消息
-      await threadService.saveMessage(threadId, "assistant", fullReply);
+    } finally {
+      if (fullReply) {
+        // 保存ai回复消息
+        await threadService.saveMessage(threadId, "assistant", fullReply);
+      }
     }
   }
 }

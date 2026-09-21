@@ -1,4 +1,12 @@
-import { defineContract } from "@prisma/orm-postgres/contract-builder";
+import { defineContract, enumType, member } from "@prisma/orm-postgres/contract-builder";
+
+const pgText = { codecId: "pg/text@1", nativeType: "text" } as const;
+const MessageRoleEnum = enumType(
+  "message_role",
+  pgText,
+  member("user", "user"),
+  member("assistant", "assistant"),
+);
 
 export const contract = defineContract({}, ({ field, model, rel }) => {
   // 通用基础时间戳结构（复用继承模式）
@@ -32,13 +40,16 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
     fields: {
       id: field.text().id(),
       threadId: field.text(),
-      role: field.text(),
+      role: field.namedType(MessageRoleEnum),
       content: field.text(),
       ...withTimeStamps(),
     },
   });
 
   return {
+    enums: {
+      message_role: MessageRoleEnum,
+    },
     models: {
       User: User.relations({
         threads: rel.hasMany(Thread, { by: "userId" }),
