@@ -77,7 +77,10 @@ function inferScopeForFile(file) {
   }
 
   // 前端交互动画 (motion)
-  if (file.startsWith("apps/frontend/") && (file.includes("/motion/") || file.includes("motion"))) {
+  if (
+    file.startsWith("apps/frontend/") &&
+    (file.includes("/motion/") || file.includes("motion"))
+  ) {
     return "motion";
   }
 
@@ -88,13 +91,20 @@ function inferScopeForFile(file) {
 
   // 子包匹配 (backend, frontend, types 等)
   for (const pkg of workspacePackages) {
-    if (file.startsWith(`apps/${pkg}/`) || file.startsWith(`packages/${pkg}/`)) {
+    if (
+      file.startsWith(`apps/${pkg}/`) ||
+      file.startsWith(`packages/${pkg}/`)
+    ) {
       return pkg;
     }
   }
 
   // 依赖变更 (deps)
-  if (file === "bun.lock" || file.endsWith("/package.json") || file === "package.json") {
+  if (
+    file === "bun.lock" ||
+    file.endsWith("/package.json") ||
+    file === "package.json"
+  ) {
     return "deps";
   }
 
@@ -134,7 +144,9 @@ function getDynamicScope() {
 
   // 排除通常随代码变动附带的辅助文件（如拼写检查本地词库、IDE 临时设置）
   const noisePatterns = [/^\.cspell\//, /^\.vscode\//];
-  const significantFiles = files.filter((f) => !noisePatterns.some((pattern) => pattern.test(f)));
+  const significantFiles = files.filter(
+    (f) => !noisePatterns.some((pattern) => pattern.test(f)),
+  );
   const targetFiles = significantFiles.length > 0 ? significantFiles : files;
 
   const detected = new Set();
@@ -149,11 +161,17 @@ function getDynamicScope() {
   if (detectedScopes.length === 0) return [];
 
   // 区分业务/模块 Scope 与底层设施 Scope (deps/config/root)
-  const businessScopes = new Set([...workspacePackages, "agent", "ui", "motion"]);
+  const businessScopes = new Set([
+    ...workspacePackages,
+    "agent",
+    "ui",
+    "motion",
+  ]);
   const matchedBusiness = detectedScopes.filter((s) => businessScopes.has(s));
 
   // 如果改动涉及具体业务/模块，优先以业务模块为准（避免因修改配置或依赖带上干扰项）
-  const finalScopes = matchedBusiness.length > 0 ? matchedBusiness : detectedScopes;
+  const finalScopes =
+    matchedBusiness.length > 0 ? matchedBusiness : detectedScopes;
 
   // cz-git / czg 在 AI 模式 (czg ai / bun run commit:ai) 下跳过了 Scope 交互提问，
   // 并且源码内部硬编码了 if (isString(options.defaultScope)) answers.scope = options.defaultScope;
@@ -196,18 +214,50 @@ export default defineConfig({
       generatingByAI: "AI 正在生成提交标题...",
       generatedSelectByAI: "从 AI 生成的候选中选择合适的标题:",
     },
-    // 自定义发送给 AI 的提示词（cz-git 默认用英文 prompt，所以这里强制要求输出简体中文）
-    aiQuestionCB: ({ maxSubjectLength, diff }) =>
-      [
-        "你是一名资深工程师，正在编写遵循 Conventional Commits 规范的 Git 提交信息。",
-        "请阅读下面的 git diff，生成一句简体中文的提交标题（subject），要求：",
-        "1. 以动词开头，简明扼要概括本次改动，避免空话套话；",
-        "2. 只输出 subject 本身：不要带 type/scope 前缀，不要引号，不要以句号结尾；",
-        `3. 长度不要超过 ${maxSubjectLength} 个字符。`,
+    // 忽略无关锁文件与构建产物，避免挤占 7800 字符 diff 空间
+    aiDiffIgnore: ["bun.lock", "*.lock", "*.log", "dist/**"],
+    // 降低发散度，提高代码摘要准确性（cz-git 默认 temperature 为 0.7）
+    apiExtraBody: {
+      temperature: 0.2,
+    },
+    // 自定义发送给 AI 的提示词（结合用户选定的 type 与 scope，引导大模型输出准确的核心动词与改动）
+    aiQuestionCB: ({ type, defaultScope, maxSubjectLength, diff }) => {
+      const typeHintMap = {
+        feat: "以'实现'、'新增'、'支持'等准确动词开头，概括新增功能或业务特性",
+        fix: "以'修复'、'消除'、'纠正'等准确动词开头，明确说明修复了什么缺陷或异常",
+        refactor:
+          "以'重构'、'优化'、'提取'、'调整'等动词开头，概括既不修复缺陷也不添加特性的结构调整",
+        perf: "以'优化'、'提升'、'降低'等动词开头，概括性能提升或资源开销改善",
+        style: "以'规范'、'格式化'等动词开头，概括不影响逻辑的代码格式变动",
+        docs: "以'完善'、'补充'、'更新'等动词开头，概括文档或注释的修改",
+        test: "以'增加'、'补充'、'完善'等动词开头，概括自动化测试的修改",
+        build: "以'调整'、'升级'、'更新'等动词开头，概括依赖包或构建工具链变动",
+        ci: "以'配置'、'调整'、'完善'等动词开头，概括 CI/CD 工作流的修改",
+        chore: "以'维护'、'清理'、'配置'等动词开头，概括日常维护或辅助脚本配置",
+        revert: "以'回滚'、'撤销'等动词开头，概括撤销的提交内容",
+      };
+      const actionHint =
+        typeHintMap[type] || "以动词开头，简明扼要概括本次改动的核心逻辑";
+      const scopeHint = defaultScope
+        ? `涉及范围为: "${defaultScope}"，标题需聚焦于该范围，不要在描述中重复该 scope 名字。`
+        : "";
+
+      return [
+        "你是一名资深架构师，正在编写遵循 Conventional Commits 规范的 Git 提交信息。",
+        `本次提交选定的类型为: "${type}"。`,
+        scopeHint,
+        "请仔细阅读下方代码 diff，生成一句简体中文提交标题（subject），严格遵循以下要求：",
+        `1. 动作精准：${actionHint}；`,
+        "2. 直击本质：概括核心业务或逻辑改动，严禁使用'更新代码'、'修改部分文件'等空话套话；",
+        "3. 纯净输出：仅输出 subject 本身，严禁带有任何 type/scope 前缀（如不要写 feat:、fix(...) 等），严禁包裹引号，末尾严禁添加句号（. 或 。）；",
+        `4. 长度限制：严禁超过 ${maxSubjectLength} 个字符。`,
         "",
         "以下是代码 diff：",
         diff,
-      ].join("\n"),
+      ]
+        .filter(Boolean)
+        .join("\n");
+    },
     // scope 未显式配置时，cz-git 会自动读取上方 commitlint 的 scope-enum 规则生成候选列表
     useEmoji: false,
     allowCustomScopes: false,
