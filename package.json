@@ -31,7 +31,9 @@
       "commitizen": "^4.3.2",
       "cz-git": "^1.14.0",
       "czg": "^1.14.0",
-      "@langchain/langgraph-checkpoint-postgres": "^1.0.5"
+      "@langchain/langgraph-checkpoint-postgres": "^1.0.5",
+      "zustand": "^5.0.15",
+      "immer": "^11.1.18"
     }
   },
   "type": "module",

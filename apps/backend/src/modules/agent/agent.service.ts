@@ -7,14 +7,18 @@ import { simpleAgent } from "./agent.graph";
 
 export class AgentService {
   // 内部校验工具，确保会话合法存在
-  private async validateThread(threadId?: string): Promise<string> {
-    if (!threadId) {
-      throw new Error("请求参数缺少 threadId");
-    }
-
+  private async ensureThread({
+    threadId,
+    message,
+  }: {
+    threadId: string;
+    message: string;
+  }): Promise<string> {
     const thread = await threadService.getThreadById(threadId);
+
     if (!thread) {
-      throw new Error(`会话不存在:${threadId}`);
+      const title = message.length > 20 ? `${message.slice(0, 20)}...` : message;
+      await threadService.createThread({ id: threadId, title });
     }
 
     return threadId;
@@ -23,7 +27,7 @@ export class AgentService {
   // 普通调用
   async chat(body: ChatRequestDto): Promise<ChatResponseDto> {
     // 拿到合法threadId
-    const threadId = await this.validateThread(body.threadId);
+    const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
 
     // 保存用户信息
     await threadService.saveMessage(threadId, "user", body.message);
@@ -52,14 +56,14 @@ export class AgentService {
   // 流式输出（异步生成器）
   async *chatStream(body: ChatRequestDto) {
     // 拿到合法threadId
-    const threadId = await this.validateThread(body.threadId);
+    const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
 
     // 保存用户信息
     await threadService.saveMessage(threadId, "user", body.message);
 
     const stream = await simpleAgent.stream(
       { messages: [new HumanMessage(body.message)] },
-      { streamMode: "messages", configurable: { thread_id: body.threadId ?? "default" } },
+      { streamMode: "messages", configurable: { thread_id: threadId } },
     );
 
     // 存个整体回复进数据库

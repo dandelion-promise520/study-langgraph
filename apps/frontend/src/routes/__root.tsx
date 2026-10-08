@@ -16,6 +16,11 @@ import {
   StatefulButton,
   type ButtonState,
 } from "@frontend/components/motion";
+import {
+  AnimatedToastStack,
+  useAnimatedToastStack,
+  type ToastInput,
+} from "@frontend/components/motion/animated-toast-stack";
 import { useThreads } from "@frontend/hooks";
 import {
   createRootRouteWithContext,
@@ -23,14 +28,10 @@ import {
   useMatchRoute,
   useNavigate,
 } from "@tanstack/react-router";
-import { MessageCircle, MessageSquarePlus } from "lucide-react";
+import { MessageCircle, MessageSquarePlus, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: RootComponent,
-});
-
-function RootComponent() {
+const RootComponent = () => {
   const navigate = useNavigate();
   const matchRoute = useMatchRoute();
   const match = matchRoute({ to: "/c/$threadId" });
@@ -72,31 +73,52 @@ function RootComponent() {
   const [deleteState, setDeleteState] = useState<ButtonState>("idle");
   const [deleteItem, setDeleteItem] = useState<SidebarResource | null>(null);
 
-  // 打开删除会话模态框，并deleteItem信息
-  const handleDeleteSession = async (item: SidebarResource) => {
-    setDeleteItem(item);
-    setModalOpen(true);
+  const { toasts, showToast, updateToast, dismissToast } = useAnimatedToastStack({
+    defaultDuration: 3600,
+    limit: 5,
+  });
+
+  const openToast = (input: ToastInput) => {
+    const id = showToast(input);
+    if (input.status === "loading") {
+      window.setTimeout(() => {
+        updateToast(id, {
+          status: "success",
+          title: "Publish complete",
+          description: "Toast updated in-place from loading to success.",
+          duration: 3200,
+        });
+      }, 1800);
+    }
   };
 
-  // 抽离一个通用的安全关窗与重置函数
-  const handleCloseModal = () => {
-    setModalOpen(false);
+  // 打开删除会话模态框，并传入deleteItem信息
+  const handleDeleteSession = async (item: SidebarResource) => {
+    console.log(item);
+    setDeleteItem(item);
+    setModalOpen(true);
   };
 
   // 确认删除
   const handleConfirmDelete = async (item: SidebarResource) => {
     try {
+      // 给按钮打上loading
       setDeleteState("loading");
+      // 等待请求完成
       await deleteThread(item.id);
-      setDeleteState("success");
-
-      // 保留一个短暂的视觉停留
-      setTimeout(() => {
-        handleCloseModal();
-      }, 500);
-    } catch (error) {
-      setDeleteState("error");
-      console.error("删除会话失败", error);
+      // 如果删的是当前的激活会话，就跳转到跟目录
+      if (deleteItem && activeThreadId === deleteItem.id) {
+        navigate({ to: "/" });
+      }
+      // 弹个窗显示删除成功
+      openToast({ title: "删除会话成功", status: "success" });
+    } catch {
+      openToast({ title: "删除会话失败", status: "error" });
+    } finally {
+      // 不管成功或是失败，都统一关掉模态框并清除传入的item信息并让删除按钮恢复原态
+      setDeleteState("idle");
+      setModalOpen(false);
+      setDeleteItem(null);
     }
   };
 
@@ -110,7 +132,7 @@ function RootComponent() {
               <AnimatedSidebarMenu>
                 <AnimatedSidebarMenuItem>
                   <AnimatedSidebarMenuButton
-                    icon={<MessageSquarePlus className="size-4" />}
+                    icon={<MessageSquarePlus className="size-3.5" />}
                     onSelect={handleNewSession}
                     className="font-normal"
                   >
@@ -127,7 +149,7 @@ function RootComponent() {
               <AISidebar
                 activeId={activeThreadId}
                 items={sessions}
-                renderIcon={() => <MessageCircle className="size-4" />}
+                renderIcon={() => <MessageCircle className="size-3.5" />}
                 onDelete={handleDeleteSession}
                 onActiveChange={(id) => {
                   if (id) {
@@ -148,21 +170,11 @@ function RootComponent() {
       <CenterMorphModal
         open={modalOpen}
         onOpenChange={(open) => {
-          if (!open) handleCloseModal();
+          if (!open) setModalOpen(false);
           else setModalOpen(true);
         }}
       >
-        <CenterMorphModalContent
-          ariaLabel="删除聊天?"
-          onExitComplete={() => {
-            // 弹窗动画结束后触发
-            setDeleteState("idle");
-            if (deleteItem && activeThreadId === deleteItem.id) {
-              navigate({ to: "/" });
-            }
-            setDeleteItem(null);
-          }}
-        >
+        <CenterMorphModalContent ariaLabel="删除聊天?">
           <div className="flex flex-col gap-4 p-7 sm:p-8">
             {/* 标题 */}
             <p className="text-xl">删除聊天?</p>
@@ -180,7 +192,7 @@ function RootComponent() {
                   variant="outline"
                   size="md"
                   onClick={() => {
-                    handleCloseModal();
+                    setModalOpen(false);
                   }}
                 >
                   取消
@@ -194,6 +206,7 @@ function RootComponent() {
                     if (!deleteItem) return;
                     handleConfirmDelete(deleteItem);
                   }}
+                  errorText="请重试"
                   loadingText="删除中"
                   successText="删除完成"
                 >
@@ -204,6 +217,25 @@ function RootComponent() {
           </div>
         </CenterMorphModalContent>
       </CenterMorphModal>
+
+      {/* 全局弹窗 */}
+      <AnimatedToastStack
+        toasts={toasts}
+        onDismiss={dismissToast}
+        position={"top-center"}
+        placement="fixed"
+        maxVisible={4}
+        classNames={{
+          surface: "bg-card/95",
+        }}
+        icons={{
+          neutral: <Sparkles className="size-3.5" />,
+        }}
+      />
     </ChatApp>
   );
-}
+};
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  component: RootComponent,
+});

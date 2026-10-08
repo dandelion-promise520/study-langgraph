@@ -10,6 +10,7 @@ interface ErrorPayload {
   message?: string;
 }
 
+// 网络部分错误函数
 export const getErrorMessage = (error: unknown, fallback = "网络异常"): string => {
   if (error instanceof EdenFetchError) {
     if (typeof error.value === "string") return error.value;

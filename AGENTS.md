@@ -102,3 +102,12 @@ type(scope?): subject
 
 - **实体集中契约驱动**：数据库表结构集中在 `apps/backend/src/prisma/contract.ts` 中统一定义与维护，作为底层持久化实体的单一事实来源。
 - **严禁数据库实体直接穿透为 API 响应**：即使 Prisma 自动推导了完整的数据库模型类型，对外暴露接口时也必须在 `packages/types` 中定义对应的 DTO 进行结构映射。禁止直接将底层持久化实体暴露给客户端，以确保底层表结构变更不破坏对外契约，并防止敏感字段泄漏。
+
+---
+
+## 代码与语法规范 (Code & Syntax Conventions)
+
+### 1. 禁用双重逻辑非，优先使用空值合并 (Nullish Coalescing over Double Negation)
+
+- **严禁使用 `!!` 进行布尔类型强转**：避免使用 `!!value` 或 `!!(a && b)` 这种隐式类型转换写法。
+- **必须使用 `??` 显式提供默认值**：通过可选链配合空值合并操作符（如 `state.streams[threadId]?.isGenerating ?? false`）或显式条件判断，提升代码可读性与类型意图的明确性。

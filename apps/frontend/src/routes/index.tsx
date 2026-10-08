@@ -1,11 +1,7 @@
 import { ChatPane } from "@frontend/components/chat-pane";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
-  component: NewChatPage,
-});
-
-function NewChatPage() {
+const NewChatPage = () => {
   const navigate = useNavigate();
 
   const handleThreadCreated = (newThreadId: string) => {
@@ -16,4 +12,8 @@ function NewChatPage() {
     });
   };
   return <ChatPane threadId={null} onThreadCreated={handleThreadCreated} />;
-}
+};
+
+export const Route = createFileRoute("/")({
+  component: NewChatPage,
+});

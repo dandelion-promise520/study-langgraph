@@ -23,14 +23,7 @@ export class ThreadService {
 
   // 新建会话
   async createThread(data: CreateThreadDto): Promise<ThreadDto> {
-    // 检查是否已存在空对话
-    const existingEmptyThread = await db.orm.public.Thread.where((t) => t.messages.none()).first();
-
-    if (existingEmptyThread) {
-      return existingEmptyThread;
-    }
-
-    const id = data.id ?? `thread-${Date.now()}`;
+    const id = data.id ?? crypto.randomUUID();
     return db.orm.public.Thread.create({
       id,
       title: data.title ?? "新会话",

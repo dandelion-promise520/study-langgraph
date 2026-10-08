@@ -28,10 +28,13 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
 
-    /* Paths */
+    /* Paths：全仓唯一一份，各子项目 extends 继承，不再各自覆盖 */
     "paths": {
       "@backend/*": ["./apps/backend/src/*"],
-      "@frontend/*": ["./apps/frontend/src/*"],
+      /* 首个候选 "./src/*" 是给 shadcn CLI 的：它以 apps/frontend 为基准解析别名，
+         并据此决定生成文件的 import 前缀。tsc 以仓库根为基准解析本配置，
+         该候选不存在会自动落到第二个候选，因此两者都能正确解析。 */
+      "@frontend/*": ["./src/*", "./apps/frontend/src/*"],
       "@lg-lab/types": ["./packages/types/src/index.ts"]
     }
   }

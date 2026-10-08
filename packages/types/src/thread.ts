@@ -1,8 +1,16 @@
 import z from "zod";
 
+//  全局唯一的会话 ID 契约基元
+export const ThreadIdSchema = z
+  .string()
+  .uuid("会话 ID 必须是合法的 UUID 格式")
+  .describe("全局唯一的会话 ID (UUIDv4)");
+
+export type ThreadId = z.infer<typeof ThreadIdSchema>;
+
 // 会话对象
 export const ThreadSchema = z.object({
-  id: z.string(),
+  id: ThreadIdSchema,
   title: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -10,7 +18,7 @@ export const ThreadSchema = z.object({
 
 // 新建会话入参
 export const CreateThreadSchema = z.object({
-  id: z.string().optional(),
+  id: ThreadIdSchema.optional(),
   title: z.string().optional(),
 });
 
@@ -35,7 +43,7 @@ export const MessageSchema = z.object({
 
 // 路径参数
 export const ThreadParamsSchema = z.object({
-  id: z.string().min(1, "会话ID不能为空"),
+  id: ThreadIdSchema,
 });
 
 export type ThreadDto = z.infer<typeof ThreadSchema>;

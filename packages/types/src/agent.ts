@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { ThreadIdSchema } from "./thread";
+
 export const ChatRequestSchema = z.object({
   message: z.string().min(1, "消息内容不能为空"),
-  threadId: z.string().optional(),
+  threadId: ThreadIdSchema,
 });
 
 export const ChatResponseSchema = z.object({
