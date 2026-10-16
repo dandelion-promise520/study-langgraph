@@ -7,10 +7,11 @@
   "module": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "db:emit": "prisma contract emit",
-    "db:init": "prisma db init",
-    "db:update": "prisma db update",
-    "db:verify": "prisma db verify",
+    "db:check": "drizzle-kit check",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "dev": "bun run --watch src/index.ts",
     "lint": "oxlint src",
     "typecheck": "tsc --noEmit"
@@ -24,17 +25,21 @@
     "@langchain/openai": "catalog:",
     "@lg-lab/types": "workspace:*",
     "@prisma/orm-postgres": "^8.0.0-rc.11",
-    "dotenv": "^17.4.2",
+    "drizzle-orm": "^1.0.0-rc.4",
     "elysia": "catalog:",
     "elysia-rate-limit": "4.6.3",
     "langchain": "catalog:",
+    "pg": "^8.23.1",
     "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@prisma/cli-engine": "0.4.0",
     "@types/bun": "catalog:",
     "@types/node": "^22.20.3",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^1.0.0-rc.4",
     "prisma": "^8.0.0-rc.15",
+    "tsx": "^4.23.15",
     "typescript": "catalog:"
   }
 }

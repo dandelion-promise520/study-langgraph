@@ -6,66 +6,79 @@ import type {
   UpdateThreadDto,
 } from "@lg-lab/types";
 
-import { db } from "@backend/prisma/db";
+import { db } from "@backend/db";
+import { messages, threads } from "@backend/db/schema";
+import { asc, desc, eq, sql } from "drizzle-orm";
 
 export class ThreadService {
   // 获取所有会话
   async getThreads(): Promise<ThreadDto[]> {
-    return await db.orm.public.Thread.select("id", "title", "createdAt", "updatedAt")
-      .orderBy((t) => t.updatedAt.desc())
-      .all();
+    return await db.select().from(threads).orderBy(desc(threads.updatedAt));
   }
 
   // 按id查一个会话
   async getThreadById(id: string): Promise<ThreadDto | null> {
-    return await db.orm.public.Thread.first({ id });
+    // 相当于const result = results[0]，取数组的第一个值，也等于const result = results.at(0)
+    const [result] = await db.select().from(threads).where(eq(threads.id, id)).limit(1);
+
+    return result ?? null;
   }
 
   // 新建会话
   async createThread(data: CreateThreadDto): Promise<ThreadDto> {
-    const id = data.id ?? crypto.randomUUID();
-    return db.orm.public.Thread.create({
-      id,
-      title: data.title ?? "新会话",
-    });
+    const [newThread] = await db
+      .insert(threads)
+      .values({ id: data.id, title: data.title ?? "新会话" }) //如果前端传了 UUID 就用前端的；如果 data.id 是 undefined，Drizzle 会自动触发 $defaultFn 调用 Bun.randomUUIDv7()
+      .returning();
+
+    if (!newThread) throw new Error("创建会话失败");
+
+    return newThread;
   }
 
   // 重命名会话
   async updateThread(id: string, data: UpdateThreadDto) {
-    await db.orm.public.Thread.where({ id }).update({ title: data.title });
+    await db.update(threads).set({ title: data.title }).where(eq(threads.id, id));
   }
 
   // 删除会话
   async deleteThread(id: string) {
-    await db.orm.public.Message.where({ threadId: id }).delete();
-    await db.orm.public.Thread.where({ id }).delete();
+    await db.delete(threads).where(eq(threads.id, id));
   }
 
   // 查询指定会话历史消息
   async getMessages(threadId: string): Promise<MessageDto[]> {
-    return await db.orm.public.Message.select(
-      "id",
-      "threadId",
-      "role",
-      "content",
-      "createdAt",
-      "updatedAt",
-    )
-      .where({ threadId })
-      .orderBy((m) => m.createdAt.asc())
-      .all();
+    return await db
+      .select()
+      .from(messages)
+      .where(eq(messages.threadId, threadId))
+      .orderBy(asc(messages.createdAt));
   }
 
   // 保存单条消息
-  async saveMessage(threadId: string, role: MessageRole, content: string) {
-    await db.orm.public.Message.create({
-      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      threadId,
-      role,
-      content,
-    });
+  async saveMessage({
+    content,
+    role,
+    threadId,
+  }: {
+    threadId: string;
+    role: MessageRole;
+    content: string;
+  }) {
+    await db.transaction(async (tx) => {
+      // 把消息插入到消息表中
+      await tx.insert(messages).values({
+        threadId,
+        role,
+        content,
+      });
 
-    await db.orm.public.Thread.where({ id: threadId }).update({});
+      // 更新对应会话的更新时间
+      await tx
+        .update(threads)
+        .set({ updatedAt: sql`now()` })
+        .where(eq(threads.id, threadId));
+    });
   }
 }
 

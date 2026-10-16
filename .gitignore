@@ -5,6 +5,7 @@ node_modules
 out
 dist
 *.tgz
+repomix-output.xml
 
 # code coverage
 coverage

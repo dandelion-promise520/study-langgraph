@@ -33,6 +33,8 @@ export interface InputProps extends Omit<
   onChange?: (value: string) => void;
   /** Truthy error triggers a shake, red border and (if a string) a message. */
   error?: string | boolean;
+  /** Keep a blank line for the message so the field height never changes. */
+  reserveErrorLine?: boolean;
   success?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
@@ -49,6 +51,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     onFocus,
     onBlur,
     error,
+    reserveErrorLine,
     success,
     leftIcon,
     rightIcon,
@@ -89,6 +92,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     if (!controlled) setInternal(next);
     onChange?.(next);
   };
+
+  const errorSlot = (
+    <AnimatePresence initial={false}>
+      {errorMessage ? (
+        <motion.p
+          id={`${id}-error`}
+          role="alert"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: -4, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4, filter: "blur(4px)" }}
+          transition={{ duration: 0.2 }}
+          className={cn("px-1 text-xs text-destructive", classNames?.errorMessage)}
+        >
+          {errorMessage}
+        </motion.p>
+      ) : null}
+    </AnimatePresence>
+  );
 
   return (
     <div className={cn("flex flex-col gap-1.5", className, classNames?.root)}>
@@ -184,21 +205,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         ) : null}
       </div>
 
-      <AnimatePresence initial={false}>
-        {errorMessage ? (
-          <motion.p
-            id={`${id}-error`}
-            role="alert"
-            initial={reduce ? { opacity: 0 } : { opacity: 0, y: -4, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4, filter: "blur(4px)" }}
-            transition={{ duration: 0.2 }}
-            className={cn("px-1 text-xs text-destructive", classNames?.errorMessage)}
-          >
-            {errorMessage}
-          </motion.p>
-        ) : null}
-      </AnimatePresence>
+      {/* The wrapper is conditional on purpose: an always-present div would
+          count as a flex item and add a stray gap to every field. */}
+      {reserveErrorLine ? <div className="min-h-4">{errorSlot}</div> : errorSlot}
     </div>
   );
 });

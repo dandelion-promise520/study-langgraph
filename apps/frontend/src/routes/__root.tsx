@@ -21,6 +21,7 @@ import {
   useAnimatedToastStack,
   type ToastInput,
 } from "@frontend/components/motion/animated-toast-stack";
+import { NotFoundGlitch } from "@frontend/components/motion/not-found/glitch";
 import { useThreads } from "@frontend/hooks";
 import {
   createRootRouteWithContext,
@@ -238,4 +239,5 @@ const RootComponent = () => {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
+  notFoundComponent: () => <NotFoundGlitch />,
 });

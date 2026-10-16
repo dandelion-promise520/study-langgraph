@@ -4,6 +4,7 @@ checkpointer
 czai
 elysiajs
 lintstagedrc
+repomix
 shiki
 stylesheet
 uuidv

@@ -30,7 +30,7 @@ export class AgentService {
     const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
 
     // 保存用户信息
-    await threadService.saveMessage(threadId, "user", body.message);
+    await threadService.saveMessage({ content: body.message, role: "user", threadId });
 
     // 调用 LangGraph
     const result = await simpleAgent.invoke(
@@ -48,7 +48,7 @@ export class AgentService {
         : JSON.stringify(lastMessage?.content ?? "");
 
     // 保存ai回复消息
-    await threadService.saveMessage(threadId, "assistant", reply);
+    await threadService.saveMessage({ content: reply, role: "assistant", threadId });
 
     return { reply };
   }
@@ -59,7 +59,7 @@ export class AgentService {
     const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
 
     // 保存用户信息
-    await threadService.saveMessage(threadId, "user", body.message);
+    await threadService.saveMessage({ content: body.message, role: "user", threadId });
 
     const stream = await simpleAgent.stream(
       { messages: [new HumanMessage(body.message)] },
@@ -79,7 +79,7 @@ export class AgentService {
     } finally {
       if (fullReply) {
         // 保存ai回复消息
-        await threadService.saveMessage(threadId, "assistant", fullReply);
+        await threadService.saveMessage({ content: fullReply, role: "assistant", threadId });
       }
     }
   }

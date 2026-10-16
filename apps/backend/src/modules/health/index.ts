@@ -1,9 +1,9 @@
-import { db } from "@backend/prisma/db";
+import { db } from "@backend/db";
+import { sql } from "drizzle-orm";
 import Elysia from "elysia";
 
 const pingDatabase = async () => {
-  const plan = db.raw.sql`SELECT 1`.affectedCount().build();
-  await db.runtime().execute(plan);
+  await db.execute(sql`SELECT 1`);
 };
 
 export const healthModule = new Elysia({ name: "health" })
