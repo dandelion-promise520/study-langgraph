@@ -1,0 +1,124 @@
+<mxfile host="65bd71144e">
+    <diagram id="study-langgraph-overview" name="项目架构与聊天链路">
+        <mxGraphModel dx="1653" dy="1976" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#111827;fontSize=20;fontStyle=1;" value="LangGraph Lab｜项目结构与实际聊天链路" vertex="1">
+                    <mxGeometry height="34" width="1000" x="40" y="12" as="geometry"/>
+                </mxCell>
+                <mxCell id="workspaceHint" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#111827;fontSize=11;fontColor=#4b5563;" value="Bun workspaces：apps/frontend · apps/backend · packages/types" vertex="1">
+                    <mxGeometry height="24" width="900" x="40" y="43" as="geometry"/>
+                </mxCell>
+                <mxCell id="mainLabel" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#111827;fontSize=13;fontStyle=1;" value="A. 主聊天链路（前端当前使用流式接口）" vertex="1">
+                    <mxGeometry height="22" width="900" x="40" y="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_ui" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="ChatPane / TanStack Router&#xa;新会话生成 UUID 并路由&#xa;接收用户输入" vertex="1">
+                    <mxGeometry height="100" width="150" x="40" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="_fXmb3OshtUoVbccBoP0-1" edge="1" parent="1" source="n_store" style="edgeStyle=none;html=1;" target="n_thread_client" value="">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_store" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Zustand + React Query&#xa;乐观插入消息占位&#xa;逐块更新缓存 / AbortController" vertex="1">
+                    <mxGeometry height="100" width="150" x="220" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_eden" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Eden API Client&#xa;POST /agent/chat/stream" vertex="1">
+                    <mxGeometry height="100" width="150" x="400" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Elysia Backend&#xa;/agent · /threads · /health&#xa;CORS · 限流 · OpenAPI" vertex="1">
+                    <mxGeometry height="100" width="150" x="580" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_agent_controller" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="AgentController&#xa;SSE message / done / error" vertex="1">
+                    <mxGeometry height="100" width="150" x="760" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_agent_service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="AgentService&#xa;ensureThread → 保存 user&#xa;消费流并保存 assistant" vertex="1">
+                    <mxGeometry height="100" width="150" x="940" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_graph" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="LangGraph StateGraph&#xa;messages + thread_id&#xa;START → callModel → END" vertex="1">
+                    <mxGeometry height="100" width="150" x="1120" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_model" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="ChatOpenAI&#xa;OpenAI-compatible endpoint&#xa;模型参数来自 env" vertex="1">
+                    <mxGeometry height="100" width="150" x="1300" y="92" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="n_ui" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_store" value="submit">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="n_store" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_eden" value="stream request">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="n_eden" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_api" value="HTTP">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="n_api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_agent_controller" value="/agent/chat/stream">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" edge="1" parent="1" source="n_agent_controller" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_agent_service" value="ChatRequest">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" edge="1" parent="1" source="n_agent_service" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_graph" value="HumanMessage + thread_id">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" edge="1" parent="1" source="n_graph" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_model" value="model.invoke">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="threadLabel" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#111827;fontSize=13;fontStyle=1;" value="B. 会话管理与数据持久化" vertex="1">
+                    <mxGeometry height="22" width="900" x="40" y="228" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_sidebar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Sidebar + React Query&#xa;会话列表 / 重命名 / 删除&#xa;加载历史消息" vertex="1">
+                    <mxGeometry height="100" width="150" x="40" y="258" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_thread_client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Eden /threads client&#xa;GET · POST · PATCH · DELETE&#xa;GET /:id/messages" vertex="1">
+                    <mxGeometry height="100" width="150" x="220" y="258" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_thread_api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="Elysia ThreadController&#xa;/threads routes&#xa;请求校验使用共享模型" vertex="1">
+                    <mxGeometry height="100" width="150" x="400" y="258" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_thread_service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="ThreadService&#xa;查找 / 创建会话&#xa;保存与查询消息" vertex="1">
+                    <mxGeometry height="100" width="150" x="580" y="258" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_db" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="PostgreSQL via Drizzle&#xa;users · threads · messages" vertex="1">
+                    <mxGeometry height="116" width="190" x="760" y="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_saver" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#1f2937;fontSize=10;align=center;verticalAlign=middle;" value="PostgresSaver&#xa;LangGraph checkpoints&#xa;按 thread_id 持久化" vertex="1">
+                    <mxGeometry height="100" width="150" x="1120" y="258" as="geometry"/>
+                </mxCell>
+                <mxCell id="e8" edge="1" parent="1" source="n_sidebar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_thread_client" value="queries">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e9" edge="1" parent="1" source="n_thread_client" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_thread_api" value="HTTP">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e10" edge="1" parent="1" source="n_thread_api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_thread_service" value="controller">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e11" edge="1" parent="1" source="n_thread_service" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;" target="n_db" value="CRUD">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e12" edge="1" parent="1" source="n_api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;dashed=1;" target="n_thread_api" value="/threads/*">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e13" edge="1" parent="1" source="n_agent_service" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;dashed=1;" target="n_thread_service" value="ensureThread / 保存消息">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e14" edge="1" parent="1" source="n_graph" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;dashed=1;" target="n_saver" value="checkpoint">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e15" edge="1" parent="1" source="n_saver" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;endFill=1;strokeColor=#687386;dashed=1;" target="n_db" value="same DATABASE_URL">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="returnPath" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#1f2937;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;" value="返回链路：模型 token → Graph message stream → AgentService 累积并保存 assistant 回复 → Controller 发 SSE → Eden 解析 → Zustand 逐块写入 React Query → ChatPane 渲染。" vertex="1">
+                    <mxGeometry height="58" width="1410" x="40" y="390" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_types" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#1f2937;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;" value="共享契约：packages/types&#xa;Zod DTO：ChatRequest / Response / StreamChunk、Thread / Message" vertex="1">
+                    <mxGeometry height="95" width="360" x="40" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_current" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#1f2937;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;" value="当前实现边界：Agent 图只有 callModel 单节点；/agent/chat 非流式接口也保留。&#xa;useAgentChat Hook 存在，但主聊天页面实际走 Zustand stores/chat.ts。" vertex="1">
+                    <mxGeometry height="95" width="570" x="430" y="478" as="geometry"/>
+                </mxCell>
+                <mxCell id="n_project" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#1f2937;fontSize=10;align=left;verticalAlign=middle;spacingLeft=8;" value="存储与启动：Drizzle schema 维护业务表；PostgresSaver 保存图状态，使用 DATABASE_URL。&#xa;启动时初始化 checkpoint，并由 health 路由检查 PostgreSQL。" vertex="1">
+                    <mxGeometry height="95" width="420" x="1030" y="478" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

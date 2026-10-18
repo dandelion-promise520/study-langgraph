@@ -1,7 +1,7 @@
 "use client";
 
-import { useHoverCapable } from "@frontend/hooks/gestures/use-hover-capable";
 import { EASE_OUT, SPRING_PRESS } from "@frontend/lib/ease";
+import { useHoverCapable } from "@frontend/lib/hooks/use-hover-capable";
 import { cn } from "@frontend/lib/utils";
 import { AnimatePresence, type HTMLMotionProps, motion, useReducedMotion } from "motion/react";
 import {

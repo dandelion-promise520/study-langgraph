@@ -1,4 +1,3 @@
-"use client";
 // beui.dev/components/motion/center-morph-modal
 
 import { EASE_OUT } from "@frontend/lib/ease";
@@ -140,8 +139,10 @@ export interface CenterMorphModalContentProps {
   ariaLabel: string;
   /** Optional id of descriptive content inside the modal. */
   ariaDescribedBy?: string;
-  /** Close on Escape or backdrop press. Default true. */
+  /** Allow dismissal with Escape and, when enabled, backdrop press. Default true. */
   dismissible?: boolean;
+  /** Close when the backdrop is pressed. Default false. */
+  closeOnBackdrop?: boolean;
   /** Render the close control inside the panel's top-right corner. Default true. */
   showCloseButton?: boolean;
   closeButtonLabel?: string;
@@ -183,6 +184,7 @@ export function CenterMorphModalContent({
   ariaLabel,
   ariaDescribedBy,
   dismissible = true,
+  closeOnBackdrop = false,
   showCloseButton = true,
   closeButtonLabel = "Close modal",
   onExitComplete,
@@ -254,7 +256,7 @@ export function CenterMorphModalContent({
                 type="button"
                 aria-label="Dismiss modal"
                 tabIndex={-1}
-                disabled={!dismissible}
+                disabled={!dismissible || !closeOnBackdrop}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -263,7 +265,9 @@ export function CenterMorphModalContent({
                   duration: reduce ? 0.1 : 0.28,
                   ease: EASE_OUT,
                 }}
-                onClick={() => context.setOpen(false)}
+                onClick={() => {
+                  if (dismissible && closeOnBackdrop) context.setOpen(false);
+                }}
                 className={cn(
                   "pointer-events-auto fixed inset-0 z-[100] h-full w-full cursor-default bg-background/10 backdrop-blur-sm",
                   backdropClassName,

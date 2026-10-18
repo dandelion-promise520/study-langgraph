@@ -1,4 +1,4 @@
-import { ChatPane } from "@frontend/components/chat-pane";
+import { ChatPane } from "@frontend/components/chat";
 import { useThreads } from "@frontend/hooks";
 import { createFileRoute } from "@tanstack/react-router";
 

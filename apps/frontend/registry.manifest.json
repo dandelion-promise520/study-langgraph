@@ -1,0 +1,273 @@
+{
+  "//": [
+    "registry vendor 台账：vendor 层所有文件的唯一事实来源。",
+    "vendorRoots 下的每个文件都必须在此登记 —— 未登记即 check:vendor 失败，要么登记，要么搬出 vendor 层。",
+    "target 是 registry item 声明的期望路径（@components/@ui/@lib/@hooks 分别映射到 src/components、src/components/ui、src/lib、src/hooks）。",
+    "fork: true 表示该文件已刻意偏离 registry 路径（放弃该项的 CLI 升级能力），跳过路径一致性校验。",
+    "改动后执行：bun run check:vendor"
+  ],
+  "vendorRoots": ["src/components/motion", "src/components/ui", "src/lib"],
+  "firstPartyFiles": ["src/components/motion/index.ts"],
+  "allowDuplicateExports": [
+    {
+      "name": "Route",
+      "reason": "TanStack Router 的文件路由约定：每个路由文件必须导出 Route，属于框架强制约定而非重复实现"
+    },
+    {
+      "name": "SignUpStatus",
+      "reason": "TODO login-form.tsx 目前是 signup-form.tsx 的逐行副本（仅改了一个函数名），待重写为真正的登录表单后应删除这些豁免"
+    },
+    { "name": "SignUpValues", "reason": "TODO 同上，login-form.tsx 是 signup-form.tsx 的副本" },
+    { "name": "SignUpErrors", "reason": "TODO 同上，login-form.tsx 是 signup-form.tsx 的副本" },
+    {
+      "name": "SignUpFormClassNames",
+      "reason": "TODO 同上，login-form.tsx 是 signup-form.tsx 的副本"
+    },
+    { "name": "SignUpFormProps", "reason": "TODO 同上，login-form.tsx 是 signup-form.tsx 的副本" },
+    { "name": "passwordStrength", "reason": "TODO 同上，login-form.tsx 是 signup-form.tsx 的副本" }
+  ],
+  "entries": [
+    {
+      "path": "src/components/motion/action-swap-roll.tsx",
+      "registry": "@beui",
+      "item": "action-swap-roll",
+      "target": "@components/motion/action-swap-roll.tsx"
+    },
+    {
+      "path": "src/components/motion/action-swap.tsx",
+      "registry": "@beui",
+      "item": "action-swap",
+      "target": "@components/motion/action-swap.tsx"
+    },
+    {
+      "path": "src/components/motion/animated-sidebar.tsx",
+      "registry": "@beui",
+      "item": "animated-sidebar",
+      "target": "@components/motion/animated-sidebar.tsx"
+    },
+    {
+      "path": "src/components/motion/animated-toast-stack.tsx",
+      "registry": "@beui",
+      "item": "animated-toast-stack",
+      "target": "@components/motion/animated-toast-stack.tsx"
+    },
+    {
+      "path": "src/components/motion/button/base.tsx",
+      "registry": "@beui",
+      "item": "button-base",
+      "target": "@components/motion/button/base.tsx"
+    },
+    {
+      "path": "src/components/motion/button/index.tsx",
+      "registry": "@beui",
+      "item": "button-base",
+      "target": "@components/motion/button/index.tsx"
+    },
+    {
+      "path": "src/components/motion/button/magnetic.tsx",
+      "registry": "@beui",
+      "item": "button-magnetic",
+      "target": "@components/motion/button/magnetic.tsx"
+    },
+    {
+      "path": "src/components/motion/button/metallic.tsx",
+      "registry": "@beui",
+      "item": "button-metallic",
+      "target": "@components/motion/button/metallic.tsx"
+    },
+    {
+      "path": "src/components/motion/button/stateful.tsx",
+      "registry": "@beui",
+      "item": "button-stateful",
+      "target": "@components/motion/button/stateful.tsx"
+    },
+    {
+      "path": "src/components/motion/center-morph-modal.tsx",
+      "registry": "@beui",
+      "item": "center-morph-modal",
+      "target": "@components/motion/center-morph-modal.tsx"
+    },
+    {
+      "path": "src/components/motion/checkbox.tsx",
+      "registry": "@beui",
+      "item": "checkbox",
+      "target": "@components/motion/checkbox.tsx"
+    },
+    {
+      "path": "src/components/motion/command-palette.tsx",
+      "registry": "@beui",
+      "item": "command-palette",
+      "target": "@components/motion/command-palette.tsx"
+    },
+    {
+      "path": "src/components/motion/input.tsx",
+      "registry": "@beui",
+      "item": "input",
+      "target": "@components/motion/input.tsx"
+    },
+    {
+      "path": "src/components/motion/loader.tsx",
+      "registry": "@beui",
+      "item": "loader",
+      "target": "@components/motion/loader.tsx"
+    },
+    {
+      "path": "src/components/motion/magnetic.tsx",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@components/motion/magnetic.tsx"
+    },
+    {
+      "path": "src/components/motion/popover-morph.tsx",
+      "registry": "@beui",
+      "item": "popover-morph",
+      "target": "@components/motion/popover-morph.tsx"
+    },
+    {
+      "path": "src/components/motion/popover-position.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@components/motion/popover-position.ts"
+    },
+    {
+      "path": "src/components/motion/radio.tsx",
+      "registry": "@beui",
+      "item": "radio",
+      "target": "@components/motion/radio.tsx"
+    },
+    {
+      "path": "src/components/motion/select.tsx",
+      "registry": "@beui",
+      "item": "select",
+      "target": "@components/motion/select.tsx"
+    },
+    {
+      "path": "src/components/motion/shared-layout-bg.tsx",
+      "registry": "@beui",
+      "item": "shared-layout-bg",
+      "target": "@components/motion/shared-layout-bg.tsx"
+    },
+    {
+      "path": "src/components/motion/text-scramble.tsx",
+      "registry": "@beui",
+      "item": "text-scramble",
+      "target": "@components/motion/text-scramble.tsx"
+    },
+    {
+      "path": "src/components/motion/text-shimmer.tsx",
+      "registry": "@beui",
+      "item": "text-shimmer",
+      "target": "@components/motion/text-shimmer.tsx"
+    },
+    {
+      "path": "src/components/motion/theme-toggle.tsx",
+      "registry": "@beui",
+      "item": "theme-toggle",
+      "target": "@components/motion/theme-toggle.tsx"
+    },
+    {
+      "path": "src/components/ui/avatar.tsx",
+      "registry": "@shadcn",
+      "item": "avatar",
+      "target": "@ui/avatar.tsx"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "registry": "@shadcn",
+      "item": "button",
+      "target": "@ui/button.tsx"
+    },
+    {
+      "path": "src/components/ui/card.tsx",
+      "registry": "@shadcn",
+      "item": "card",
+      "target": "@ui/card.tsx"
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "registry": "@shadcn",
+      "item": "input",
+      "target": "@ui/input.tsx"
+    },
+    {
+      "path": "src/components/ui/separator.tsx",
+      "registry": "@shadcn",
+      "item": "separator",
+      "target": "@ui/separator.tsx"
+    },
+    { "path": "src/lib/ease.ts", "registry": "@beui", "item": "shared", "target": "@lib/ease.ts" },
+    {
+      "path": "src/lib/favicon.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/favicon.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-dismiss.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-dismiss.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-favicon.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-favicon.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-hover-capable.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-hover-capable.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-hover-gesture.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-hover-gesture.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-on-open.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-on-open.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-row-cursor.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-row-cursor.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-tap-gesture.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-tap-gesture.ts"
+    },
+    {
+      "path": "src/lib/hooks/use-touch-capable.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/hooks/use-touch-capable.ts"
+    },
+    {
+      "path": "src/lib/presence-gate.tsx",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/presence-gate.tsx"
+    },
+    {
+      "path": "src/lib/text-shimmer.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/text-shimmer.ts"
+    },
+    {
+      "path": "src/lib/touch.ts",
+      "registry": "@beui",
+      "item": "shared",
+      "target": "@lib/touch.ts"
+    },
+    { "path": "src/lib/utils.ts", "registry": "@beui", "item": "shared", "target": "@lib/utils.ts" }
+  ]
+}

@@ -1,4 +1,4 @@
-import { ChatPane } from "@frontend/components/chat-pane";
+import { ChatPane } from "@frontend/components/chat";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 const NewChatPage = () => {

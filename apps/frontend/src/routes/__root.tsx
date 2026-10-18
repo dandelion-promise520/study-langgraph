@@ -1,19 +1,18 @@
 import type { MyRouterContext } from "@frontend/router";
 
-import { AISidebar, ChatApp, type SidebarResource } from "@frontend/components/agents";
+import { AuthModal } from "@frontend/components/auth";
+import { AISidebar, ChatApp, type SidebarResource } from "@frontend/components/chat";
+import { DeleteChatModal } from "@frontend/components/chat/workspace/delete-chat-modal";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
-  AnimatedSidebarGroup,
-  AnimatedSidebarGroupContent,
+  AnimatedSidebarFooter,
   AnimatedSidebarGroupLabel,
+  AnimatedSidebarHeader,
   AnimatedSidebarMenu,
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
   Button,
-  CenterMorphModal,
-  CenterMorphModalContent,
-  StatefulButton,
   type ButtonState,
 } from "@frontend/components/motion";
 import {
@@ -21,7 +20,8 @@ import {
   useAnimatedToastStack,
   type ToastInput,
 } from "@frontend/components/motion/animated-toast-stack";
-import { NotFoundGlitch } from "@frontend/components/motion/not-found/glitch";
+import { NotFoundGlitch } from "@frontend/components/not-found";
+import { Avatar, AvatarFallback, AvatarImage } from "@frontend/components/ui/avatar";
 import { useThreads } from "@frontend/hooks";
 import {
   createRootRouteWithContext,
@@ -29,7 +29,7 @@ import {
   useMatchRoute,
   useNavigate,
 } from "@tanstack/react-router";
-import { MessageCircle, MessageSquarePlus, Sparkles } from "lucide-react";
+import { MessageCircle, MessageSquarePlus, Sparkles, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const RootComponent = () => {
@@ -123,101 +123,94 @@ const RootComponent = () => {
     }
   };
 
+  const [isLogin, _setIsLogin] = useState<boolean>(false);
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+
   return (
     <ChatApp sidebarWidth="16rem" className="h-dvh w-full rounded-none border-0">
       {/* 左侧边栏 */}
       <AnimatedSidebar collapsible="offcanvas">
+        {/* 头部 */}
+        <AnimatedSidebarHeader>
+          <AnimatedSidebarMenu>
+            <AnimatedSidebarMenuItem>
+              <AnimatedSidebarMenuButton
+                icon={<MessageSquarePlus className="size-3.5" />}
+                onSelect={handleNewSession}
+                className="font-normal"
+              >
+                新建会话
+              </AnimatedSidebarMenuButton>
+            </AnimatedSidebarMenuItem>
+          </AnimatedSidebarMenu>
+        </AnimatedSidebarHeader>
+        {/* 左上角按钮组 */}
         <AnimatedSidebarContent>
-          <AnimatedSidebarGroup>
-            <AnimatedSidebarGroupContent>
-              <AnimatedSidebarMenu>
-                <AnimatedSidebarMenuItem>
-                  <AnimatedSidebarMenuButton
-                    icon={<MessageSquarePlus className="size-3.5" />}
-                    onSelect={handleNewSession}
-                    className="font-normal"
-                  >
-                    新建会话
-                  </AnimatedSidebarMenuButton>
-                </AnimatedSidebarMenuItem>
-              </AnimatedSidebarMenu>
-            </AnimatedSidebarGroupContent>
-          </AnimatedSidebarGroup>
-
-          <AnimatedSidebarGroup>
-            <AnimatedSidebarGroupLabel>历史会话</AnimatedSidebarGroupLabel>
-            <AnimatedSidebarGroupContent>
-              <AISidebar
-                activeId={activeThreadId}
-                items={sessions}
-                renderIcon={() => <MessageCircle className="size-3.5" />}
-                onDelete={handleDeleteSession}
-                onActiveChange={(id) => {
-                  if (id) {
-                    navigate({ to: "/c/$threadId", params: { threadId: id } });
-                  }
-                }}
-                onRename={handleRenameSession}
-              />
-            </AnimatedSidebarGroupContent>
-          </AnimatedSidebarGroup>
+          {/* 会话内容部分 */}
+          <AnimatedSidebarGroupLabel>历史会话</AnimatedSidebarGroupLabel>
+          <AISidebar
+            activeId={activeThreadId}
+            items={sessions}
+            renderIcon={() => <MessageCircle className="size-3.5" />}
+            onDelete={handleDeleteSession}
+            onActiveChange={(id) => {
+              if (id) {
+                navigate({ to: "/c/$threadId", params: { threadId: id } });
+              }
+            }}
+            onRename={handleRenameSession}
+          />
         </AnimatedSidebarContent>
+
+        {/* 左下角登录处 */}
+        <AnimatedSidebarFooter>
+          {isLogin ? (
+            <div className="flex items-center gap-4">
+              <Avatar>
+                <AvatarImage src={"https://assets.watermelon.sh/wm_alex.png"} alt={"Alex Rivera"} />
+                <AvatarFallback className="text-xs">{"AR"}</AvatarFallback>
+              </Avatar>
+              <span>Alex Rivera</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3.5">
+              <Avatar className="flex items-center justify-center">
+                <UserRound className="size-4" />
+              </Avatar>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                }}
+              >
+                登录
+              </Button>
+            </div>
+          )}
+        </AnimatedSidebarFooter>
       </AnimatedSidebar>
 
       {/* 右侧主视窗 */}
       <Outlet />
 
-      {/* 二次确认模态框 */}
-      <CenterMorphModal
+      {/* 删除弹框 */}
+      <DeleteChatModal
+        deleteItem={deleteItem}
+        deleteState={deleteState}
+        handleConfirmDelete={handleConfirmDelete}
+        onOpenChange={setModalOpen}
         open={modalOpen}
-        onOpenChange={(open) => {
-          if (!open) setModalOpen(false);
-          else setModalOpen(true);
-        }}
-      >
-        <CenterMorphModalContent ariaLabel="删除聊天?">
-          <div className="flex flex-col gap-4 p-7 sm:p-8">
-            {/* 标题 */}
-            <p className="text-xl">删除聊天?</p>
-            <div className="flex flex-col gap-4">
-              {/* 主区域 */}
-              <div className="flex">
-                <span className="text-md tracking-tight text-foreground">这会删除</span>
-                <span className="font-bold">"{deleteItem?.label}"</span>
-              </div>
+      />
 
-              {/* 按钮组 */}
-              <div className="flex gap-4 self-end">
-                <Button
-                  className="cursor-pointer"
-                  variant="outline"
-                  size="md"
-                  onClick={() => {
-                    setModalOpen(false);
-                  }}
-                >
-                  取消
-                </Button>
-                <StatefulButton
-                  className="cursor-pointer bg-destructive hover:bg-destructive/90"
-                  state={deleteState}
-                  variant="primary"
-                  size="md"
-                  onClick={() => {
-                    if (!deleteItem) return;
-                    handleConfirmDelete(deleteItem);
-                  }}
-                  errorText="请重试"
-                  loadingText="删除中"
-                  successText="删除完成"
-                >
-                  删除
-                </StatefulButton>
-              </div>
-            </div>
-          </div>
-        </CenterMorphModalContent>
-      </CenterMorphModal>
+      {/* 注册与登录弹框 */}
+      <AuthModal
+        open={isLoginModalOpen}
+        onOpenChange={(open) => {
+          if (!open) setIsLoginModalOpen(false);
+          else setIsLoginModalOpen(true);
+        }}
+      />
 
       {/* 全局弹窗 */}
       <AnimatedToastStack

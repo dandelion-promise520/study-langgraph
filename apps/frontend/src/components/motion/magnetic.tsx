@@ -1,7 +1,5 @@
-"use client";
-
-import { useHoverCapable } from "@frontend/hooks/gestures/use-hover-capable";
 import { SPRING_MOUSE } from "@frontend/lib/ease";
+import { useHoverCapable } from "@frontend/lib/hooks/use-hover-capable";
 import { cn } from "@frontend/lib/utils";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { useRef, type ReactNode } from "react";
