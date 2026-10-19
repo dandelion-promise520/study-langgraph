@@ -58,7 +58,7 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
             </TabsContent>
 
             <TabsContent<TabState> value="logIn">
-              <LoginForm className="border-none p-0" />
+              <LoginForm className="border-none p-0" title="请登录您的账号" description="" />
             </TabsContent>
           </Tabs>
         </div>

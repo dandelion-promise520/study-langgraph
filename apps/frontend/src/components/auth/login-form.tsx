@@ -5,7 +5,7 @@ import { Checkbox } from "@frontend/components/motion/checkbox";
 import { Input } from "@frontend/components/motion/input";
 import { EASE_OUT, SPRING_LAYOUT } from "@frontend/lib/ease";
 import { cn } from "@frontend/lib/utils";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type FormEvent, type ReactNode, useCallback, useId, useMemo, useState } from "react";
 
@@ -106,29 +106,29 @@ function defaultValidate(values: SignUpValues): SignUpErrors {
   const errors: SignUpErrors = {};
 
   if (!values.name.trim()) {
-    errors.name = "Enter your name.";
+    errors.name = "请输入您的用户名";
   }
 
   if (!values.email.trim()) {
-    errors.email = "Enter your email.";
+    errors.email = "请输入您的邮箱";
   } else if (!EMAIL_PATTERN.test(values.email)) {
     errors.email = "That doesn't look like an email address.";
   }
 
   if (!values.password) {
-    errors.password = "Choose a password.";
+    errors.password = "请输入您的密码";
   } else if (values.password.length < MIN_PASSWORD_LENGTH) {
     errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
   }
 
   if (!values.confirmPassword) {
-    errors.confirmPassword = "Confirm your password.";
+    errors.confirmPassword = "请再次输入密码";
   } else if (values.confirmPassword !== values.password) {
     errors.confirmPassword = "Passwords don't match.";
   }
 
   if (!values.terms) {
-    errors.terms = "Accept the terms to continue.";
+    errors.terms = "请同意我们的条款后继续";
   }
 
   return errors;
@@ -262,20 +262,6 @@ export function LoginForm({
 
       <div className={cn("flex flex-col gap-1", classNames?.fields)}>
         <Input
-          label="用户名"
-          autoComplete="name"
-          placeholder="Ada Lovelace"
-          leftIcon={<User />}
-          disabled={isSubmitting}
-          value={values.name}
-          onChange={(next) => setValue("name", next)}
-          onBlur={() => touch("name")}
-          error={shownError("name")}
-          reserveErrorLine
-          success={isValid("name")}
-        />
-
-        <Input
           label="Email"
           type="email"
           inputMode="email"
@@ -296,7 +282,6 @@ export function LoginForm({
             label="密码"
             type={revealPassword ? "text" : "password"}
             autoComplete="new-password"
-            placeholder="At least 8 characters"
             leftIcon={<Lock />}
             rightIcon={
               <button
@@ -353,21 +338,6 @@ export function LoginForm({
             ) : null}
           </AnimatePresence>
         </div>
-
-        <Input
-          label="确认密码"
-          type={revealPassword ? "text" : "password"}
-          autoComplete="new-password"
-          placeholder="Re-enter your password"
-          leftIcon={<Lock />}
-          disabled={isSubmitting}
-          value={values.confirmPassword}
-          onChange={(next) => setValue("confirmPassword", next)}
-          onBlur={() => touch("confirmPassword")}
-          error={shownError("confirmPassword")}
-          reserveErrorLine
-          success={isValid("confirmPassword")}
-        />
       </div>
 
       <div className={cn("flex flex-col gap-1.5", classNames?.terms)}>

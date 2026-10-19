@@ -1,28 +1,32 @@
 ---
 name: beui
-description: Pick and install beUI (@beui) animated React components from the shadcn registry. Use when building motion UI, agent/chat interfaces, toasts, docks, bottom sheets, drawers, popovers, sliders, loaders, 404 pages, or any beui.dev component. Maps user intent to exact @beui install slugs instead of inventing custom widgets.
+description: Pick and install beUI (@beui) animated React components through public MCP or the shadcn registry. Use when building motion UI, agent/chat interfaces, toasts, docks, bottom sheets, drawers, popovers, sliders, loaders, 404 pages, or any beui.dev component. Maps user intent to exact @beui install slugs instead of inventing custom widgets.
 ---
 
 # beUI
 
-Use beUI as copy-paste source through the `@beui` shadcn registry.
+Use beUI as copy-paste source through its public MCP or the `@beui` shadcn registry.
+
+See the [AI agents guide](https://beui.dev/docs/ai-agents) for current connection instructions and endpoints.
+The public MCP at `https://mcp.beui.dev/mcp` needs no license key or Pro authentication.
+For licensed components, use the separate `beui-pro` skill and Pro connection.
 
 ## Workflow
 
-1. Fetch the live registry before choosing a component:
+1. Discover current components with the public MCP's `list_components` or `search_components` when connected. Otherwise, fetch the live registry:
 
 ```bash
 curl -fsS https://beui.dev/r/registry.json
 ```
 
-2. Pick the closest install slug from `items[].name`.
-3. Inspect before installing:
+2. For CLI installation, pick the closest install slug from `items[].name` in the live registry. Public MCP catalog slugs can name documentation pages with multiple installable variants. Do not assume every page slug is an install slug.
+3. Inspect the selected component with MCP `get_component`, or inspect an installable item through the CLI:
 
 ```bash
 npx shadcn@latest view @beui/<slug>
 ```
 
-4. Install with the user's package runner:
+4. Install the complete files returned by MCP using the project's paths and aliases, then install the listed package dependencies. Preserve existing helpers and local modifications. Alternatively, install a verified registry slug with the user's package runner:
 
 ```bash
 npx shadcn@latest add @beui/<slug>
@@ -32,7 +36,7 @@ pnpm dlx shadcn@latest add @beui/<slug>
 bunx --bun shadcn@latest add @beui/<slug>
 ```
 
-5. Read the files that were added, then compose with the named exports. There is no `beui` runtime package.
+5. Read the files that were added, then compose with the named exports. There is no `beui` runtime package. Validate any CLI command returned by MCP against the live install slugs before running it.
 
 The live registry is the source of truth. Use the table below only to resolve common lookalikes.
 
@@ -85,6 +89,7 @@ The live registry is the source of truth. Use the table below only to resolve co
 | Rolling digits | `number-ticker` | `animated-number` |
 | Count-up on view | `animated-number` | `number-ticker` |
 | Tick-dot slider | `range-slider` | other `range-slider-*` |
+| Inline label slider | `range-slider-inline` | `range-slider` |
 | Liquid fill slider | `range-slider-fluid` | `range-slider` |
 | Equalizer slider | `range-slider-wave` | `range-slider` |
 | Tilting value bubble slider | `range-slider-bubble` | `range-slider` |
@@ -110,6 +115,9 @@ The live registry is the source of truth. Use the table below only to resolve co
 | Cylinder carousel | `cylinder-carousel` | `marquee` |
 | Logo or text marquee | `marquee` | `cylinder-carousel` |
 | Data table | `table` | HTML table from scratch |
+| Activity heatmap, contribution graph | `heat-calendar` | custom grid |
+| Monthly returns grid | `returns-calendar` | `heat-calendar` |
+| Analyst price target chart, forecast fan | `price-target-fan` | custom svg chart |
 | Editable table | `table-editable` | `table` |
 | Async table | `table-async` | `table` |
 | Tournament bracket | `knockout-bracket` | `knockout-wheel` |
@@ -140,3 +148,9 @@ The live registry is the source of truth. Use the table below only to resolve co
 ## In this repo
 
 When contributing to beUI itself, follow `AGENTS.md`. A new public component needs source, preview, registry entry, and a passing `bun run check:registry`. Never rename existing `/r/{name}.json` slugs.
+
+Chart components (`heat-calendar`, `returns-calendar`, `price-target-fan`) live under `/charts` in the docs. Their `@beui` install slugs are unchanged.
+
+Compose charts from their root and exported parts. `HeatCalendar` provides `HeatCalendarGrid`, `HeatCalendarLegend`, and `HeatCalendarTooltip`; `ReturnsCalendar` provides `ReturnsCalendarGrid` and `ReturnsCalendarTooltip`. Put each calendar tooltip inside its grid. Both accept `selection`, `defaultSelection`, and `onSelectionChange`.
+
+`PriceTargetFan` provides Header, Plot, Svg, Axes, History, Targets, Now, Cursor, and Tooltip parts (prefix each with `PriceTargetFan`). Put SVG parts inside Svg and put Tooltip beside Svg inside Plot. Pass `current`, `targets`, and an optional chronological `history` of `{ date: ISOString, price }`; omitted history renders no historical series. Use `active`, `defaultActive`, and `onActiveChange` to control the readout. Each chart exports a `use...` hook for custom descendant content; tooltip children may be a render function. Sample data belongs in the consuming app, not the chart implementation. `HeatCalendar.endDate` uses the UTC calendar date.

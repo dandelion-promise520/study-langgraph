@@ -5,7 +5,7 @@
       "source": "starc007/ui-components",
       "sourceType": "github",
       "skillPath": "skills/beui/SKILL.md",
-      "computedHash": "c26ac007b804613b5275c9c1836a997ded209de8c71c039e4c82564d7befcaba"
+      "computedHash": "bff7df8f18d41d96fb1ba26adfed7354c3de9f0bc11669e6e03c9f2b0384b997"
     },
     "deep-agents-core": {
       "source": "langchain-ai/langchain-skills",
@@ -53,7 +53,7 @@
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
       "skillPath": "config/skills/eval-engineering/SKILL.md",
-      "computedHash": "a744dbb793a610ba2bc203fbd6a74ca99895b2bf4fcf68d431893f04b3de8d6e"
+      "computedHash": "f16c54616690a803e7fd6398d153320fd3aed71f6b98f5d6fcae992eef51e907"
     },
     "langchain-dependencies": {
       "source": "langchain-ai/langchain-skills",
@@ -101,7 +101,7 @@
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
       "skillPath": "config/skills/langgraph-fundamentals/SKILL.md",
-      "computedHash": "581ea3bb684f4cd2c3eeee3f9b357f3988032d1f40fb5afc2ce217ec2ecbcdaa"
+      "computedHash": "15d38ee836230e438415a256faf54a19eeb08789033aa1211dc113241a42f274"
     },
     "langgraph-human-in-the-loop": {
       "source": "langchain-ai/langchain-skills",
@@ -127,23 +127,17 @@
       "skillPath": "config/skills/langgraph-typescript-quickstart/SKILL.md",
       "computedHash": "6ec171c34aa155308af416b7cb2f8be64f6226ee7e2be4dca9d6180bb2d47081"
     },
-    "langsmith-online-eval-engineering": {
-      "source": "langchain-ai/langchain-skills",
-      "sourceType": "github",
-      "skillPath": "config/skills/langsmith-online-eval-engineering/SKILL.md",
-      "computedHash": "e1298fcc26a33f1c90f2ff94defc8b55c8d8355d384c138a80278b2cfb767466"
-    },
     "managed-deep-agents": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
       "skillPath": "config/skills/managed-deep-agents/SKILL.md",
-      "computedHash": "e4f26dfc142ef97704ddc5e090b2636f2b67ba4542a52018d1860e851e608ed8"
+      "computedHash": "08cf8dbee488f574f413e9eb17920011209310160847006f91dc5d46f2263b89"
     },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "f99ef49d9909d380ca683ceb8dc8c25775c20ee38140112c394e037d8c11ee18"
+      "computedHash": "7859e9a064940a1a0010c992b63e4633c4f5f39ed367a23c16f24029816b1703"
     },
     "swarm": {
       "source": "langchain-ai/langchain-skills",

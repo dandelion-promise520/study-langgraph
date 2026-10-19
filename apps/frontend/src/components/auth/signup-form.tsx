@@ -264,7 +264,7 @@ export function SignUpForm({
         <Input
           label="用户名"
           autoComplete="name"
-          placeholder="Ada Lovelace"
+          placeholder="用户名"
           leftIcon={<User />}
           disabled={isSubmitting}
           value={values.name}
@@ -296,7 +296,6 @@ export function SignUpForm({
             label="密码"
             type={revealPassword ? "text" : "password"}
             autoComplete="new-password"
-            placeholder="At least 8 characters"
             leftIcon={<Lock />}
             rightIcon={
               <button
@@ -358,7 +357,6 @@ export function SignUpForm({
           label="确认密码"
           type={revealPassword ? "text" : "password"}
           autoComplete="new-password"
-          placeholder="Re-enter your password"
           leftIcon={<Lock />}
           disabled={isSubmitting}
           value={values.confirmPassword}

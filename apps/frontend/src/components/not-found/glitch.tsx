@@ -67,7 +67,7 @@ export function NotFoundGlitch({
 }: NotFoundProps) {
   return (
     <NotFoundStage className={className}>
-      <div className="group relative font-mono [font-size:clamp(5rem,18vw,11rem)] leading-none font-bold tracking-tighter text-foreground select-none">
+      <div className="group relative font-mono text-[clamp(5rem,18vw,11rem)] leading-none font-bold tracking-tighter text-foreground select-none">
         {/* Chromatic ghost layers, nudged apart on hover. */}
         <span
           aria-hidden
