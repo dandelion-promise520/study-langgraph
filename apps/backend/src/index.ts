@@ -1,3 +1,5 @@
+import type { ApiErrorDto } from "@lg-lab/types";
+
 import { env } from "@backend/config/env";
 import { agentModule, healthModule, threadModule } from "@backend/modules";
 import { checkpointer } from "@backend/modules/agent/agent.graph";
@@ -6,6 +8,8 @@ import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { zodToJsonSchema } from "zod-to-json-schema";
+
+import { AppError } from "./lib/errors";
 
 const app = new Elysia()
   .onStart(async () => {
@@ -24,9 +28,31 @@ const app = new Elysia()
   .onAfterResponse(({ request, set }) => {
     console.log(`<-- ${request.method} ${new URL(request.url).pathname} ${set.status ?? 200}`);
   })
-  // 全局未捕获异常日志
-  .onError(({ code, error, request }) => {
-    console.error(`[Error] ${request.method} ${request.url} [${code}]:`, error);
+  // 全局异常处理
+  .onError(({ code, error }): ApiErrorDto => {
+    if (error instanceof AppError) {
+      return { code: error.code, message: error.message };
+    }
+
+    if (code === "VALIDATION") {
+      const issues = error.all;
+      return {
+        code: "VALIDATION_FAILED",
+        message: issues[0]?.message ?? "参数校验失败",
+        details: issues.map((issue) => ({
+          field: issue.path,
+          message: issue.message,
+        })),
+      };
+    }
+
+    if (code === "NOT_FOUND") return { code: "NOT_FOUND", message: "接口不存在" };
+
+    if (code === "PARSE") return { code: "INVALID_BODY", message: "请求体不是合法的 JSON" };
+
+    console.error("[未捕获异常]", error);
+
+    return { code: "INTERNAL_ERROR", message: "服务器内部错误" };
   })
   .use(cors())
   .use(

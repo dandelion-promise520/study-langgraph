@@ -12,14 +12,14 @@ export class AgentController {
   /**
    * 处理聊天请求
    */
-  async chat(body: ChatRequestDto): Promise<ChatResponseDto> {
-    return await agentService.chat(body);
+  async chat({ body, userId }: { body: ChatRequestDto; userId: string }): Promise<ChatResponseDto> {
+    return await agentService.chat({ body, userId });
   }
 
-  async *chatStream(body: ChatRequestDto) {
+  async *chatStream({ body, userId }: { body: ChatRequestDto; userId: string }) {
     try {
       // 1. 调用 Service 获取纯文本/Token 异步生成器流
-      const textStream = agentService.chatStream(body);
+      const textStream = agentService.chatStream({ body, userId });
 
       // 2. 将每个文本增量包装为 SSE message 事件
       for await (const delta of textStream) {

@@ -4,30 +4,56 @@ import { threadService } from "./thread.service";
 
 export class ThreadController {
   // 获取会话
-  async getThreads(): Promise<ThreadDto[]> {
-    return await threadService.getThreads();
+  async getThreads({ userId }: { userId: string }): Promise<ThreadDto[]> {
+    return await threadService.getThreads({ userId });
   }
 
   // 创建会话
-  async createThread(body: CreateThreadDto): Promise<ThreadDto> {
-    return await threadService.createThread(body);
+  async createThread({
+    data,
+    userId,
+  }: {
+    data: CreateThreadDto;
+    userId: string;
+  }): Promise<ThreadDto> {
+    return await threadService.createThread({ data, userId });
   }
 
   // 更新会话
-  async updateThreads(id: string, body: UpdateThreadDto): Promise<{ success: boolean }> {
-    await threadService.updateThread(id, body);
+  async updateThreads({
+    id,
+    data,
+    userId,
+  }: {
+    id: string;
+    data: UpdateThreadDto;
+    userId: string;
+  }): Promise<{ success: boolean }> {
+    await threadService.updateThread({ data, id, userId });
     return { success: true };
   }
 
   // 删除会话
-  async deleteThreads(id: string): Promise<{ success: boolean }> {
-    await threadService.deleteThread(id);
+  async deleteThreads({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }): Promise<{ success: boolean }> {
+    await threadService.deleteThread({ id, userId });
     return { success: true };
   }
 
   // 获取会话信息
-  async getMessages(threadId: string): Promise<MessageDto[]> {
-    return await threadService.getMessages(threadId);
+  async getMessages({
+    threadId,
+    userId,
+  }: {
+    threadId: string;
+    userId: string;
+  }): Promise<MessageDto[]> {
+    return await threadService.getMessages({ threadId, userId });
   }
 }
 

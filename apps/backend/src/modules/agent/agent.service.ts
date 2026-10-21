@@ -10,24 +10,30 @@ export class AgentService {
   private async ensureThread({
     threadId,
     message,
+    userId,
   }: {
     threadId: string;
     message: string;
+    userId: string;
   }): Promise<string> {
-    const thread = await threadService.getThreadById(threadId);
+    const thread = await threadService.getThreadById({ id: threadId, userId });
 
     if (!thread) {
       const title = message.length > 20 ? `${message.slice(0, 20)}...` : message;
-      await threadService.createThread({ id: threadId, title });
+      await threadService.createThread({ data: { id: threadId, title }, userId });
     }
 
     return threadId;
   }
 
   // 普通调用
-  async chat(body: ChatRequestDto): Promise<ChatResponseDto> {
+  async chat({ body, userId }: { body: ChatRequestDto; userId: string }): Promise<ChatResponseDto> {
     // 拿到合法threadId
-    const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
+    const threadId = await this.ensureThread({
+      threadId: body.threadId,
+      message: body.message,
+      userId,
+    });
 
     // 保存用户信息
     await threadService.saveMessage({ content: body.message, role: "user", threadId });
@@ -54,9 +60,13 @@ export class AgentService {
   }
 
   // 流式输出（异步生成器）
-  async *chatStream(body: ChatRequestDto) {
+  async *chatStream({ body, userId }: { body: ChatRequestDto; userId: string }) {
     // 拿到合法threadId
-    const threadId = await this.ensureThread({ threadId: body.threadId, message: body.message });
+    const threadId = await this.ensureThread({
+      threadId: body.threadId,
+      message: body.message,
+      userId,
+    });
 
     // 保存用户信息
     await threadService.saveMessage({ content: body.message, role: "user", threadId });

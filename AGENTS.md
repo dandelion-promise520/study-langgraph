@@ -111,3 +111,35 @@ type(scope?): subject
 
 - **严禁使用 `!!` 进行布尔类型强转**：避免使用 `!!value` 或 `!!(a && b)` 这种隐式类型转换写法。
 - **必须使用 `??` 显式提供默认值**：通过可选链配合空值合并操作符（如 `state.streams[threadId]?.isGenerating ?? false`）或显式条件判断，提升代码可读性与类型意图的明确性。
+
+### 2. 多参数一律使用对象包裹 (Options Object for Multiple Parameters)
+
+- **参数数量达到 2 个及以上时，必须收敛为单个对象参数**，禁止使用并排的位置参数（如 `fn(a, b)`）。
+- **仅 1 个参数时保持直接传值**，不要无谓包装成 `fn({ a })`。
+
+理由：调用点自解释（`createThread({ data, userId })` 一眼看清每个值的含义）、不受参数顺序影响、后续新增可选参数无需改动所有调用点、避免连续 boolean 位置参数造成的可读性灾难。
+
+```ts
+// 禁止：两个及以上位置参数
+async createThread(data: CreateThreadDto, userId: string): Promise<ThreadDto> {}
+
+// 必须：单个对象参数，并在签名内解构
+async createThread({
+  data,
+  userId,
+}: {
+  data: CreateThreadDto;
+  userId: string;
+}): Promise<ThreadDto> {}
+
+// 调用点
+await threadService.createThread({ data: body, userId });
+```
+
+- **单参数保持直接传值**：
+
+```ts
+async deleteThread(id: string) {}
+```
+
+- 参数结构较复杂或需在多处复用时，可为该对象单独定义具名类型（模块内部类型就近放在模块目录内，跨端契约放 `packages/types`）；禁止退化为 `...args: any[]` 之类的兜底写法。

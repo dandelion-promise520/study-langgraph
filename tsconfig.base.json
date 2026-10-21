@@ -1,40 +1,63 @@
 {
+  // 提供给编辑器（如 VS Code）的 JSON Schema，用于鼠标悬停提示和字段自动补全
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    /* Language and Environment */
+    /* Language and Environment（语言与运行环境） */
+    // 编译目标的 JS 版本：ESNext 表示始终对齐最新标准的 JS 语法，不做降级转换
     "target": "ESNext",
+    // 注入的内置类型声明库：仅包含最新标准 JS API（如 Promise, Set 等），不包含浏览器 DOM 类型（如 document, window）
     "lib": ["ESNext"],
+    // 模块系统格式：使用最新的 ES Module (import/export) 规范
     "module": "ESNext",
+    // 强制将所有文件都视为独立模块（哪怕文件里没有写 import/export），彻底防止全局作用域变量污染
     "moduleDetection": "force",
+    // 允许在项目中引入和混合使用普通的 .js / .jsx 文件
     "allowJs": true,
 
-    /* Bundler mode & Transpilation */
+    /* Bundler mode & Transpilation（打包器模式与转译策略） */
+    // 使用现代打包器（Vite/esbuild/Webpack/Bun等）的模块解析策略：支持 package.json 的 exports 字段，且导入时无需强写文件后缀
     "moduleResolution": "bundler",
+    // 允许在 import 语句中显式带上 .ts / .tsx 后缀（要求必须同时开启 noEmit: true）
     "allowImportingTsExtensions": true,
+    // 严格模块语法：强制要求纯类型的导入导出必须加 type 关键字（如 import type { A }），编译时直接抹除，避免运行时模块循环依赖问题
     "verbatimModuleSyntax": true,
+    // 不生成编译后的 JS 文件：TS 仅作为“类型检查器”使用，真正的转译/打包交给 Vite、tsx、esbuild 或 Bun 等外部工具
     "noEmit": true,
 
-    /* Strictness & Code Quality */
+    /* Strictness & Code Quality（严格模式与代码质量） */
+    // 开启所有基础严格类型检查的一键总开关（包含 strictNullChecks、noImplicitAny 等核心安全检查）
     "strict": true,
+    // 跳过对第三方库（node_modules 下的 .d.ts）的类型检查：大幅提升编译检查速度，并避免第三方库自身的类型冲突报错
     "skipLibCheck": true,
+    // 防止 switch 语句中非空的 case 漏写 break 或 return 导致意外贯穿到下一个分支
     "noFallthroughCasesInSwitch": true,
+    // 下标访问安全：通过数组下标（arr[0]）或动态字典取出的值，类型自动附带 | undefined，强迫先判空再使用
     "noUncheckedIndexedAccess": true,
+    // 强制显式重写：子类重写父类方法或属性时，必须显式加上 override 关键字（如刚才 AppError 里的 override readonly name）
     "noImplicitOverride": true,
+    // 检查副作用导入：像 import "./setup" 或 import "./style.css" 这种不导出变量的导入，如果目标文件不存在会直接报错（默认 TS 会静默忽略）
     "noUncheckedSideEffectImports": true,
+    // 是否仅允许“可直接擦除”的 TS 语法：设为 false 表示允许使用构造函数参数属性（constructor(readonly a: number)）和 enum 等语法糖
     "erasableSyntaxOnly": true,
 
-    /* Configurable Relaxations */
+    /* Configurable Relaxations（主动放宽的检查项，避免开发时过于繁琐） */
+    // 声明了但未使用的局部变量不报错（通常交给 ESLint / Biome 处理，避免写代码调试时满屏红线）
     "noUnusedLocals": false,
+    // 函数中定义了但未使用的参数不报错
     "noUnusedParameters": false,
+    // 允许通过点语法（obj.key）直接访问动态索引签名（Record<string, any>）的属性，而不强制要求写成 obj['key']
     "noPropertyAccessFromIndexSignature": false,
 
     /* Paths：全仓唯一一份，各子项目 extends 继承，不再各自覆盖 */
+    // 路径别名映射：配合打包器或运行时工具实现跨包/跨目录的绝对路径导入
     "paths": {
+      // 将 @backend/* 映射到后端源码目录
       "@backend/*": ["./apps/backend/src/*"],
       /* 首个候选 "./src/*" 是给 shadcn CLI 的：它以 apps/frontend 为基准解析别名，
          并据此决定生成文件的 import 前缀。tsc 以仓库根为基准解析本配置，
          该候选不存在会自动落到第二个候选，因此两者都能正确解析。 */
       "@frontend/*": ["./src/*", "./apps/frontend/src/*"],
+      // 指向 Monorepo 内部共享类型包的源码入口（无需先 build 子包即可直接获得最新类型提示）
       "@lg-lab/types": ["./packages/types/src/index.ts"]
     }
   }
