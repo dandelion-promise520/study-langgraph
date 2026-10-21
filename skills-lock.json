@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "api-design-principles": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/api-design-principles/SKILL.md",
+      "computedHash": "853df00266999c9cddf8b6bbd563cf0fe822c1cf8463ef0c584c4af457d87b95"
+    },
     "beui": {
       "source": "starc007/ui-components",
       "sourceType": "github",
@@ -133,11 +139,23 @@
       "skillPath": "config/skills/managed-deep-agents/SKILL.md",
       "computedHash": "08cf8dbee488f574f413e9eb17920011209310160847006f91dc5d46f2263b89"
     },
+    "postgres-best-practices": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/postgres-best-practices/SKILL.md",
+      "computedHash": "c52df0a23627719f5a3349faf3ec1f3a2e4c7866dbaef3b5af4ca4f849ea0bd3"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "7859e9a064940a1a0010c992b63e4633c4f5f39ed367a23c16f24029816b1703"
+    },
+    "sql-optimization-patterns": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sql-optimization-patterns/SKILL.md",
+      "computedHash": "00e6f990af37a9daa25f901a1661d902bea6ec543d6767fbc853f9a9e1f0059f"
     },
     "swarm": {
       "source": "langchain-ai/langchain-skills",
