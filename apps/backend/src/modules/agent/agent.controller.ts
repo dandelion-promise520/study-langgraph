@@ -1,27 +1,22 @@
-import {
-  CHAT_STREAM_DONE_TAG,
-  type ChatRequestDto,
-  type ChatResponseDto,
-  type ChatStreamChunkDto,
-} from "@lg-lab/types";
+import { CHAT_STREAM_DONE_TAG, type ChatRequestDto, type ChatStreamChunkDto } from "@lg-lab/types";
 import { sse } from "elysia";
 
 import { agentService } from "./agent.service";
 
-export class AgentController {
+class AgentController {
   /**
    * 处理聊天请求
    */
-  async chat({ body, userId }: { body: ChatRequestDto; userId: string }): Promise<ChatResponseDto> {
-    return await agentService.chat({ body, userId });
+  chat({ body, userId }: { body: ChatRequestDto; userId: string }) {
+    return agentService.chat({ body, userId });
   }
 
   async *chatStream({ body, userId }: { body: ChatRequestDto; userId: string }) {
     try {
-      // 1. 调用 Service 获取纯文本/Token 异步生成器流
+      // 调用 Service 获取纯文本/Token 异步生成器流
       const textStream = agentService.chatStream({ body, userId });
 
-      // 2. 将每个文本增量包装为 SSE message 事件
+      // 将每个文本增量包装为 SSE message 事件
       for await (const delta of textStream) {
         const payload: ChatStreamChunkDto = { delta };
 
@@ -31,7 +26,7 @@ export class AgentController {
         });
       }
 
-      // 3. 模型生成完成，推送 [DONE] 结束标记
+      // 模型生成完成，推送 [DONE] 结束标记
       yield sse({
         event: "done",
         data: CHAT_STREAM_DONE_TAG,

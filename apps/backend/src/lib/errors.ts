@@ -4,9 +4,9 @@ export class AppError extends Error {
   readonly status: number;
   readonly code: ErrorCode;
 
-  constructor({ code, message }: { code: ErrorCode; message?: string }) {
+  constructor({ code, message, cause }: { code: ErrorCode; message?: string; cause?: unknown }) {
     const preset = ERROR_CODE[code];
-    super(message ?? preset.message);
+    super(message ?? preset.message, { cause });
     this.name = "AppError";
     this.status = preset.status;
     this.code = code;

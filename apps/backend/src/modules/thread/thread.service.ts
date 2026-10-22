@@ -66,6 +66,8 @@ export class ThreadService {
       .returning();
 
     if (!updated) throw new AppError({ code: "THREAD_NOT_FOUND" });
+
+    return updated;
   }
 
   // 删除会话

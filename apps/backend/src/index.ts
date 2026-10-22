@@ -1,7 +1,7 @@
 import type { ApiErrorDto } from "@lg-lab/types";
 
 import { env } from "@backend/config/env";
-import { agentModule, healthModule, threadModule } from "@backend/modules";
+import { agentModule, authModule, healthModule, threadModule } from "@backend/modules";
 import { checkpointer } from "@backend/modules/agent/agent.graph";
 import openapi from "@elysia/openapi";
 import { cors } from "@elysiajs/cors";
@@ -79,6 +79,7 @@ const app = new Elysia()
   .use(healthModule)
   .use(agentModule)
   .use(threadModule)
+  .use(authModule)
   .get("/", () => ({
     status: "ok",
     service: "LangGraph Elysia Backend",

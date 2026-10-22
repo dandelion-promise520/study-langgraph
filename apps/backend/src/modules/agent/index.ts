@@ -8,23 +8,11 @@ export const agentModule = new Elysia({ prefix: "/agent" })
   .use(requireUser)
   .model(AgentModels)
   // 1、普通单次请求
-  .post(
-    "/chat",
-    async ({ body, userId }) => {
-      return await agentController.chat({ body, userId });
-    },
-    {
-      body: "ChatRequest",
-      response: "ChatResponse",
-    },
-  )
+  .post("/chat", ({ body, userId }) => agentController.chat({ body, userId }), {
+    body: "ChatRequest",
+    response: "ChatResponse",
+  })
   // 2、sse流式传输
-  .post(
-    "/chat/stream",
-    ({ body, userId }) => {
-      return agentController.chatStream({ body, userId });
-    },
-    {
-      body: "ChatRequest",
-    },
-  );
+  .post("/chat/stream", ({ body, userId }) => agentController.chatStream({ body, userId }), {
+    body: "ChatRequest",
+  });

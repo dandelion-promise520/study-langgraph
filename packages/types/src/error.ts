@@ -13,6 +13,7 @@ export const ApiErrorSchema = z.object({
 
 export const ERROR_CODE = {
   UNAUTHORIZED: { status: 401, message: "未登录" },
+  INVALID_CREDENTIALS: { status: 401, message: "邮箱或密码错误" },
   FORBIDDEN: { status: 403, message: "无权访问" },
   NOT_FOUND: { status: 404, message: "资源不存在" },
   THREAD_NOT_FOUND: { status: 404, message: "会话不存在" },
