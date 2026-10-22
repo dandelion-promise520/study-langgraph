@@ -54,7 +54,7 @@ const app = new Elysia()
 
     return { code: "INTERNAL_ERROR", message: "服务器内部错误" };
   })
-  .use(cors())
+  .use(cors({ credentials: true, origin: true }))
   .use(
     rateLimit({
       duration: 60 * 1000, // 限流时间窗口：1 分钟（60000 ms）

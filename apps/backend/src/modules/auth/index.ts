@@ -14,4 +14,30 @@ export const authModule = new Elysia({ prefix: "/auth" })
     },
     { body: "Register", response: { 201: UserSchema } },
   )
-  .post("/login", ({ body }) => authController.login({ body }), { body: "Login" });
+  .post(
+    "/login",
+    async ({ body, cookie }) => {
+      const { user, token, expiresAt } = await authController.login({ body });
+      cookie.auth_session?.set({
+        value: token,
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        expires: expiresAt,
+      });
+
+      return user;
+    },
+    { body: "Login", response: { 200: UserSchema } },
+  )
+  .delete("/logout", async ({ cookie }) => {
+    const token = cookie.auth_session?.value;
+
+    if (typeof token === "string" && token !== "") {
+      await authController.logout({ token });
+    }
+
+    cookie.auth_session?.remove();
+
+    return { success: true };
+  });

@@ -7,8 +7,12 @@ class AuthController {
     return authService.register({ body });
   }
 
-  async login({ body }: { body: LoginDto }) {
+  login({ body }: { body: LoginDto }) {
     return authService.login({ body });
+  }
+
+  logout({ token }: { token: string }) {
+    return authService.logout({ token });
   }
 }
 
