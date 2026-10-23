@@ -1,18 +1,30 @@
 import Elysia from "elysia";
 
-import { requireUser } from "../auth/require-user";
+import { requireAuth } from "../auth/require-auth";
 import { threadController } from "./thread.controller";
 import { ThreadModels } from "./thread.model";
 
 export const threadModule = new Elysia({ prefix: "/threads" })
-  .use(requireUser)
+  .use(requireAuth)
   .model(ThreadModels)
   // 获取会话
-  .get("/", ({ userId }) => threadController.getThreads({ userId }))
-  // 新建会话
-  .post("/", ({ body, userId }) => threadController.createThread({ data: body, userId }), {
-    body: "CreateThread",
+  .get("/", ({ userId }) => threadController.getThreads({ userId }), {
+    response: { 200: "ThreadList" },
+    detail: { security: [{ cookieAuth: [] }] },
   })
+  // 新建会话
+  .post(
+    "/",
+    ({ body, userId, set }) => {
+      set.status = 201;
+      return threadController.createThread({ data: body, userId });
+    },
+    {
+      body: "CreateThread",
+      response: { 201: "Thread" },
+      detail: { security: [{ cookieAuth: [] }] },
+    },
+  )
   //重命名会话
   .patch(
     "/:id",
@@ -21,6 +33,8 @@ export const threadModule = new Elysia({ prefix: "/threads" })
     {
       params: "ThreadParams",
       body: "UpdateThread",
+      response: { 200: "Thread" },
+      detail: { security: [{ cookieAuth: [] }] },
     },
   )
   // 删除会话
@@ -30,11 +44,15 @@ export const threadModule = new Elysia({ prefix: "/threads" })
       await threadController.deleteThread({ id: params.id, userId });
       set.status = 204;
     },
-    { params: "ThreadParams" },
+    { params: "ThreadParams", detail: { security: [{ cookieAuth: [] }] } },
   )
   // 获取会话历史消息
   .get(
     "/:id/messages",
     ({ params, userId }) => threadController.getMessages({ threadId: params.id, userId }),
-    { params: "ThreadParams" },
+    {
+      params: "ThreadParams",
+      detail: { security: [{ cookieAuth: [] }] },
+      response: { 200: "MessageList" },
+    },
   );

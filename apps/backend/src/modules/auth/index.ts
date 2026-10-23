@@ -3,6 +3,7 @@ import Elysia from "elysia";
 
 import { authController } from "./auth.controller";
 import { AuthModels } from "./auth.model";
+import { requireAuth } from "./require-auth";
 
 export const authModule = new Elysia({ prefix: "/auth" })
   .model(AuthModels)
@@ -40,4 +41,9 @@ export const authModule = new Elysia({ prefix: "/auth" })
     cookie.auth_session?.remove();
 
     return { success: true };
+  })
+  .use(requireAuth)
+  .get("/me", ({ userId }) => authController.getCurrentUser({ userId }), {
+    response: { 200: UserSchema },
+    detail: { security: [{ cookieAuth: [] }] },
   });

@@ -74,6 +74,13 @@ const app = new Elysia()
       mapJsonSchema: {
         zod: zodToJsonSchema,
       },
+      documentation: {
+        components: {
+          securitySchemes: {
+            cookieAuth: { type: "apiKey", in: "cookie", name: "auth_session" },
+          },
+        },
+      },
     }),
   )
   .use(healthModule)

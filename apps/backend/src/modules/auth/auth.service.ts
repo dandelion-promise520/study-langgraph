@@ -2,9 +2,9 @@ import { db } from "@backend/db";
 import { authSessions, users } from "@backend/db/schema";
 import { AppError } from "@backend/lib/errors";
 import { isPgUniqueViolation } from "@backend/lib/pg-error";
-import { UserSchema, type LoginDto, type RegisterDto } from "@lg-lab/types";
+import { UserSchema, type LoginDto, type RegisterDto, type UserDto } from "@lg-lab/types";
 import { randomBytes } from "crypto";
-import { eq } from "drizzle-orm";
+import { and, eq, lt, sql } from "drizzle-orm";
 
 // session过期时间
 const SESSION_TTL_MS = 30 * 24 * 3600 * 1000; // 30 天，
@@ -56,9 +56,14 @@ class AuthService {
     // 算出过期时间
     const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
 
+    // 顺手清下过期的token行
+    await db
+      .delete(authSessions)
+      .where(and(eq(authSessions.userId, user.id), lt(authSessions.expiresAt, sql`now()`)));
+
     // 插表
     await db.insert(authSessions).values({
-      expiresAt: expiresAt.toISOString(),
+      expiresAt: expiresAt,
       token,
       userId: user.id,
     });
@@ -68,6 +73,14 @@ class AuthService {
 
   async logout({ token }: { token: string }) {
     await db.delete(authSessions).where(eq(authSessions.token, token));
+  }
+
+  async getCurrentUser({ userId }: { userId: string }): Promise<UserDto> {
+    const [row] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+
+    if (!row) throw new AppError({ code: "UNAUTHORIZED" });
+
+    return UserSchema.parse(row);
   }
 }
 

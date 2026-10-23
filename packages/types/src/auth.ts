@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { IsoDateTimeSchema } from "./common";
+
 export const EmailSchema = z
   .string()
   .trim()
@@ -25,7 +27,7 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string(),
   emailVerified: z.boolean(),
-  createdAt: z.string(),
+  createdAt: IsoDateTimeSchema,
 });
 
 export type RegisterDto = z.infer<typeof RegisterSchema>;

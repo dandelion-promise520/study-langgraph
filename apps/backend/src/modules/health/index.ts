@@ -24,12 +24,14 @@ export const healthModule = new Elysia({ name: "health" })
         database: "connected",
         timestamp: new Date().toISOString(),
       };
-    } catch (error) {
+    } catch (cause) {
+      console.error("[health] 数据库探活失败", cause);
       set.status = 503;
+
       return {
         status: "error",
         database: "unreachable",
-        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
       };
     }
   });

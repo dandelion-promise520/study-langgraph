@@ -13,18 +13,16 @@ const commonColumns = () => ({
   // 创建时间
   createdAt: timestamp("createdAt", {
     withTimezone: true,
-    mode: "string",
   })
     .notNull()
     .defaultNow(),
   // 更新时间
   updatedAt: timestamp("updatedAt", {
     withTimezone: true,
-    mode: "string",
   })
     .notNull()
     .defaultNow()
-    .$onUpdate(() => new Date().toISOString()),
+    .$onUpdate(() => new Date()),
 });
 
 // 用户表
@@ -45,7 +43,7 @@ export const authSessions = pgTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     token: text("token").notNull().unique(),
-    expiresAt: timestamp("expiresAt", { withTimezone: true, mode: "string" }).notNull(),
+    expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
     ipAddress: text("ipAddress"),
     userAgent: text("userAgent"),
   },

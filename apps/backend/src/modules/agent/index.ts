@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
 
-import { requireUser } from "../auth/require-user";
+import { requireAuth } from "../auth/require-auth";
 import { agentController } from "./agent.controller";
 import { AgentModels } from "./agent.model";
 
 export const agentModule = new Elysia({ prefix: "/agent" })
-  .use(requireUser)
+  .use(requireAuth)
   .model(AgentModels)
   // 1、普通单次请求
   .post("/chat", ({ body, userId }) => agentController.chat({ body, userId }), {

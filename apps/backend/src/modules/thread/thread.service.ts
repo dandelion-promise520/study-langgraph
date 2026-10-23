@@ -1,24 +1,27 @@
-import type {
-  CreateThreadDto,
-  MessageDto,
-  MessageRole,
-  ThreadDto,
-  UpdateThreadDto,
-} from "@lg-lab/types";
-
 import { db } from "@backend/db";
 import { messages, threads } from "@backend/db/schema";
 import { AppError } from "@backend/lib/errors";
+import {
+  MessageSchema,
+  ThreadSchema,
+  type CreateThreadDto,
+  type MessageDto,
+  type MessageRole,
+  type ThreadDto,
+  type UpdateThreadDto,
+} from "@lg-lab/types";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 export class ThreadService {
   // 获取所有会话
   async getThreads({ userId }: { userId: string }): Promise<ThreadDto[]> {
-    return await db
+    const [row] = await db
       .select()
       .from(threads)
       .where(eq(threads.userId, userId))
       .orderBy(desc(threads.updatedAt));
+
+    return ThreadSchema.array().parse(row);
   }
 
   // 按id查一个会话
@@ -30,7 +33,7 @@ export class ThreadService {
       .where(and(eq(threads.id, id), eq(threads.userId, userId)))
       .limit(1);
 
-    return result ?? null;
+    return result ? ThreadSchema.parse(result) : null;
   }
 
   // 新建会话
@@ -47,7 +50,7 @@ export class ThreadService {
       .onConflictDoNothing()
       .returning();
 
-    if (created) return created;
+    if (created) return ThreadSchema.parse(created);
 
     if (data.id) {
       const existing = await this.getThreadById({ id: data.id, userId });
@@ -67,7 +70,7 @@ export class ThreadService {
 
     if (!updated) throw new AppError({ code: "THREAD_NOT_FOUND" });
 
-    return updated;
+    return ThreadSchema.parse(updated);
   }
 
   // 删除会话
@@ -92,11 +95,13 @@ export class ThreadService {
 
     if (!thread) throw new AppError({ code: "THREAD_NOT_FOUND" });
 
-    return await db
+    const [row] = await db
       .select()
       .from(messages)
       .where(eq(messages.threadId, threadId))
       .orderBy(asc(messages.createdAt));
+
+    return MessageSchema.array().parse(row);
   }
 
   // 保存单条消息

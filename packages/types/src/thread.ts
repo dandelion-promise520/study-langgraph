@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { IsoDateTimeSchema } from "./common";
+
 //  全局唯一的会话 ID 契约基元
 export const ThreadIdSchema = z
   .string()
@@ -12,8 +14,8 @@ export type ThreadId = z.infer<typeof ThreadIdSchema>;
 export const ThreadSchema = z.object({
   id: ThreadIdSchema,
   title: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: IsoDateTimeSchema,
+  updatedAt: IsoDateTimeSchema,
 });
 
 // 新建会话入参
@@ -37,8 +39,8 @@ export const MessageSchema = z.object({
   threadId: z.string(),
   role: MessageRoleSchema,
   content: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: IsoDateTimeSchema,
+  updatedAt: IsoDateTimeSchema,
 });
 
 // 路径参数

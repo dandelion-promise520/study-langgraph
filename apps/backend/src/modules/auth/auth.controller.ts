@@ -14,6 +14,10 @@ class AuthController {
   logout({ token }: { token: string }) {
     return authService.logout({ token });
   }
+
+  getCurrentUser({ userId }: { userId: string }) {
+    return authService.getCurrentUser({ userId });
+  }
 }
 
 export const authController = new AuthController();
