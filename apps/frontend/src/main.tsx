@@ -1,8 +1,8 @@
 import { router } from "@frontend/router";
 import "@frontend/styles/index.css";
+import { ThemeProvider } from "@frontend/vendor/ui/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
-import { ThemeProvider } from "next-themes";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -19,13 +19,7 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-        enableColorScheme
-      >
+      <ThemeProvider defaultTheme="system">
         <RouterProvider router={router} context={{ queryClient }}></RouterProvider>
       </ThemeProvider>
     </QueryClientProvider>

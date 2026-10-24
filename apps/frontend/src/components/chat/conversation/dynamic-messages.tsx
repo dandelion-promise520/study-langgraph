@@ -1,6 +1,6 @@
 import type { AddedMessage } from "@frontend/types/agent";
 
-import { ThinkingShimmer } from "@frontend/components/chat/activity/loading-states/thinking-shimmer";
+import { ThinkingShimmer } from "@frontend/vendor/agents/loading-states/thinking-shimmer";
 import {
   Message,
   MessageAvatar,
@@ -9,8 +9,8 @@ import {
   MessageContent,
   MessageFooter,
   MessageHeader,
-} from "@frontend/components/chat/messages/message";
-import { StreamingResponse } from "@frontend/components/chat/messages/streaming-response";
+} from "@frontend/vendor/agents/message";
+import { StreamingResponse } from "@frontend/vendor/agents/streaming-response";
 import { Bot, User } from "lucide-react";
 
 /**

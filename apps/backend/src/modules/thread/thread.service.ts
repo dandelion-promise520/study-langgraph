@@ -15,13 +15,13 @@ import { and, asc, desc, eq, sql } from "drizzle-orm";
 export class ThreadService {
   // 获取所有会话
   async getThreads({ userId }: { userId: string }): Promise<ThreadDto[]> {
-    const [row] = await db
+    const rows = await db
       .select()
       .from(threads)
       .where(eq(threads.userId, userId))
       .orderBy(desc(threads.updatedAt));
 
-    return ThreadSchema.array().parse(row);
+    return ThreadSchema.array().parse(rows);
   }
 
   // 按id查一个会话
@@ -95,13 +95,13 @@ export class ThreadService {
 
     if (!thread) throw new AppError({ code: "THREAD_NOT_FOUND" });
 
-    const [row] = await db
+    const rows = await db
       .select()
       .from(messages)
       .where(eq(messages.threadId, threadId))
       .orderBy(asc(messages.createdAt));
 
-    return MessageSchema.array().parse(row);
+    return MessageSchema.array().parse(rows);
   }
 
   // 保存单条消息

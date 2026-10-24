@@ -1,4 +1,4 @@
-import type { SidebarResource } from "@frontend/components/chat/workspace/ai-sidebar";
+import type { SidebarResource } from "@frontend/vendor/agents/ai-sidebar";
 
 import { useState } from "react";
 

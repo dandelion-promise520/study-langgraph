@@ -1,27 +1,22 @@
-// beui.dev/components/blocks/signup-form
-
-import { StatefulButton } from "@frontend/components/motion/button";
-import { Checkbox } from "@frontend/components/motion/checkbox";
-import { Input } from "@frontend/components/motion/input";
-import { EASE_OUT, SPRING_LAYOUT } from "@frontend/lib/ease";
-import { cn } from "@frontend/lib/utils";
+import { cn } from "@frontend/vendor/lib/utils";
+import { StatefulButton } from "@frontend/vendor/motion/button";
+import { Checkbox } from "@frontend/vendor/motion/checkbox";
+import { Input } from "@frontend/vendor/motion/input";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { type FormEvent, type ReactNode, useCallback, useId, useMemo, useState } from "react";
+import { type ReactNode, type SubmitEvent, useCallback, useId, useMemo, useState } from "react";
 
-export type SignUpStatus = "idle" | "loading" | "success" | "error";
+export type LoginStatus = "idle" | "loading" | "success" | "error";
 
-export type SignUpValues = {
-  name: string;
+export type LoginValues = {
   email: string;
   password: string;
-  confirmPassword: string;
   terms: boolean;
 };
 
-export type SignUpErrors = Partial<Record<keyof SignUpValues, string>>;
+export type LoginErrors = Partial<Record<keyof LoginValues, string>>;
 
-export type SignUpFormClassNames = {
+export type LoginFormClassNames = {
   root?: string;
   header?: string;
   title?: string;
@@ -33,17 +28,17 @@ export type SignUpFormClassNames = {
   footer?: string;
 };
 
-export interface SignUpFormProps {
+export interface LoginFormProps {
   /** Controlled values. Omit for uncontrolled. */
-  values?: SignUpValues;
-  defaultValues?: Partial<SignUpValues>;
-  onValuesChange?: (values: SignUpValues) => void;
+  values?: LoginValues;
+  defaultValues?: Partial<LoginValues>;
+  onValuesChange?: (values: LoginValues) => void;
   /** Called with valid values only. Return a promise to drive the button state. */
-  onSubmit?: (values: SignUpValues) => void | Promise<void>;
+  onSubmit?: (values: LoginValues) => void | Promise<void>;
   /** Replace the built-in rules — return a message per invalid field. */
-  validate?: (values: SignUpValues) => SignUpErrors;
+  validate?: (values: LoginValues) => LoginErrors;
   /** Controlled submit state. Omit to let the form track it. */
-  status?: SignUpStatus;
+  status?: LoginStatus;
   /** Form-level failure message, shown above the submit button. */
   errorMessage?: string;
   title?: ReactNode;
@@ -53,14 +48,12 @@ export interface SignUpFormProps {
   /** Show the password strength meter. */
   strengthMeter?: boolean;
   className?: string;
-  classNames?: SignUpFormClassNames;
+  classNames?: LoginFormClassNames;
 }
 
-const EMPTY_VALUES: SignUpValues = {
-  name: "",
+const EMPTY_VALUES: LoginValues = {
   email: "",
   password: "",
-  confirmPassword: "",
   terms: false,
 };
 
@@ -69,16 +62,6 @@ const EMPTY_VALUES: SignUpValues = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const MIN_PASSWORD_LENGTH = 8;
-
-const STRENGTH_LABELS = ["Too short", "Weak", "Fair", "Good", "Strong"] as const;
-
-const STRENGTH_COLORS = [
-  "bg-destructive",
-  "bg-destructive",
-  "bg-amber-500",
-  "bg-amber-400",
-  "bg-(--color-success)",
-] as const;
 
 /**
  * Length-weighted strength score, 0-4. NIST SP 800-63B advises against
@@ -102,12 +85,8 @@ export function passwordStrength(password: string): number {
   return Math.min(score, 4);
 }
 
-function defaultValidate(values: SignUpValues): SignUpErrors {
-  const errors: SignUpErrors = {};
-
-  if (!values.name.trim()) {
-    errors.name = "请输入您的用户名";
-  }
+function defaultValidate(values: LoginValues): LoginErrors {
+  const errors: LoginErrors = {};
 
   if (!values.email.trim()) {
     errors.email = "请输入您的邮箱";
@@ -119,12 +98,6 @@ function defaultValidate(values: SignUpValues): SignUpErrors {
     errors.password = "请输入您的密码";
   } else if (values.password.length < MIN_PASSWORD_LENGTH) {
     errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
-  }
-
-  if (!values.confirmPassword) {
-    errors.confirmPassword = "请再次输入密码";
-  } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = "Passwords don't match.";
   }
 
   if (!values.terms) {
@@ -142,25 +115,24 @@ export function LoginForm({
   validate,
   status: statusProp,
   errorMessage,
-  title = "Create your account",
-  description = "Start building in under a minute.",
-  submitLabel = "Create account",
+  title,
+  description,
+  submitLabel,
   footer,
-  strengthMeter = true,
   className,
   classNames,
-}: SignUpFormProps) {
+}: LoginFormProps) {
   const reduce = useReducedMotion();
   const baseId = useId();
 
   const controlled = valuesProp !== undefined;
-  const [internalValues, setInternalValues] = useState<SignUpValues>({
+  const [internalValues, setInternalValues] = useState<LoginValues>({
     ...EMPTY_VALUES,
     ...defaultValues,
   });
   const values = controlled ? valuesProp : internalValues;
 
-  const [internalStatus, setInternalStatus] = useState<SignUpStatus>("idle");
+  const [internalStatus, setInternalStatus] = useState<LoginStatus>("idle");
   const status = statusProp ?? internalStatus;
 
   const [revealPassword, setRevealPassword] = useState(false);
@@ -169,12 +141,12 @@ export function LoginForm({
   // field only *shows* its error once it has been blurred (or submit touched
   // everything). So a first entry is never flagged mid-typing, while a field
   // already in error clears the moment it becomes valid.
-  const [touched, setTouched] = useState<Partial<Record<keyof SignUpValues, boolean>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof LoginValues, boolean>>>({});
 
   const errors = useMemo(() => (validate ?? defaultValidate)(values), [values, validate]);
 
   const setValue = useCallback(
-    <K extends keyof SignUpValues>(key: K, next: SignUpValues[K]) => {
+    <K extends keyof LoginValues>(key: K, next: LoginValues[K]) => {
       const nextValues = { ...values, [key]: next };
       if (!controlled) {
         setInternalValues(nextValues);
@@ -189,29 +161,25 @@ export function LoginForm({
     [controlled, onValuesChange, statusProp, values],
   );
 
-  const touch = useCallback((key: keyof SignUpValues) => {
+  const touch = useCallback((key: keyof LoginValues) => {
     setTouched((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
   }, []);
 
   /** Error to render for a field — hidden until the field has been touched. */
-  const shownError = (key: keyof SignUpValues) => (touched[key] ? errors[key] : undefined);
+  const shownError = (key: keyof LoginValues) => (touched[key] ? errors[key] : undefined);
 
   /** Success check draws only once a touched field is non-empty and valid. */
-  const isValid = (key: keyof SignUpValues) =>
+  const isValid = (key: keyof LoginValues) =>
     Boolean(touched[key]) && !errors[key] && Boolean(values[key]);
 
-  const strength = passwordStrength(values.password);
-  const showStrength = strengthMeter && values.password.length > 0;
   const isSubmitting = status === "loading";
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setTouched({
-      name: true,
       email: true,
       password: true,
-      confirmPassword: true,
       terms: true,
     });
 
@@ -295,48 +263,13 @@ export function LoginForm({
               </button>
             }
             disabled={isSubmitting}
+            placeholder="password"
             value={values.password}
             onChange={(next) => setValue("password", next)}
             onBlur={() => touch("password")}
             error={shownError("password")}
             reserveErrorLine
           />
-
-          <AnimatePresence initial={false}>
-            {showStrength ? (
-              <motion.div
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
-                transition={{ duration: 0.18, ease: EASE_OUT }}
-                className={cn("flex flex-col gap-1.5 px-1", classNames?.strength)}
-              >
-                <div className="flex gap-1.5" aria-hidden>
-                  {[0, 1, 2, 3].map((index) => (
-                    <span
-                      key={index}
-                      className="h-1 flex-1 overflow-hidden rounded-full bg-muted-foreground/20"
-                    >
-                      {/* scaleX rather than width — transforms only, per the
-                          motion conventions, and it keeps the bar off layout. */}
-                      <motion.span
-                        initial={false}
-                        animate={{ scaleX: index < strength ? 1 : 0 }}
-                        transition={reduce ? { duration: 0 } : SPRING_LAYOUT}
-                        className={cn(
-                          "block h-full w-full origin-left rounded-full",
-                          STRENGTH_COLORS[strength],
-                        )}
-                      />
-                    </span>
-                  ))}
-                </div>
-                <p aria-live="polite" className="text-xs text-muted-foreground">
-                  Password strength: {STRENGTH_LABELS[strength]}
-                </p>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
         </div>
       </div>
 
@@ -388,9 +321,9 @@ export function LoginForm({
         type="submit"
         size="lg"
         state={status}
-        loadingText="Creating account"
-        successText="Account created"
-        errorText="Try again"
+        loadingText="登录"
+        successText="登录成功"
+        errorText="请重试"
         aria-describedby={errorMessage ? formErrorId : undefined}
         className={cn("w-full", classNames?.submit)}
       >

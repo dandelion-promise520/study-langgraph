@@ -4,13 +4,15 @@ import { AppError } from "@backend/lib/errors";
 import { and, eq, gt, sql } from "drizzle-orm";
 import Elysia from "elysia";
 
+import { clearSessionCookie } from "./session-cookie";
+
 export const requireAuth = new Elysia({ name: "require-auth" }).derive(
   { as: "scoped" },
   async ({ cookie }) => {
     const token = cookie.auth_session?.value;
 
     if (typeof token !== "string" || token === "") {
-      cookie.auth_session?.remove();
+      clearSessionCookie({ cookie: cookie.auth_session });
       throw new AppError({ code: "UNAUTHORIZED" });
     }
 
@@ -21,7 +23,7 @@ export const requireAuth = new Elysia({ name: "require-auth" }).derive(
       .limit(1);
 
     if (!session) {
-      cookie.auth_session?.remove();
+      clearSessionCookie({ cookie: cookie.auth_session });
       throw new AppError({ code: "UNAUTHORIZED" });
     }
 

@@ -1,5 +1,6 @@
-import { ThinkingShimmer } from "@frontend/components/chat/activity/loading-states/thinking-shimmer";
-import { PromptInput } from "@frontend/components/chat/conversation/prompt-input";
+import { useThreadMessages } from "@frontend/hooks";
+import { useChatStore } from "@frontend/stores/chat";
+import { ThinkingShimmer } from "@frontend/vendor/agents/loading-states/thinking-shimmer";
 import {
   Message,
   MessageAvatar,
@@ -9,11 +10,11 @@ import {
   MessageGroup,
   MessageHeader,
   MessageScroller,
-} from "@frontend/components/chat/messages/message";
-import { StreamingResponse } from "@frontend/components/chat/messages/streaming-response";
-import { AnimatedSidebarInset, AnimatedSidebarTrigger } from "@frontend/components/motion";
-import { useThreadMessages } from "@frontend/hooks";
-import { useChatStore } from "@frontend/stores/chat";
+} from "@frontend/vendor/agents/message";
+import { PromptInput } from "@frontend/vendor/agents/prompt-input";
+import { StreamingResponse } from "@frontend/vendor/agents/streaming-response";
+import { AnimatedSidebarInset, AnimatedSidebarTrigger } from "@frontend/vendor/motion";
+import { ThemeToggle } from "@frontend/vendor/motion/theme-toggle";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bot, PanelLeft, User } from "lucide-react";
 import { useState } from "react";
@@ -38,7 +39,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
     threadId ? (state.streams[threadId]?.isGenerating ?? false) : false,
   );
   // 获取当前会话的历史消息
-  const { data: messages = [] } = useThreadMessages(threadId);
+  const { data: messages = [] } = useThreadMessages({ threadId });
 
   // 找到哪条消息正在打字
   let streamingMessageId: string | null = null;
@@ -95,6 +96,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
             </p>
           </div>
         </div>
+        <ThemeToggle variant="circle-blur" start="top-right" className="cursor-pointer" />
       </header>
 
       {/* 消息滚动列表 */}

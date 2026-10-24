@@ -1,4 +1,4 @@
-import type { ApprovalCardStatus } from "@frontend/components/chat/activity/approval-card";
+import type { ApprovalCardStatus } from "@frontend/vendor/agents/approval-card";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 

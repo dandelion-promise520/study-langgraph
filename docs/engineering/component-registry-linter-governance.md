@@ -175,26 +175,24 @@ shadcn 模式的核心哲学就是：**“一旦你复制了代码，它就属�
 
 各子模块（前端、后端、共享类型包）只扫描各自的 `src` 目录，前端独享 React 检查，后端排除前端规则，数据库迁移快照与外部工具目录彻底加入 `ignorePatterns`。
 
-### 策略四：把“文件归谁、该在哪”变成可校验的结构契约
+### 策略四：把“文件归谁、该在哪”变成结构约定
 
 Lint 豁免只解决了“代码能不能过检查”，没有解决“这堆代码谁维护、下次怎么升级”。源码分发型组件库真正的隐性成本在后者：**一旦移动了 registry 文件，`shadcn add --diff / --overwrite` 就失去参照，上游更新通道随即作废，而你往往在半年后才意识到这件事。**
 
 beUI 的每个 registry item 都在 `files[].target` 里声明了期望落点（`@components/motion/*`、`@lib/*`、`@lib/hooks/*`），这是 CLI 的契约。因此约定三条：
 
-1. **分类的轴是“同步意愿”，不是“功能域”。** vendor 层（`components/ui`、`components/motion`、`lib`）保持 registry 原路径，随时可用 CLI 升级；自有层（`components/chat`、`components/auth`、`hooks`）按业务域自由组织。
+1. **分类的轴是“同步意愿”，不是“功能域”。** vendor 层（`vendor/ui`、`vendor/motion`、`vendor/agents`、`vendor/lib`）保持 registry 原路径，随时可用 CLI 升级；自有层（`components/chat`、`components/auth`、`hooks`）按业务域自由组织。两层由 `components.json` 的 `aliases` 隔离——所有 registry 别名的根都指向 `@frontend/vendor`，业务目录不在任何 registry 路径之下，上游下发任何同名目录都撞不到自有代码。
 2. **不拆散一个 item。** 同一个 item 的文件带内部相对 import（如 `command-palette` 依赖同批安装的 `lib/presence-gate`），把一个文件搬走就等于让整条 import 链失效。
 3. **依赖单向。** 自有层可以依赖 vendor 层，vendor 层不得反向依赖业务模块。
 
-这些约定由 `apps/frontend/registry.manifest.json`（台账）与 `apps/frontend/scripts/check-vendor.ts`（校验）落地，`bun run lint` 时会自动执行，覆盖四项检查：
+这套约定最初由 `apps/frontend/registry.manifest.json`（台账）加 `apps/frontend/scripts/check-vendor.ts`（校验）落地，现已移除。原因是台账逐文件记录 `path` 与 `target`，而这两项都能由 `aliases` 和 registry 声明推导出来——维护一份可以被推导的副本，只会让它随开发进度慢慢漂移。现在只依赖两条：
 
-| 检查     | 失败含义                                                               |
-| :------- | :--------------------------------------------------------------------- |
-| 覆盖率   | vendor 目录里出现了没登记的文件：要么补台账，要么搬出 vendor 层        |
-| 路径一致 | 文件的落点偏离了 registry target 且未标记 `fork`：CLI 将无法再 diff 它 |
-| 符号唯一 | 同一个导出名出现在两个文件里，典型症状是两份实现逐渐分叉               |
-| 单向依赖 | vendor 文件反向 import 了业务模块                                      |
+| 手段                       | 作用                                                        |
+| :------------------------- | :---------------------------------------------------------- |
+| 目录边界                   | `src/vendor/` 下的一切都是上游产物，改动前先确认是否要 fork |
+| `shadcn add <item> --diff` | 需要判断某个文件是否被改过时按需比对，不预先记录            |
 
-新增第三方组件时，在台账里补一条 entry 即可；确认要长期偏离 registry 路径的文件，标 `"fork": true` 并接受放弃该项的 CLI 升级能力。已知的合理重复（如 TanStack Router 要求每个路由文件导出 `Route`）写入 `allowDuplicateExports` 并注明原因，让豁免列表本身成为一份可审计的技术债清单。
+真正需要人工记住的只剩“装过哪些 item”。这份清单不与磁盘同步，也不参与任何校验，因此不会失配。
 
 ---
 

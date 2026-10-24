@@ -4,14 +4,20 @@ import Elysia from "elysia";
 import { authController } from "./auth.controller";
 import { AuthModels } from "./auth.model";
 import { requireAuth } from "./require-auth";
+import { clearSessionCookie, setSessionCookie } from "./session-cookie";
 
 export const authModule = new Elysia({ prefix: "/auth" })
   .model(AuthModels)
   .post(
     "/register",
-    ({ body, set }) => {
+    async ({ body, set, cookie }) => {
+      const { expiresAt, token, user } = await authController.register({ body });
+
+      // 注册后自动登录
+      setSessionCookie({ cookie: cookie.auth_session, expiresAt, token });
+
       set.status = 201;
-      return authController.register({ body });
+      return user;
     },
     { body: "Register", response: { 201: UserSchema } },
   )
@@ -19,28 +25,23 @@ export const authModule = new Elysia({ prefix: "/auth" })
     "/login",
     async ({ body, cookie }) => {
       const { user, token, expiresAt } = await authController.login({ body });
-      cookie.auth_session?.set({
-        value: token,
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        expires: expiresAt,
-      });
+
+      setSessionCookie({ cookie: cookie.auth_session, expiresAt, token });
 
       return user;
     },
     { body: "Login", response: { 200: UserSchema } },
   )
-  .delete("/logout", async ({ cookie }) => {
+  .delete("/logout", async ({ cookie, set }) => {
     const token = cookie.auth_session?.value;
 
     if (typeof token === "string" && token !== "") {
       await authController.logout({ token });
     }
 
-    cookie.auth_session?.remove();
+    clearSessionCookie({ cookie: cookie.auth_session });
 
-    return { success: true };
+    set.status = 204;
   })
   .use(requireAuth)
   .get("/me", ({ userId }) => authController.getCurrentUser({ userId }), {

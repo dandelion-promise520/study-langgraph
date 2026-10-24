@@ -1,8 +1,8 @@
 "use client";
 // beui.dev/components/motion/tabs
 
-import { EASE_OUT, SPRING_SWAP } from "@frontend/lib/ease";
-import { cn } from "@frontend/lib/utils";
+import { EASE_OUT, SPRING_SWAP } from "@frontend/vendor/lib/ease";
+import { cn } from "@frontend/vendor/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   cancelFrame,

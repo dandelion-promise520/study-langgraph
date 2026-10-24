@@ -1,5 +1,5 @@
-import { AnimatedSidebarTrigger } from "@frontend/components/motion/animated-sidebar";
-import { ThemeToggle } from "@frontend/components/motion/theme-toggle";
+import { AnimatedSidebarTrigger } from "@frontend/vendor/motion/animated-sidebar";
+import { ThemeToggle } from "@frontend/vendor/motion/theme-toggle";
 import { PanelLeft } from "lucide-react";
 
 /**

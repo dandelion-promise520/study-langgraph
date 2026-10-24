@@ -1,5 +1,5 @@
-import type { TodoItem } from "@frontend/components/chat/activity/todo-list";
-import type { ToolApprovalStatus } from "@frontend/components/chat/activity/tool-approval";
+import type { TodoItem } from "@frontend/vendor/agents/todo-list";
+import type { ToolApprovalStatus } from "@frontend/vendor/agents/tool-approval";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 

@@ -1,8 +1,11 @@
 import type { MyRouterContext } from "@frontend/router";
 
 import { AuthModal } from "@frontend/components/auth";
-import { AISidebar, ChatApp, type SidebarResource } from "@frontend/components/chat";
 import { DeleteChatModal } from "@frontend/components/chat/workspace/delete-chat-modal";
+import { NotFoundGlitch } from "@frontend/components/not-found";
+import { useThreads } from "@frontend/hooks";
+import { AISidebar, type SidebarResource } from "@frontend/vendor/agents/ai-sidebar";
+import { ChatApp } from "@frontend/vendor/agents/chat-app";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -14,15 +17,13 @@ import {
   AnimatedSidebarMenuItem,
   Button,
   type ButtonState,
-} from "@frontend/components/motion";
+} from "@frontend/vendor/motion";
 import {
   AnimatedToastStack,
   useAnimatedToastStack,
   type ToastInput,
-} from "@frontend/components/motion/animated-toast-stack";
-import { NotFoundGlitch } from "@frontend/components/not-found";
-import { Avatar, AvatarFallback, AvatarImage } from "@frontend/components/ui/avatar";
-import { useThreads } from "@frontend/hooks";
+} from "@frontend/vendor/motion/animated-toast-stack";
+import { Avatar, AvatarFallback, AvatarImage } from "@frontend/vendor/ui/avatar";
 import {
   createRootRouteWithContext,
   Outlet,

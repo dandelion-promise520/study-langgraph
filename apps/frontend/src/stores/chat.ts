@@ -33,6 +33,8 @@ export const useChatStore = create<ChatStore>((set, get) => {
     sendMessage: async ({ message, queryClient, threadId }) => {
       if (get().streams[threadId]) return;
 
+      await queryClient.cancelQueries({ queryKey: THREAD_QUERY_KEYS.messages(threadId) });
+
       const controller = new AbortController();
 
       set((state) => ({
@@ -71,7 +73,10 @@ export const useChatStore = create<ChatStore>((set, get) => {
 
       // 后台持续拉流并原地更新对应格子的内容（切走也不会中断）
       try {
-        const stream = sendChatMessageStream({ message, threadId }, controller.signal);
+        const stream = sendChatMessageStream({
+          data: { message, threadId },
+          signal: controller.signal,
+        });
 
         for await (const delta of stream) {
           queryClient.setQueryData<MessageDto[]>(THREAD_QUERY_KEYS.messages(threadId), (old = []) =>

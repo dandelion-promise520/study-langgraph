@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import { AISidebar, type SidebarResource } from "@frontend/components/chat/workspace/ai-sidebar";
+import { AISidebar, type SidebarResource } from "@frontend/vendor/agents/ai-sidebar";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -11,8 +11,8 @@ import {
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
   AnimatedSidebarRail,
-} from "@frontend/components/motion/animated-sidebar";
-import { CommandPalette } from "@frontend/components/motion/command-palette";
+} from "@frontend/vendor/motion/animated-sidebar";
+import { CommandPalette } from "@frontend/vendor/motion/command-palette";
 import {
   Clock3,
   FileText,

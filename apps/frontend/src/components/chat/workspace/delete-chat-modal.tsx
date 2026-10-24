@@ -1,12 +1,12 @@
+import type { SidebarResource } from "@frontend/vendor/agents/ai-sidebar";
+
 import {
   Button,
   CenterMorphModal,
   CenterMorphModalContent,
   StatefulButton,
   type ButtonState,
-} from "@frontend/components/motion";
-
-import type { SidebarResource } from "./ai-sidebar";
+} from "@frontend/vendor/motion";
 
 interface DeleteChatModalProps {
   open: boolean;

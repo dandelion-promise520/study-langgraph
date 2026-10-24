@@ -9,22 +9,52 @@ import { and, eq, lt, sql } from "drizzle-orm";
 // session过期时间
 const SESSION_TTL_MS = 30 * 24 * 3600 * 1000; // 30 天，
 
+type Transaction = Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
+
 class AuthService {
+  private async createSession({ tx, userId }: { tx: Transaction; userId: string }) {
+    // 生成一个随机token
+    const token = randomBytes(32).toString("base64url");
+
+    // 算出过期时间
+    const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+
+    // 顺手清下过期的token行
+    await tx
+      .delete(authSessions)
+      .where(and(eq(authSessions.userId, userId), lt(authSessions.expiresAt, sql`now()`)));
+
+    // 插表
+    await tx.insert(authSessions).values({
+      expiresAt: expiresAt,
+      token,
+      userId: userId,
+    });
+
+    return { expiresAt, token };
+  }
+
   async register({ body }: { body: RegisterDto }) {
     const passwordHash = await Bun.password.hash(body.password);
 
     try {
-      const [row] = await db
-        .insert(users)
-        .values({
-          email: body.email,
-          name: body.name,
-          passwordHash,
-        })
-        .returning();
+      return await db.transaction(async (tx) => {
+        const [row] = await tx
+          .insert(users)
+          .values({
+            email: body.email,
+            name: body.name,
+            passwordHash,
+          })
+          .returning();
 
-      // 剥离成UserSchema的形状，也就是把passwordHash抽出去
-      return UserSchema.parse(row);
+        const user = UserSchema.parse(row);
+        // 注册后自动登录
+        const session = await this.createSession({ tx, userId: user.id });
+
+        // 剥离成UserSchema的形状，也就是把passwordHash抽出去
+        return { user, ...session };
+      });
     } catch (e) {
       if (isPgUniqueViolation({ err: e, constraintName: "users_email_key" })) {
         throw new AppError({ code: "EMAIL_TAKEN", cause: e });
@@ -50,25 +80,10 @@ class AuthService {
       throw new AppError({ code: "INVALID_CREDENTIALS" });
     }
 
-    // 生成一个随机token
-    const token = randomBytes(32).toString("base64url");
+    // 发session
+    const session = await db.transaction(async (tx) => this.createSession({ tx, userId: user.id }));
 
-    // 算出过期时间
-    const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-
-    // 顺手清下过期的token行
-    await db
-      .delete(authSessions)
-      .where(and(eq(authSessions.userId, user.id), lt(authSessions.expiresAt, sql`now()`)));
-
-    // 插表
-    await db.insert(authSessions).values({
-      expiresAt: expiresAt,
-      token,
-      userId: user.id,
-    });
-
-    return { user: UserSchema.parse(user), expiresAt, token };
+    return { user: UserSchema.parse(user), ...session };
   }
 
   async logout({ token }: { token: string }) {

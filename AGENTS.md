@@ -89,6 +89,26 @@ type(scope?): subject
 - 严禁在回复或文档中使用任何 emoji 表情符号。
 - 保持客观、专业、严谨的技术表述风格。
 
+### 4. Serena 代码智能工具的使用边界
+
+本项目已注册 Serena MCP（LSP：typescript）。它是**符号级检索**工具，不具备语义理解能力，使用范围严格限定如下。
+
+**该用：**
+
+- 探索陌生文件：先 `get_symbols_overview` 取符号表，不要整文件读取。
+- 修改导出形状或函数签名前：`find_referencing_symbols` 确认影响面。它返回引用所在的**符号路径**（如 `ChatPane/handleStop`），比 grep 的「文件 + 行号」更精确。
+- 只关心单个文件的类型错误：`get_diagnostics_for_file`，不必为看一处报错跑全量 `tsc -b`。
+
+**不该用：**
+
+- **全部编辑类工具**（`replace_symbol_body`、`insert_*_symbol`、`replace_content`、`rename_symbol`、`replace_in_files`）。Serena 的激活指令要求接管文件读写，声明对代码文件 `Read` 与 `Edit` 均为 FORBIDDEN，与本文件「尊重自主编码」条直接冲突，冲突时以本文件为准。该限制已通过 `.serena/project.yml` 的 `read_only: true` 在服务端强制（同时会屏蔽 `editing` 模式带来的编辑工具），修改此开关后需重启 Serena 进程才生效。
+- **不带路径的全库 `find_symbol`**：其为子串名字匹配（搜 `ChatMessage` 会带出 `sendChatMessage`），精度不优于 `Grep`，仅在已知目录范围内取符号体时使用。
+- **`onboarding`**：会向 `.serena/memories/` 写入项目记忆，与 `.workbuddy/memory/` 形成第二套事实源，禁止运行。
+
+**调用前置条件：** 项目未激活时所有 Serena 工具均报 `No active project`。流程为先 `initial_instructions` 取 session id，再 `activate_project`（`project` 填 `study-langgraph` 或绝对路径，`session` 填上一步取得的值）。每次新建会话需重做一次。
+
+**版本库边界：** `.serena/` 下自带 `.gitignore`，已排除 `/cache`（符号索引二进制）与 `/project.local.yml`（本机路径）。`project.yml` 记录语言服务器与项目名，属于团队共享配置，**必须保留在版本库中**，不要为图省事把整个 `.serena/` 加进根 `.gitignore`。
+
 ---
 
 ## 架构与类型规范 (Architecture & Type Conventions)

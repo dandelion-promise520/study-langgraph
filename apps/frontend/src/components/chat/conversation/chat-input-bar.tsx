@@ -1,4 +1,4 @@
-import { PromptInput } from "@frontend/components/chat/conversation/prompt-input";
+import { PromptInput } from "@frontend/vendor/agents/prompt-input";
 import { FolderKanban, Paperclip, WandSparkles } from "lucide-react";
 
 /**

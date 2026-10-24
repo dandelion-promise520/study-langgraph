@@ -1,19 +1,12 @@
-import { AgentActivity } from "@frontend/components/chat/activity/agent-activity";
+import { AgentActivity } from "@frontend/vendor/agents/agent-activity";
 import {
   ApprovalCard,
   type ApprovalCardQuestion,
   type ApprovalCardStatus,
-} from "@frontend/components/chat/activity/approval-card";
-import { TodoList, type TodoItem } from "@frontend/components/chat/activity/todo-list";
-import {
-  ToolApproval,
-  ToolApprovalCode,
-  type ToolApprovalStatus,
-} from "@frontend/components/chat/activity/tool-approval";
-import { ToolResult, ToolResultOutput } from "@frontend/components/chat/activity/tool-result";
-import { CodeBlock } from "@frontend/components/chat/messages/code-block";
-import { FileDiff } from "@frontend/components/chat/messages/file-diff";
-import { ImageGeneration } from "@frontend/components/chat/messages/image-generation";
+} from "@frontend/vendor/agents/approval-card";
+import { CodeBlock } from "@frontend/vendor/agents/code-block";
+import { FileDiff } from "@frontend/vendor/agents/file-diff";
+import { ImageGeneration } from "@frontend/vendor/agents/image-generation";
 import {
   Message,
   MessageAvatar,
@@ -21,8 +14,15 @@ import {
   MessageBubbleContent,
   MessageContent,
   MessageHeader,
-} from "@frontend/components/chat/messages/message";
-import { StreamingResponse } from "@frontend/components/chat/messages/streaming-response";
+} from "@frontend/vendor/agents/message";
+import { StreamingResponse } from "@frontend/vendor/agents/streaming-response";
+import { TodoList, type TodoItem } from "@frontend/vendor/agents/todo-list";
+import {
+  ToolApproval,
+  ToolApprovalCode,
+  type ToolApprovalStatus,
+} from "@frontend/vendor/agents/tool-approval";
+import { ToolResult, ToolResultOutput } from "@frontend/vendor/agents/tool-result";
 import { Bot, User } from "lucide-react";
 
 // ==========================================

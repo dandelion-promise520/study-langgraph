@@ -1,9 +1,11 @@
+import { getErrorMessage } from "@frontend/api";
+import { useLogin, useRegister } from "@frontend/hooks";
+import { CenterMorphModal, CenterMorphModalContent } from "@frontend/vendor/motion";
 import { LogIn, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 
-import { CenterMorphModal, CenterMorphModalContent } from "../motion";
 import { LoginForm } from "./login-form";
-import { SignUpForm } from "./signup-form";
+import { RegisterForm } from "./register-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 interface AuthModalProps {
@@ -11,19 +13,20 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const TAB_VALUES = ["signUp", "logIn"] as const;
+const TAB_VALUES = ["register", "login"] as const;
 type TabState = (typeof TAB_VALUES)[number];
 
 export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
-  const [tabState, setTabState] = useState<TabState>("logIn");
+  const { mutateAsync: register } = useRegister();
+  const { mutateAsync: login } = useLogin();
+
+  const [tabState, setTabState] = useState<TabState>("login");
   const [formError, setFormError] = useState<string>();
 
   return (
     <CenterMorphModal open={open} onOpenChange={onOpenChange}>
-      <CenterMorphModalContent ariaLabel="请登录">
+      <CenterMorphModalContent ariaLabel="登录或注册">
         <div className="flex flex-col gap-4 p-7 sm:p-8">
-          <p className="text-xl">请登录</p>
-
           <Tabs
             values={TAB_VALUES}
             defaultValue={tabState}
@@ -32,33 +35,51 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
             icons="selected"
           >
             <TabsList>
-              <TabsTrigger<TabState> value="signUp" icon={<UserRoundPlus className="size-3.5" />}>
-                注册
-              </TabsTrigger>
-              <TabsTrigger<TabState> value="logIn" icon={<LogIn className="size-3.5" />}>
+              <TabsTrigger<TabState> value="login" icon={<LogIn className="size-3.5" />}>
                 登录
               </TabsTrigger>
+              <TabsTrigger<TabState> value="register" icon={<UserRoundPlus className="size-3.5" />}>
+                注册
+              </TabsTrigger>
             </TabsList>
-
-            <TabsContent<TabState> value="signUp">
-              <SignUpForm
+            <TabsContent<TabState> value="register">
+              <RegisterForm
                 className="border-none p-0"
-                title="创建您的账号"
-                description=""
+                title="注册"
+                submitLabel="注册"
                 errorMessage={formError}
-                onSubmit={async (values) => {
+                onSubmit={async ({ email, name, password }) => {
                   setFormError(undefined);
-                  await new Promise((resolve) => setTimeout(resolve, 1200));
-                  if (values.email.toLowerCase().startsWith("taken@")) {
-                    setFormError("That email is already registered.");
-                    throw new Error("Email already registered");
+                  try {
+                    onOpenChange(false);
+                    await register({ email, name, password });
+                  } catch (error) {
+                    setFormError(getErrorMessage(error));
+                    throw error;
                   }
+                }}
+                onValuesChange={() => {
+                  setFormError(undefined);
                 }}
               />
             </TabsContent>
-
-            <TabsContent<TabState> value="logIn">
-              <LoginForm className="border-none p-0" title="请登录您的账号" description="" />
+            <TabsContent<TabState> value="login">
+              <LoginForm
+                className="border-none p-0"
+                submitLabel="登录"
+                title="登录"
+                errorMessage={formError}
+                onSubmit={async ({ email, password }) => {
+                  setFormError(undefined);
+                  try {
+                    await login({ email, password });
+                    onOpenChange(false);
+                  } catch (error) {
+                    setFormError(getErrorMessage(error));
+                    throw error;
+                  }
+                }}
+              />
             </TabsContent>
           </Tabs>
         </div>
