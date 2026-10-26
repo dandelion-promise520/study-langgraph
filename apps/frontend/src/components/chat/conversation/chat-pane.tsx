@@ -88,7 +88,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
         <div className="flex min-w-0 items-center gap-2.5">
           <AnimatedSidebarTrigger className="text-muted-foreground hover:bg-muted hover:text-foreground">
-            <PanelLeft className="size-3.5" />
+            <PanelLeft />
           </AnimatedSidebarTrigger>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground">
@@ -96,7 +96,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
             </p>
           </div>
         </div>
-        <ThemeToggle variant="circle-blur" start="top-right" className="cursor-pointer" />
+        <ThemeToggle variant="circle-blur" start="top-right" />
       </header>
 
       {/* 消息滚动列表 */}
@@ -111,13 +111,7 @@ export const ChatPane = ({ threadId, threadTitle, onThreadCreated }: ChatPanePro
               const isStreaming = id === streamingMessageId;
               return (
                 <Message key={id} from={from} animateIn>
-                  <MessageAvatar>
-                    {from === "assistant" ? (
-                      <Bot className="size-3.5" />
-                    ) : (
-                      <User className="size-3.5" />
-                    )}
-                  </MessageAvatar>
+                  <MessageAvatar>{from === "assistant" ? <Bot /> : <User />}</MessageAvatar>
                   <MessageContent>
                     <MessageHeader>
                       <span>{from === "assistant" ? "AI 智能体" : "你"}</span>

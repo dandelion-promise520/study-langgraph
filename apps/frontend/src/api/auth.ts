@@ -31,7 +31,5 @@ export const logout = async () => {
 export const getMe = async () => {
   const { data } = await client.auth.me.get();
 
-  if (!data) throw new Error("获取用户信息失败");
-
-  return data;
+  return data || null;
 };

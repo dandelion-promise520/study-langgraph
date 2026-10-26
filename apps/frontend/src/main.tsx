@@ -3,8 +3,11 @@ import "@frontend/styles/index.css";
 import { ThemeProvider } from "@frontend/vendor/ui/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
+import { LucideProvider } from "lucide-react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
+import { ToastProvider } from "./components/toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +23,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system">
-        <RouterProvider router={router} context={{ queryClient }}></RouterProvider>
+        <LucideProvider size={16}>
+          <ToastProvider>
+            <RouterProvider router={router} context={{ queryClient }}></RouterProvider>
+          </ToastProvider>
+        </LucideProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,

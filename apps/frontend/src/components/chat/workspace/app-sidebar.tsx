@@ -94,7 +94,7 @@ export function AppSidebar({
               ].map(({ label, icon: Icon, onSelect }) => (
                 <AnimatedSidebarMenuItem key={label}>
                   <AnimatedSidebarMenuButton
-                    icon={<Icon className="size-4" />}
+                    icon={<Icon />}
                     onSelect={onSelect}
                     className="font-normal"
                   >

@@ -24,6 +24,12 @@ export const useMe = () =>
     retry: shouldRetry,
   });
 
+export const useAuth = () => {
+  const { data, isPending } = useMe();
+
+  return { data: data ?? null, isAuthenticated: Boolean(data), idLoading: isPending };
+};
+
 // 注册
 export const useRegister = () => {
   const queryClient = useQueryClient();

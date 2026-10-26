@@ -3,7 +3,8 @@ import type { MyRouterContext } from "@frontend/router";
 import { AuthModal } from "@frontend/components/auth";
 import { DeleteChatModal } from "@frontend/components/chat/workspace/delete-chat-modal";
 import { NotFoundGlitch } from "@frontend/components/not-found";
-import { useThreads } from "@frontend/hooks";
+import { useToast } from "@frontend/components/toast";
+import { useAuth, useThreads } from "@frontend/hooks";
 import { AISidebar, type SidebarResource } from "@frontend/vendor/agents/ai-sidebar";
 import { ChatApp } from "@frontend/vendor/agents/chat-app";
 import {
@@ -18,11 +19,6 @@ import {
   Button,
   type ButtonState,
 } from "@frontend/vendor/motion";
-import {
-  AnimatedToastStack,
-  useAnimatedToastStack,
-  type ToastInput,
-} from "@frontend/vendor/motion/animated-toast-stack";
 import { Avatar, AvatarFallback, AvatarImage } from "@frontend/vendor/ui/avatar";
 import {
   createRootRouteWithContext,
@@ -30,7 +26,7 @@ import {
   useMatchRoute,
   useNavigate,
 } from "@tanstack/react-router";
-import { MessageCircle, MessageSquarePlus, Sparkles, UserRound } from "lucide-react";
+import { MessageCircle, MessageSquarePlus, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const RootComponent = () => {
@@ -75,24 +71,7 @@ const RootComponent = () => {
   const [deleteState, setDeleteState] = useState<ButtonState>("idle");
   const [deleteItem, setDeleteItem] = useState<SidebarResource | null>(null);
 
-  const { toasts, showToast, updateToast, dismissToast } = useAnimatedToastStack({
-    defaultDuration: 3600,
-    limit: 5,
-  });
-
-  const openToast = (input: ToastInput) => {
-    const id = showToast(input);
-    if (input.status === "loading") {
-      window.setTimeout(() => {
-        updateToast(id, {
-          status: "success",
-          title: "Publish complete",
-          description: "Toast updated in-place from loading to success.",
-          duration: 3200,
-        });
-      }, 1800);
-    }
-  };
+  const { showToast } = useToast();
 
   // 打开删除会话模态框，并传入deleteItem信息
   const handleDeleteSession = async (item: SidebarResource) => {
@@ -113,9 +92,9 @@ const RootComponent = () => {
         navigate({ to: "/" });
       }
       // 弹个窗显示删除成功
-      openToast({ title: "删除会话成功", status: "success" });
+      showToast({ title: "删除会话成功", status: "success" });
     } catch {
-      openToast({ title: "删除会话失败", status: "error" });
+      showToast({ title: "删除会话失败", status: "error" });
     } finally {
       // 不管成功或是失败，都统一关掉模态框并清除传入的item信息并让删除按钮恢复原态
       setDeleteState("idle");
@@ -124,7 +103,7 @@ const RootComponent = () => {
     }
   };
 
-  const [isLogin, _setIsLogin] = useState<boolean>(false);
+  const { data, isAuthenticated } = useAuth();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
@@ -137,7 +116,7 @@ const RootComponent = () => {
           <AnimatedSidebarMenu>
             <AnimatedSidebarMenuItem>
               <AnimatedSidebarMenuButton
-                icon={<MessageSquarePlus className="size-3.5" />}
+                icon={<MessageSquarePlus />}
                 onSelect={handleNewSession}
                 className="font-normal"
               >
@@ -153,7 +132,7 @@ const RootComponent = () => {
           <AISidebar
             activeId={activeThreadId}
             items={sessions}
-            renderIcon={() => <MessageCircle className="size-3.5" />}
+            renderIcon={() => <MessageCircle />}
             onDelete={handleDeleteSession}
             onActiveChange={(id) => {
               if (id) {
@@ -166,20 +145,21 @@ const RootComponent = () => {
 
         {/* 左下角登录处 */}
         <AnimatedSidebarFooter>
-          {isLogin ? (
+          {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <Avatar>
-                <AvatarImage src={"https://assets.watermelon.sh/wm_alex.png"} alt={"Alex Rivera"} />
-                <AvatarFallback className="text-xs">{"AR"}</AvatarFallback>
+                <AvatarImage src={"https://assets.watermelon.sh/wm_alex.png"} alt={data?.name} />
+                <AvatarFallback className="text-xs">{data?.name}</AvatarFallback>
               </Avatar>
-              <span>Alex Rivera</span>
+              <span>{data?.name}</span>
             </div>
           ) : (
             <div className="flex items-center gap-3.5">
               <Avatar className="flex items-center justify-center">
-                <UserRound className="size-4" />
+                <UserRound />
               </Avatar>
               <Button
+                className="cursor-pointer"
                 size="sm"
                 onClick={() => {
                   setIsLoginModalOpen(true);
@@ -210,21 +190,6 @@ const RootComponent = () => {
         onOpenChange={(open) => {
           if (!open) setIsLoginModalOpen(false);
           else setIsLoginModalOpen(true);
-        }}
-      />
-
-      {/* 全局弹窗 */}
-      <AnimatedToastStack
-        toasts={toasts}
-        onDismiss={dismissToast}
-        position={"top-center"}
-        placement="fixed"
-        maxVisible={4}
-        classNames={{
-          surface: "bg-card/95",
-        }}
-        icons={{
-          neutral: <Sparkles className="size-3.5" />,
         }}
       />
     </ChatApp>

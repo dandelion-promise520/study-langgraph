@@ -3,7 +3,7 @@ import Elysia from "elysia";
 
 import { authController } from "./auth.controller";
 import { AuthModels } from "./auth.model";
-import { requireAuth } from "./require-auth";
+import { resolveSession } from "./require-auth";
 import { clearSessionCookie, setSessionCookie } from "./session-cookie";
 
 export const authModule = new Elysia({ prefix: "/auth" })
@@ -43,8 +43,15 @@ export const authModule = new Elysia({ prefix: "/auth" })
 
     set.status = 204;
   })
-  .use(requireAuth)
-  .get("/me", ({ userId }) => authController.getCurrentUser({ userId }), {
-    response: { 200: UserSchema },
-    detail: { security: [{ cookieAuth: [] }] },
-  });
+  .get(
+    "/me",
+    async ({ cookie }) => {
+      const userId = await resolveSession({ cookie });
+
+      return userId ? authController.getCurrentUser({ userId }) : null;
+    },
+    {
+      response: { 200: UserSchema.nullable() },
+      detail: { security: [{ cookieAuth: [] }] },
+    },
+  );

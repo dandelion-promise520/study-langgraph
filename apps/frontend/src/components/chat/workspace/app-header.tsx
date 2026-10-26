@@ -30,7 +30,7 @@ export function AppHeader({
       {/* 左侧：侧边栏切换按钮 + 标题描述 */}
       <div className="flex min-w-0 items-center gap-2.5">
         <AnimatedSidebarTrigger className="text-muted-foreground hover:bg-muted hover:text-foreground">
-          <PanelLeft className="size-4" />
+          <PanelLeft />
         </AnimatedSidebarTrigger>
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-foreground">{title}</p>

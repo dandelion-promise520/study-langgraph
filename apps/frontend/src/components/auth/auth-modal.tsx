@@ -35,10 +35,10 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
             icons="selected"
           >
             <TabsList>
-              <TabsTrigger<TabState> value="login" icon={<LogIn className="size-3.5" />}>
+              <TabsTrigger<TabState> value="login" icon={<LogIn />}>
                 登录
               </TabsTrigger>
-              <TabsTrigger<TabState> value="register" icon={<UserRoundPlus className="size-3.5" />}>
+              <TabsTrigger<TabState> value="register" icon={<UserRoundPlus />}>
                 注册
               </TabsTrigger>
             </TabsList>
